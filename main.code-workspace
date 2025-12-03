@@ -1,0 +1,30 @@
+{
+    "folders": [
+        {
+            "path": "."
+        },
+        {
+            "path": "../STM32F4_GamesCollection"
+        },
+        {
+            "path": "../STM32F4_Libraries"
+        }
+    ],
+    "extensions": {
+        "recommendations": [
+            "ms-python.debugpy",
+            "ms-python.python",
+            "ms-python.vscode-pylance",
+            "ms-python.vscode-python-envs",
+            "ms-vscode.cmake-tools",
+            "ms-vscode.cpp-devtools",
+            "ms-vscode.cpptools",
+            "ms-vscode.cpptools-extension-pack",
+            "ms-vscode.cpptools-themes",
+            "twxs.cmake"
+        ]
+    }
+    // "settings": {
+    //     "cmake.sourceDirectory": "${workspaceFolder}/src"
+    // }
+}

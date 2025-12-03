@@ -1,0 +1,150 @@
+
+#include <type_traits>
+
+// Заголовой библиотеки
+struct LibVersion
+{
+	// Изменяется при внедрении обратно несовместимых функций
+	uint16_t major;
+	
+	// Изменяется при внедрении новых функций
+	uint16_t minor;
+};
+
+template <typename LibType>
+class LibsContainer
+{
+	// check what LibType is child of LibVersion
+
+protected:
+	StaticList<LibType*, 8> libs;
+	
+public:
+	void RegLib(LibType* lib)
+	{
+		libs.Push(lib);
+	}
+	
+	enum FindResult { LIB_UNDEFINED, LIB_MAJOR_HIGH, LIB_MAJOR_LOW, LIB_MINOR, LIB_FOUND };
+	
+	FindResult Find(LibVersion version, LibType*& lib)
+	{
+		FindResult res = FindResult::UNDEFINED;
+		
+		for (LibType* _lib : libs)
+		{
+			if (_lib->major > version.major)
+			{
+				// Игры написана на устаревшей библиотеке. Данная игра не поддерживается на текущей платформе
+				if (res < LIB_MAJOR_HIGH)
+					res = LIB_MAJOR_HIGH;
+			}
+			else if (_lib->major < version.major)
+			{
+				// Игра предназначена для более новой системы. Обновите систему
+				if (res < LIB_MAJOR_LOW)
+					res = LIB_MAJOR_LOW;
+			}
+			else if (_lib->minor < version.minor)
+			{
+				// Игре могут потребоваться функции обновленной системы. Обновите систему
+				if (res < LIB_MINOR)
+					res = LIB_MINOR;
+			}
+			else
+			{
+				version.minor = _lib->minor; 	// Для нахождения лучшей библиотеки (version - локальный, так что так можно)
+				lib = _lib;
+				res = LIB_FOUND;
+			}
+		}
+
+		return res;
+	}
+};
+
+// Структура с указателем на системный вызов
+struct SystemAPI : public LibVersion
+{
+	bool (*Call) (uint32_t CallID, const void* arg, void* answer);
+	
+	template <typename CallStruct>
+	bool Call(const typename CallStruct::Arg* arg, typename CallStruct::Answer* answer)
+	{
+		return Call(CallStruct::ID, arg, answer);
+	}
+};
+
+static_assert(std::is_standart_layout_v<LibVersion>);
+static_assert(std::is_standart_layout_v<SystemAPI>);
+
+// ------------------------- Использование -------------------------
+
+LibsContainer<SystemAPI> SystemAPI_Versions;
+
+void Init()
+{
+	SystemAPI_Versions.RegLib(new SystemAPI_v1_Impl);
+	SystemAPI_Versions.RegLib(new SystemAPI_v2_Impl);
+}
+
+void InitUserScenes()
+{
+	GameCenter* game_center = SceneManager::Instance().Make<GameCenter>(GAME_SCENE, &SystemAPI_Versions);
+	
+}
+
+// ------------------------- Использование в GameCenter -------------------------
+
+bool LoadGame(BaseGame* game)
+{
+	if (!game || !game->Init())
+		return false;
+		
+	SystemAPI* api{};
+	
+	FindResult res = api_versions->Find(game->GetRequiredAPI(), api);
+	
+	if (res == LIB_FOUND)
+	{
+		game->InitSystemAPI(api);
+		loaded_game = game;
+		return true;
+	}
+	else if (res == LIB_MINOR)
+	{
+		// Игре могут потребоваться функции обновленной системы. Обновите систему
+	}
+	else if (res == LIB_MAJOR_LOW)
+	{
+		// Игра предназначена для более новой системы. Обновите систему
+	}
+	else if (res == LIB_MAJOR_HIGH)
+	{
+		// Игры написана на устаревшей библиотеке. Данная игра не поддерживается на текущей платформе
+	}
+	
+	return false;
+}
+
+// ------------------------- Интерфейс BaseGame -------------------------
+
+class BaseGame
+{
+protected:
+	// Требуемая версия системного API
+	LibVersion required_api{};
+
+public:
+	// Вызывается в конструкторе игры
+	void RequiresAPI(uint16_t major, uint16_t minor)
+	{
+		required_api.major = major;
+		required_api.minor = minor;
+	}
+	
+	LibVersion GetRequiredAPI() const { return required_api; }
+	
+	void InitSystemAPI(SystemAPI* system_api);
+	
+}

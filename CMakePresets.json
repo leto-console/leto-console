@@ -1,0 +1,172 @@
+{
+    "version": 3,
+    "configurePresets": [
+        {
+            "name": "stm32-base",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "installDir": "${sourceDir}/out/install/${presetName}",
+            "cacheVariables": {
+                "CMAKE_TOOLCHAIN_FILE": {
+                    "type": "FILEPATH",
+                    "value": "${sourceDir}/cmake/toolchain-arm-none-eabi.cmake"
+                },
+                "PRESET_DEFINE_MACRO": "USE_HAL_DRIVER"
+            },
+            "architecture": {
+                "value": "unspecified",
+                "strategy": "external"
+            }
+        },
+        {
+            "name": "windows-base",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "installDir": "${sourceDir}/out/install/${presetName}",
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "cl.exe",
+                "CMAKE_CXX_COMPILER": "cl.exe",
+                "PRESET_DEFINE_MACRO": "__WIN__"
+            },
+            "condition": {
+                "type": "equals",
+                "lhs": "${hostSystemName}",
+                "rhs": "Windows"
+            }
+        },
+        {
+            "name": "ubuntu-base",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "installDir": "${sourceDir}/out/install/${presetName}",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++",
+                "PRESET_DEFINE_MACRO": "__LINUX__"
+            }
+        },
+        {
+            "name": "termux-base",
+            "hidden": true,
+            "binaryDir": "${sourceDir}/build/${presetName}",
+            "installDir": "${sourceDir}/out/install/${presetName}",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++",
+                "PRESET_DEFINE_MACRO": "__TERMUX__"
+            }
+        },
+        {
+            "name": "stm32-st7735-debug",
+            "inherits": "stm32-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "PRESET_NAME": "stm32-st7735-debug",
+                "PRESET_DEFINE_SCREEN": "USE_ST7735"
+            }
+        },
+        {
+            "name": "stm32-st7735-release",
+            "inherits": "stm32-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "PRESET_NAME": "stm32-st7735-release",
+                "PRESET_DEFINE_SCREEN": "USE_ST7735"
+            }
+        },
+        {
+            "name": "win-debug-ssd1306",
+            "displayName": "win-debug-ssd1306",
+            "inherits": "windows-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "PRESET_NAME": "win-debug-ssd1306",
+                "PRESET_DEFINE_SCREEN": "USE_SSD1306"
+            }
+        },
+        {
+            "name": "win-debug-st7735",
+            "displayName": "win-debug-st7735",
+            "inherits": "windows-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "PRESET_NAME": "win-debug-st7735",
+                "PRESET_DEFINE_SCREEN": "USE_ST7735"
+            }
+        },
+        {
+            "name": "ubuntu-debug",
+            "displayName": "ubuntu-debug",
+            "inherits": "ubuntu-base",
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "PRESET_NAME": "ubuntu-debug"
+            }
+        },
+        {
+            "name": "termux-debug",
+            "displayName": "termux-debug",
+            "inherits": "termux-base",
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "PRESET_NAME": "termux-debug"
+            }
+        },
+        {
+            "name": "termux-win-debug",
+            "displayName": "termux-win-debug",
+            "inherits": "windows-base",
+            "architecture": {
+                "value": "x64",
+                "strategy": "external"
+            },
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "PRESET_NAME": "termux-win-debug",
+                "PRESET_DEFINE_MACRO": "__TERMUX__",
+                "PRESET_DEFINE_SCREEN": "USE_ST7735"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "stm32-st7735-debug",
+            "configurePreset": "stm32-st7735-debug"
+        },
+        {
+            "name": "stm32-st7735-release",
+            "configurePreset": "stm32-st7735-release"
+        },
+        {
+            "name": "win-debug-ssd1306",
+            "configurePreset": "win-debug-ssd1306"
+        },
+        {
+            "name": "win-debug-st7735",
+            "configurePreset": "win-debug-st7735"
+        },
+        {
+            "name": "ubuntu-debug",
+            "configurePreset": "ubuntu-debug"
+        },
+        {
+            "name": "termux-debug",
+            "configurePreset": "ubuntu-debug"
+        }
+    ]
+}
