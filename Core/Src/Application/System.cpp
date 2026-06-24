@@ -470,8 +470,6 @@ void Application::Init()
 //	HAL_TIM_Base_Start_IT(htim);
 	printf("init\n");
 	
-	Make_LetoAPI_V1();
-
 #ifndef USE_HAL_DRIVER
 	fatfs_image_initialize(arg_parser.FindArg("--client") ? "client.img" : "server.img");
 #else 
