@@ -41,6 +41,7 @@ MainScene::MainScene()
 			menu.AppendMenuItem(def.name, def.ID);
 	}
 
+	menu.InitBaseCatchers();
 	menu.AppendMenuItem("ВЫЙТИ", SceneID::LOGOUT);
 	menu.SetResetOnShow(false);
 	menu.Enable();

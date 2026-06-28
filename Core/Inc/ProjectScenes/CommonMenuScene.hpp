@@ -29,6 +29,7 @@ public:
 	CommonMenuScene(StaticText32 title = "", uint8_t menu_height = 4)
 		: menu{ menu_height, {0, title.Empty() ? 0 : 8} }, title{ title }
 	{
+		menu.InitBaseCatchers();
 		menu.Capture();
 	}
 

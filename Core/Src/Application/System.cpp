@@ -572,6 +572,8 @@ void Application::Init()
 				AuthHandler::Instance().Login(account.ID);
 				SetSystemMode(SystemMode::USER);
 				InitOnSystemModeChanged();
+				SceneManager::Instance().SwitchScene(SceneID::MAIN);
+				SceneManager::Instance().Loop();
 				break;
 			}
 			cnt_idx++;
