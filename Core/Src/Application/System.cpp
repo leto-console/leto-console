@@ -7,6 +7,8 @@
 
 #include "Application/System.hpp"
 
+#include <LetoAPI_V1_System/Make.hpp>
+
 #include <SceneManager/LambdaScene.hpp>
 #include <SceneManager/SceneManager.hpp>
 
@@ -461,7 +463,6 @@ void Application::InitOnSystemModeChanged()
 #endif
 
 #include <FatFs/FatFsTest.hpp>
-#include <LetoAPI_V1_System/Make.hpp>
 #include <System/DeviceID.hpp>
 
 void Application::Init()
