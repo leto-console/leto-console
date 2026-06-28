@@ -465,6 +465,8 @@ void Application::InitOnSystemModeChanged()
 #include <FatFs/FatFsTest.hpp>
 #include <System/DeviceID.hpp>
 
+#include "ProjectScenes/SceneID.hpp"
+
 void Application::Init()
 {
 //	__HAL_TIM_CLEAR_FLAG(htim, TIM_SR_UIF);
@@ -534,7 +536,6 @@ void Application::Init()
 
 	FileConfig::SetConfigRootPath();
 	FileConfig::SetBool("system", "reboot", false);
-
 #else
 	DateTime::Init(hrtc);
 
@@ -555,6 +556,34 @@ void Application::Init()
 
 	// Установить режим аутентификации
 	SetSystemMode(SystemMode::AUTH);
+
+#ifndef USE_HAL_DRIVER
+
+	if (arg_parser.FindArg("--user"))
+	{
+		std::string auth_idx = arg_parser.FindValue("--user", "0");
+		int idx = auth_idx[0] - '0';
+		
+		int cnt_idx = 0;
+		for (const Account& account : AuthHandler::Instance().GetAccounts())
+		{
+			if (cnt_idx == idx)
+			{
+				AuthHandler::Instance().Login(account.ID);
+				SetSystemMode(SystemMode::USER);
+				InitOnSystemModeChanged();
+				break;
+			}
+			cnt_idx++;
+		}
+
+		if (arg_parser.FindArg("--game"))
+		{
+			SceneManager::Instance().SwitchScene(SceneID::GAMES_CENTER);
+		}
+	}
+
+#endif
 }
 
 #include <NRF24L01/NRF24L01_data.hpp>
@@ -654,7 +683,6 @@ void Application::InitInput()
 	encoder1->SetReverse(EncoderReverse.GetOrDefault());
 }
 
-#include "ProjectScenes/SceneID.hpp"
 #include "ProjectScenes/DebugScene.hpp"
 #include "ProjectScenes/EEPROMScene.hpp"
 #include "ProjectScenes/MainScene.hpp"
