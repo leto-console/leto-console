@@ -34,6 +34,7 @@
 #include <Storage/Storage.hpp>
 #include <System/SystemMode.hpp>
 #include <Data/StaticList.hpp>
+#include <System/StackGuard.hpp>
 
 class Application
 {
@@ -65,6 +66,8 @@ protected:
 #else defined (__TERMUX__)
 	HttpDisplay display;
 #endif
+
+	StackGuard guard0;
 
 	// Массив указателей на устройства пользовательского ввода
 	StaticList<UserInputDevice*, 32> UserInputs;

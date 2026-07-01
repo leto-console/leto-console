@@ -399,6 +399,7 @@ public:
 #include <Auth/AuthHandler.hpp>
 #include <Auth/AuthScene.hpp>
 #include <VirtualConsole/VirtualConsole.hpp>
+#include <System/SystemDisplay.hpp>
 
 void Application::InitOnSystemModeChanged()
 {
@@ -472,6 +473,9 @@ void Application::Init()
 //	__HAL_TIM_CLEAR_FLAG(htim, TIM_SR_UIF);
 //	HAL_TIM_Base_Start_IT(htim);
 	printf("init\n");
+
+	SystemDisplay = &display;
+	SystemStackGuard0 = &guard0;
 	
 #ifndef USE_HAL_DRIVER
 	fatfs_image_initialize(arg_parser.FindArg("--client") ? "client.img" : "server.img");
@@ -592,6 +596,7 @@ void Application::Init()
 
 bool Application::Loop()
 {
+	SystemStackGuardLoop();
 	PriorityTaskSheduler::Shedule();
 	NRF24L01::Scanner.Loop();
 
@@ -683,6 +688,17 @@ void Application::InitInput()
 #endif
 
 	encoder1->SetReverse(EncoderReverse.GetOrDefault());
+
+	SystemStackGuard1 = new StackGuard;
+
+	#define TEST_STACK_GUARD
+
+#if !defined(USE_HAL_DRIVER) && defined(TEST_STACK_GUARD)
+	uint32_t* ptr = (uint32_t*) SystemStackGuard1;
+	ptr += 40;
+
+	memset(ptr, 0, 4);
+#endif
 }
 
 #include "ProjectScenes/DebugScene.hpp"
