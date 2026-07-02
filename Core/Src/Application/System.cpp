@@ -691,7 +691,7 @@ void Application::InitInput()
 
 	SystemStackGuard1 = new StackGuard;
 
-	#define TEST_STACK_GUARD
+	//#define TEST_STACK_GUARD
 
 #if !defined(USE_HAL_DRIVER) && defined(TEST_STACK_GUARD)
 	uint32_t* ptr = (uint32_t*) SystemStackGuard1;
@@ -793,6 +793,7 @@ public:
 
 };
 
+#include <System/SystemTestScene.hpp>
 
 void Application::InitSystemScenes()
 {
@@ -812,6 +813,9 @@ void Application::InitSystemScenes()
 
 	// Кадр с настройками №2
 	SceneManager::Instance().AddSceneBuilder<ProjectSettingsScene2>(SceneID::SETTINGS2);
+
+	// Кадр "Тест"
+	SceneManager::Instance().AddSceneBuilder<SystemTestScene>(SceneID::TEST_SCENE);
 
 	// ===========================================================================
 

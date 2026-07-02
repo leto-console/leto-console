@@ -57,6 +57,11 @@ protected:
 		clear_question.Enable();
 	}
 
+	void OnTest()
+	{
+		SceneManager::Instance().SwitchScene(SceneID::TEST_SCENE);
+	}
+
     void InitClearQuestions()
     {
         clear_question.SetText(0, "ВНИМАНИЕ!");
@@ -83,6 +88,7 @@ public:
 		StaticListView<ListSettingItem<bool>> on_off = OnOffList;
 
         AddSetting<ValueEditableSettingUI<uint32_t>>("Ser.Num:", Point2_i{-1, -1}, &SerialNumber, "%d", 0, 10000, 1, false);
+		AddSetting<ButtonCallInstanceSettingUI<Settings_2>>("ТЕСТ", Point2_i{-1, -1}, this, &Settings_2::OnTest);
 
         InitClearQuestions();
 	}
