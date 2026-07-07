@@ -10,6 +10,7 @@
 
 #include <Data/StaticList.hpp>
 #include <DrawFunctions/DrawBitmap.hpp>
+#include <Auth/AuthHandler.hpp>
 
 // ====================================================================================================
 
@@ -68,7 +69,11 @@ bool MainScene::Loop()
 	bool yes;
 	if (exit_question.IsResultReady(yes))
 	{
-		if (yes) SetSystemMode(SystemMode::AUTH);
+		if (yes)
+		{
+			SetSystemMode(SystemMode::AUTH);
+			AuthHandler::Instance().Logout();
+		}
 		exit_question.Disable();
 	}
 

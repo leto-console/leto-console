@@ -520,15 +520,7 @@ void Application::Init()
 	InitDebugModeCell(&DebugMode);
 
 	// Инициализация обработчика аутентификации и авторизации
-	AuthHandler::Instance().Init(AuthHandlerStart, SystemStorage, 7);
-
-	AuthHandler::Instance().InitAccountSpace(1, 0x0400, 0x0400);
-	AuthHandler::Instance().InitAccountSpace(2, 0x0800, 0x0400);
-	AuthHandler::Instance().InitAccountSpace(3, 0x0C00, 0x0400);
-	AuthHandler::Instance().InitAccountSpace(4, 0x1000, 0x0400);
-	AuthHandler::Instance().InitAccountSpace(5, 0x1400, 0x0400);
-	AuthHandler::Instance().InitAccountSpace(6, 0x1800, 0x0400);
-	AuthHandler::Instance().InitAccountSpace(7, 0x1C00, 0x0400);
+	AuthHandler::Instance().Init(AuthHandlerStart, SystemStorage, 7, 0x0400, 0x0400);
 	
 	// Подсчет количества запусков
 	StartsCount.Set(StartsCount.GetOrDefault() + 1);
@@ -545,10 +537,10 @@ void Application::Init()
 
 	if (UARTConsoleOnStart.GetOrDefault())
 		uart_log_init(huart_console);
-	CommandHandler::RegConsoleCommand(new I2CCom("i2c", "i2c command", hi2c));
-	CommandHandler::RegConsoleCommand(new NRFCom("nrf", "nrf command", huart_console));
-	CommandHandler::RegConsoleCommand(new PrintCommand("print", "dummy command"));
-	CommandHandler::RegConsoleCommand(new AllocCom("alloc", "alloc info"));
+	// CommandHandler::RegConsoleCommand(new I2CCom("i2c", "i2c command", hi2c));
+	// CommandHandler::RegConsoleCommand(new NRFCom("nrf", "nrf command", huart_console));
+	// CommandHandler::RegConsoleCommand(new PrintCommand("print", "dummy command"));
+	// CommandHandler::RegConsoleCommand(new AllocCom("alloc", "alloc info"));
 #endif
 
 	DrawFunctions::SetDefaultFont(&Default_Font_8x8);
@@ -645,21 +637,16 @@ void Application::InitInput()
 //#endif
 
 	// Создание объектов кнопок
-	ButtonDevice* button[6]{};
-
-	for (uint8_t i = 0; i < sizeof(button) / sizeof(button[0]); ++i)
-	{
-		UserInputs.Push(button[i] = new ButtonDevice);
-	}
+	static ButtonDevice button[6]{};
 
 	// Инициализация кнопок
 #ifdef USE_HAL_DRIVER
-	button[0]->Init(SYSTEM_BTN_UP, BTN_1_GPIO_Port, BTN_1_Pin);
-	button[1]->Init(SYSTEM_BTN_DOWN, BTN_2_GPIO_Port, BTN_2_Pin);
-	button[2]->Init(SYSTEM_BTN_LEFT, BTN_3_GPIO_Port, BTN_3_Pin);
-	button[3]->Init(SYSTEM_BTN_RIGHT, BTN_4_GPIO_Port, BTN_4_Pin);
-	button[4]->Init(SYSTEM_BTN_ENTER, BTN_5_GPIO_Port, BTN_5_Pin);
-	button[5]->Init(SYSTEM_BTN_MENU, BTN_6_GPIO_Port, BTN_6_Pin);
+	button[0].Init(SYSTEM_BTN_UP, BTN_1_GPIO_Port, BTN_1_Pin);
+	button[1].Init(SYSTEM_BTN_DOWN, BTN_2_GPIO_Port, BTN_2_Pin);
+	button[2].Init(SYSTEM_BTN_LEFT, BTN_3_GPIO_Port, BTN_3_Pin);
+	button[3].Init(SYSTEM_BTN_RIGHT, BTN_4_GPIO_Port, BTN_4_Pin);
+	button[4].Init(SYSTEM_BTN_ENTER, BTN_5_GPIO_Port, BTN_5_Pin);
+	button[5].Init(SYSTEM_BTN_MENU, BTN_6_GPIO_Port, BTN_6_Pin);
 #else
 	constexpr int Left_key = 37;
 	constexpr int Up_key = 38;
@@ -669,27 +656,38 @@ void Application::InitInput()
 	constexpr int Escape_key = 27;
 
 
-	button[0]->Init(SYSTEM_BTN_UP, Up_key);
-	button[1]->Init(SYSTEM_BTN_DOWN, Down_key);
-	button[2]->Init(SYSTEM_BTN_LEFT, Left_key);
-	button[3]->Init(SYSTEM_BTN_RIGHT, Right_key);
-	button[4]->Init(SYSTEM_BTN_ENTER, Enter_key);
-	button[5]->Init(SYSTEM_BTN_MENU, Escape_key);
+	button[0].Init(SYSTEM_BTN_UP, Up_key);
+	button[1].Init(SYSTEM_BTN_DOWN, Down_key);
+	button[2].Init(SYSTEM_BTN_LEFT, Left_key);
+	button[3].Init(SYSTEM_BTN_RIGHT, Right_key);
+	button[4].Init(SYSTEM_BTN_ENTER, Enter_key);
+	button[5].Init(SYSTEM_BTN_MENU, Escape_key);
 #endif
+
+	for (uint8_t i = 0; i < sizeof(button) / sizeof(button[0]); ++i)
+	{
+		UserInputs.Push(&button[i]);
+	}
 
 	// Создание и инициализация энкодера
-	EncoderDevice* encoder1 = new EncoderDevice;
-	UserInputs.Push(encoder1);
+	static EncoderDevice encoder1{};
 
 #ifdef USE_HAL_DRIVER
-	encoder1->Init(SYSTEM_ENC_MAIN, ENC_CLK_GPIO_Port, ENC_CLK_Pin, ENC_DT_GPIO_Port, ENC_DT_Pin);
+	encoder1.Init(SYSTEM_ENC_MAIN, ENC_CLK_GPIO_Port, ENC_CLK_Pin, ENC_DT_GPIO_Port, ENC_DT_Pin);
 #else
-	encoder1->Init(SYSTEM_ENC_MAIN, 189, 187);
+	encoder1.Init(SYSTEM_ENC_MAIN, 189, 187);
 #endif
 
-	encoder1->SetReverse(EncoderReverse.GetOrDefault());
+	encoder1.SetReverse(EncoderReverse.GetOrDefault());
 
-	SystemStackGuard1 = new StackGuard;
+	UserInputs.Push(&encoder1);
+
+	StackGuard guard{};
+	
+	SystemStackGuard1 = (StackGuard*) malloc(sizeof(StackGuard));
+	memcpy(SystemStackGuard1, &guard, sizeof(StackGuard));
+
+	//SystemStackGuard1 = new StackGuard;
 
 	//#define TEST_STACK_GUARD
 
