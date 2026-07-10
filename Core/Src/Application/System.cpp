@@ -537,10 +537,16 @@ void Application::Init()
 
 	if (UARTConsoleOnStart.GetOrDefault())
 		uart_log_init(huart_console);
-	// CommandHandler::RegConsoleCommand(new I2CCom("i2c", "i2c command", hi2c));
-	// CommandHandler::RegConsoleCommand(new NRFCom("nrf", "nrf command", huart_console));
-	// CommandHandler::RegConsoleCommand(new PrintCommand("print", "dummy command"));
-	// CommandHandler::RegConsoleCommand(new AllocCom("alloc", "alloc info"));
+
+	static I2CCom 		i2c_com		("i2c", "i2c command", hi2c);
+	static NRFCom 		nrf_com		("nrf", "nrf command", huart_console);
+	static PrintCommand print_com	("print", "dummy command");
+	static AllocCom 	alloc_com	("alloc", "alloc info");
+
+	CommandHandler::RegConsoleCommand(&i2c_com);
+	CommandHandler::RegConsoleCommand(&nrf_com);
+	CommandHandler::RegConsoleCommand(&print_com);
+	CommandHandler::RegConsoleCommand(&alloc_com);
 #endif
 
 	DrawFunctions::SetDefaultFont(&Default_Font_8x8);
