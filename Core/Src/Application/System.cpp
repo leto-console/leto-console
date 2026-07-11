@@ -475,7 +475,7 @@ void Application::Init()
 	printf("init\n");
 
 	SystemDisplay = &display;
-	SystemStackGuard0 = &guard0;
+	DisplayStackGuard = &display_guard;
 	
 #ifndef USE_HAL_DRIVER
 	fatfs_image_initialize(arg_parser.FindArg("--client") ? "client.img" : "server.img");
@@ -690,8 +690,8 @@ void Application::InitInput()
 
 	StackGuard guard{};
 	
-	SystemStackGuard1 = (StackGuard*) malloc(sizeof(StackGuard));
-	memcpy(SystemStackGuard1, &guard, sizeof(StackGuard));
+	SystemStackGuard = (StackGuard*) malloc(sizeof(StackGuard));
+	memcpy(SystemStackGuard, &guard, sizeof(StackGuard));
 
 	//SystemStackGuard1 = new StackGuard;
 

@@ -67,7 +67,7 @@ protected:
 	HttpDisplay display;
 #endif
 
-	StackGuard guard0;
+	StackGuard display_guard;
 
 	// Массив указателей на устройства пользовательского ввода
 	StaticList<UserInputDevice*, 32> UserInputs;

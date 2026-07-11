@@ -76,8 +76,8 @@ public:
 		time = settings.AddSetting<DateTimeSettingUI>("ВРЕМЯ", Point2_i{-1, -1}, DateTimeSettingUI::TIME);
 		date = settings.AddSetting<DateTimeSettingUI>("ДАТА", Point2_i{-1, -1}, DateTimeSettingUI::DATE);
 
-		edit_time = settings.AddSetting<DateTimeSettingUI>(">ВРЕМЯ", Point2_i{-1, -1}, DateTimeSettingUI::TIME);
-		edit_date = settings.AddSetting<DateTimeSettingUI>(">ДАТА", Point2_i{-1, -1}, DateTimeSettingUI::DATE);
+		edit_time = settings.AddSetting<DateTimeEditableSettingUI>(">ВРЕМЯ", Point2_i{-1, -1}, DateTimeSettingUI::TIME);
+		edit_date = settings.AddSetting<DateTimeEditableSettingUI>(">ДАТА", Point2_i{-1, -1}, DateTimeSettingUI::DATE);
 		edit_time->SetActive(false);
 		edit_date->SetActive(false);
 
