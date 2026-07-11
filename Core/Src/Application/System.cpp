@@ -846,7 +846,7 @@ void Application::InitSystemTasks()
 	PriorityTaskSheduler::AddTask<FatFsTask>("FF_TSK", 3000, 25);
 
 	// TODO: можно попробовать поднять частоту опроса (но зачем?)
-	PriorityTaskSheduler::AddTask<DateTimeServer>("DT_SERV", 500, 50);
+	PriorityTaskSheduler::AddTask<DateTimeServer>("DT_SERV", 10, 50);
 }
 
 #include <Web/WebDevicesTask.hpp>

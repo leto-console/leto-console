@@ -42,8 +42,64 @@ public:
 
 #include <Utils/random.hpp>
 #include <Time/DateTime.hpp>
+#include <Time/CurrentTimeCell.hpp>
+#include <UI/Menu/Menu.hpp>
+#include <UI/DateTimeSettingUI.hpp>
+#include <UI/ValueSettingUI.hpp>
+#include <UI/ListSettingUI.hpp>
+#include <UI/SettingsContainer.hpp>
+#include <UI/ButtonSettingUI.hpp>
+
 
 class TimeScene : public IScene
+{
+protected:
+	SettingsContainer settings;
+	CurrentTimeCell cell_ms, cell_mks;
+
+	ISettingUI *time, *date;
+	ISettingUI *edit_time, *edit_date;
+	ISettingUI *button;
+
+	void OnChange()
+	{
+		time->SetActive(false);
+		date->SetActive(false);
+		edit_time->SetActive(true);
+		edit_date->SetActive(true);
+		button->SetActive(false);
+	}
+
+public:
+	TimeScene(): settings { "===== ВРЕМЯ =====", &CommonAllocator }, cell_ms{ false }, cell_mks{ true }
+	{
+		time = settings.AddSetting<DateTimeSettingUI>("ВРЕМЯ", Point2_i{-1, -1}, DateTimeSettingUI::TIME);
+		date = settings.AddSetting<DateTimeSettingUI>("ДАТА", Point2_i{-1, -1}, DateTimeSettingUI::DATE);
+
+		edit_time = settings.AddSetting<DateTimeSettingUI>(">ВРЕМЯ", Point2_i{-1, -1}, DateTimeSettingUI::TIME);
+		edit_date = settings.AddSetting<DateTimeSettingUI>(">ДАТА", Point2_i{-1, -1}, DateTimeSettingUI::DATE);
+		edit_time->SetActive(false);
+		edit_date->SetActive(false);
+
+		settings.AddSetting<ValueSettingUI<uint32_t>>("MS", Point2_i{-1, -1}, &cell_ms, "%" PRIu32);
+		settings.AddSetting<ValueSettingUI<uint32_t>>("MKS", Point2_i{-1, -1}, &cell_mks, "%" PRIu32);
+		button = settings.AddSetting<ButtonCallInstanceSettingUI<TimeScene>>("ИЗМЕНИТЬ", Point2_i{-1, -1}, this, &TimeScene::OnChange);
+		settings.Enable();
+
+		AddObject(&settings);
+	}
+
+	void Draw(IScreen& screen) override {  }
+
+	bool ProcessInput(const AppEvent& event) override
+	{
+		return IsSystemPrevEvent(event) || IsSystemNextEvent(event);
+	}
+	
+	bool Loop() override { return true; }
+};
+
+class RandomScene : public IScene
 {
 protected:
 	float R{};
@@ -57,26 +113,6 @@ public:
 		StaticText32 debug_str{};
 
 		Point2_i p;
- 
-		snprintf(debug_str.CharPtr(), debug_str.Capacity(), "%" PRIu32, TimeUtils::GetCurrentMs());
-		DrawText(screen, p, debug_str);
-		p.y += 8;
-
-		snprintf(debug_str.CharPtr(), debug_str.Capacity(), "%" PRIu32, TimeUtils::GetCurrentMks());
-		DrawText(screen, p, debug_str);
-		p.y += 16;
-
-		uint8_t _h, _m, _s;
-		DateTime::GetTime(_h, _m, _s);
-		snprintf(debug_str.CharPtr(), debug_str.Capacity(), "T %d.%d.%d", _h, _m, _s);
-		DrawText(screen, p, debug_str);
-		p.y += 8;
-
-		uint8_t _d, _n, _y;
-		DateTime::GetDate(_d, _n, _y);
-		snprintf(debug_str.CharPtr(), debug_str.Capacity(), "D %d.%d.%d", _d, _n, _y);
-		DrawText(screen, p, debug_str);
-		p.y += 16;
 
 		snprintf(debug_str.CharPtr(), debug_str.Capacity(), "RAND: %0.6f", R);
 		DrawText(screen, p, debug_str);
@@ -85,6 +121,7 @@ public:
 		snprintf(debug_str.CharPtr(), debug_str.Capacity(), "RAND_INT: %d", R_int);
 		DrawText(screen, p, debug_str);
 	}
+
 	bool ProcessInput(const AppEvent& event) override
 	{
 		if (IsSystemEnterEvent(event))
@@ -101,6 +138,7 @@ public:
 	}
 	bool Loop() override { return true; }
 };
+
 
 #include <LetoAPI_V1_System/Web/WebDevicesList.hpp>
 
@@ -137,11 +175,6 @@ public:
 #include <LetoAPI_V1_System/Web/WebManager.hpp>
 #include <LetoAPI_V1_System/Lobby/LobbyManager.hpp>
 #include <System/DeviceID.hpp>
-
-#include <UI/ValueSettingUI.hpp>
-#include <UI/ListSettingUI.hpp>
-#include <UI/SettingsContainer.hpp>
-#include <UI/ButtonSettingUI.hpp>
 
 #include <Data/StaticList.hpp>
 
@@ -610,6 +643,7 @@ SystemScene::SystemScene() : CommonMenuScene{ "-----СИСТЕМА----", 8 }
 	menu.AppendMenuItem("NRF24L01-R",	CommonAllocator.Make<NRF24L01ReadScene>());
 	menu.AppendMenuItem("NRF24L01-S",	CommonAllocator.Make<NRF24L01SettingScene>());
 	menu.AppendMenuItem("Время",		CommonAllocator.Make<TimeScene>());
+	menu.AppendMenuItem("Рандом",		CommonAllocator.Make<RandomScene>());
 }
 
 // ----------------------------------------------------------------------------------------------------
