@@ -141,10 +141,19 @@ public:
 
 
 #include <LetoAPI_V1_System/Web/WebDevicesList.hpp>
+#include <UI/System/UI_ExtDeviceStatus.hpp>
+#include <SDCard/SDCard_ExtDevice.hpp>
 
 class DevicesScene : public IScene
 {
+	SDCard_ExtDevice sdcard_extd;
+	UI_ExtDeviceStatus ui_status;
+	Timer t500ms;
 public:
+	DevicesScene() : ui_status{ sdcard_extd }, t500ms{ 500 }
+	{
+	}
+
 	void Draw(IScreen& screen) override
 	{
 		using namespace DrawFunctions;
@@ -164,12 +173,27 @@ public:
 			}
 
 			idx++;
-			if (idx == 3)
+			if (idx >= 3)
 				break;
 		}
+		idx++;
+		ui_status.Draw(screen, {0, idx * 16});
 	}
-	bool ProcessInput(const AppEvent& event) override { return false; }
-	bool Loop() override { return true; }
+	bool ProcessInput(const AppEvent& event) override 
+	{
+		if (IsSystemEnterEvent(event) && sdcard_extd.GetStatus() != ExtDeviceStatus::READY)
+			sdcard_extd.AsyncInit();
+		return false; 
+	}
+	bool Loop() override 
+	{ 
+		if (t500ms.Expired())
+		{
+			t500ms.Start();
+			sdcard_extd.MainLoop();
+		}
+		return true; 
+	}
 };
 
 #include <LetoAPI_V1_System/Web/WebManager.hpp>
