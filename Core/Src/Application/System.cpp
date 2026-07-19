@@ -831,6 +831,8 @@ void Application::InitSystemScenes()
 
 #include <Time/DateTime.hpp>
 #include <FatFs/FatFsTask.hpp>
+#include <ExtDevice/ExtDeviceProcessor.hpp>
+#include <SDCard/SDCard_ExtDevice.hpp>
 
 void Application::InitSystemTasks()
 {
@@ -845,8 +847,11 @@ void Application::InitSystemTasks()
 	PriorityTaskSheduler::AddTask<nRF24L01_ReadTask>("NRF_ST", 1000, 10);
 	PriorityTaskSheduler::AddTask<FatFsTask>("FF_TSK", 3000, 25);
 
-	// TODO: можно попробовать поднять частоту опроса (но зачем?)
+	// TODO: можно попробовать поднять частоту опроса (но зачем? - чтобы дискретность изменений была ниже)
 	PriorityTaskSheduler::AddTask<DateTimeServer>("DT_SERV", 10, 50);
+
+	ExtDeviceProcessor* extdev_proc = PriorityTaskSheduler::AddTask<ExtDeviceProcessor>("EXTDEV_P", 500, 50);
+	extdev_proc->AddExtDevice(sdcard_extdev = SystemAllocator.Make<SDCard_ExtDevice>());
 }
 
 #include <Web/WebDevicesTask.hpp>
