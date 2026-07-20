@@ -643,7 +643,7 @@ void Application::InitInput()
 //#endif
 
 	// Создание объектов кнопок
-	static ButtonDevice button[6]{};
+	static ButtonDevice button[7]{};
 
 	// Инициализация кнопок
 #ifdef USE_HAL_DRIVER
@@ -653,6 +653,7 @@ void Application::InitInput()
 	button[3].Init(SYSTEM_BTN_RIGHT, BTN_4_GPIO_Port, BTN_4_Pin);
 	button[4].Init(SYSTEM_BTN_ENTER, BTN_5_GPIO_Port, BTN_5_Pin);
 	button[5].Init(SYSTEM_BTN_MENU, BTN_6_GPIO_Port, BTN_6_Pin);
+	button[6].Init(SYSTEM_BTN_ALT, BTN_7_GPIO_Port, BTN_7_Pin);
 #else
 	constexpr int Left_key = 37;
 	constexpr int Up_key = 38;
@@ -660,7 +661,7 @@ void Application::InitInput()
 	constexpr int Down_key = 40;
 	constexpr int Enter_key = 13;
 	constexpr int Escape_key = 27;
-
+	constexpr int Space_key = 32;
 
 	button[0].Init(SYSTEM_BTN_UP, Up_key);
 	button[1].Init(SYSTEM_BTN_DOWN, Down_key);
@@ -668,6 +669,7 @@ void Application::InitInput()
 	button[3].Init(SYSTEM_BTN_RIGHT, Right_key);
 	button[4].Init(SYSTEM_BTN_ENTER, Enter_key);
 	button[5].Init(SYSTEM_BTN_MENU, Escape_key);
+	button[6].Init(SYSTEM_BTN_ALT, Space_key);
 #endif
 
 	for (uint8_t i = 0; i < sizeof(button) / sizeof(button[0]); ++i)

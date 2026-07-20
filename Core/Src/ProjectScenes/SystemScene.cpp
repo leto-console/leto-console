@@ -143,6 +143,7 @@ public:
 #include <LetoAPI_V1_System/Web/WebDevicesList.hpp>
 #include <ExtDevice/UI/UI_ExtDeviceStatus.hpp>
 #include <SDCard/SDCard_ExtDevice.hpp>
+#include <Graphics/DefaultFont.hpp>
 
 class DevicesScene : public IScene
 {
@@ -150,6 +151,7 @@ class DevicesScene : public IScene
 public:
 	DevicesScene() : ui_status{ sdcard_extdev }
 	{
+		ui_status.SetFont(&Default_Font_7x7_small);
 	}
 
 	void Draw(IScreen& screen) override
