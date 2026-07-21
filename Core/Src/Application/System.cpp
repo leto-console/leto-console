@@ -1,8 +1,7 @@
-/*
- * System.cpp
- *
- *  Created on: Dec 29, 2024
- *      Author: Timur
+/**
+ * @file System.cpp
+ * @date Dec 29, 2024
+ * @author: Rakhimov T.
  */
 
 #include "Application/System.hpp"
@@ -477,40 +476,32 @@ void Application::Init()
 	SystemDisplay = &display;
 	DisplayStackGuard = &display_guard;
 	
+	InitExtDev();
+
 #ifndef USE_HAL_DRIVER
 	fatfs_image_initialize(arg_parser.FindArg("--client") ? "client.img" : "server.img");
 #else 
 	/// TODO: Выделить SDCARD_Init в метод сущности SDCARD
 	// unselect all SPI devices first
-    SDCARD_Unselect();
-    ST7735_Unselect();
 
     // initialize SD-card as fast as possible, it glitches otherwise
     // (this is important if SPI bus is shared by multiple devices)
 
     // Перед инициализацией установите низкую частоту:
-    SDCARD_SetSpeed(SPI_BAUDRATEPRESCALER_256);
-
-    //HAL_Delay(1000);
-
-    int code = SDCARD_Init();
-
-    // После успешной инициализации можно увеличить скорость:
-    SDCARD_SetSpeed(SPI_BAUDRATEPRESCALER_2);
-
-    if(code < 0) 
-	{
-    	VC_Printf("SDCARD_Init() failed", RedColor);
-    	VC_Printf("code = %d\r\n", RedColor, code);
-    	VC_Printf("R1 = %d\r\n", BlueColor, SDCARD_LastReadR1());
-    }
+    //SDCARD_SetSpeed(SPI_BAUDRATEPRESCALER_256);
+//
+    //int code = SDCARD_Init();
+//
+    //// После успешной инициализации можно увеличить скорость:
+    //SDCARD_SetSpeed(SPI_BAUDRATEPRESCALER_2);
+//
+    //if(code < 0) 
+	//{
+    //	VC_Printf("SDCARD_Init() failed", RedColor);
+    //	VC_Printf("code = %d\r\n", RedColor, code);
+    //	VC_Printf("R1 = %d\r\n", BlueColor, SDCARD_LastReadR1());
+    //}
 #endif
-
-	//for (int i = 1; i < 6; ++i)
-	//	VirtualConsole::Instance().Printf("%d+%d=%d", BlueColor, i, i, i + i);
-
-	//for (int i = 15; i < 19; ++i)
-	//	VirtualConsole::Instance().Printf("%d:7=%0.3f", BlueColor, i, i / 7.0f);
 
 	// Инициализация настроек обязательно должна идти перед остальными,
 	// поскольку на них может опираться инициализации периферии и прочего
@@ -597,9 +588,6 @@ bool Application::Loop()
 	SystemStackGuardLoop();
 	PriorityTaskSheduler::Shedule();
 	NRF24L01::Scanner.Loop();
-
-	//CommonAllocator;
-	//SystemAllocator;
 
 #ifdef __LINUX__
 	qapp->processEvents();
@@ -705,6 +693,23 @@ void Application::InitInput()
 
 	memset(ptr, 0, 4);
 #endif
+}
+
+#include <SDCard/SDCard_ExtDevice.hpp>
+#include <st7735/ST7735_ExtDevice.hpp>
+
+void Application::InitExtDev()
+{
+	{
+		static SDCard_ExtDevice dev;
+		sdcard_extdev = &dev;
+		ExtDevices.push_back(&dev);
+	}
+	{
+		static ST7735_ExtDevice dev;
+		st7735_extdev = &dev;
+		ExtDevices.push_back(&dev);
+	}
 }
 
 #include "ProjectScenes/DebugScene.hpp"
@@ -834,7 +839,6 @@ void Application::InitSystemScenes()
 #include <Time/DateTime.hpp>
 #include <FatFs/FatFsTask.hpp>
 #include <ExtDevice/ExtDeviceProcessor.hpp>
-#include <SDCard/SDCard_ExtDevice.hpp>
 
 void Application::InitSystemTasks()
 {
@@ -847,13 +851,14 @@ void Application::InitSystemTasks()
 
 	PriorityTaskSheduler::AddTask<ResearchEncoderTask>("ENC_TSK", 10, 40);
 	PriorityTaskSheduler::AddTask<nRF24L01_ReadTask>("NRF_ST", 1000, 10);
-	PriorityTaskSheduler::AddTask<FatFsTask>("FF_TSK", 3000, 25);
+	PriorityTaskSheduler::AddTask<FatFsTask>("FF_TSK", 3000, 25, sdcard_extdev);
 
 	// TODO: можно попробовать поднять частоту опроса (но зачем? - чтобы дискретность изменений была ниже)
 	PriorityTaskSheduler::AddTask<DateTimeServer>("DT_SERV", 10, 50);
 
-	ExtDeviceProcessor* extdev_proc = PriorityTaskSheduler::AddTask<ExtDeviceProcessor>("EXTDEV_P", 500, 50);
-	extdev_proc->AddExtDevice(sdcard_extdev = SystemAllocator.Make<SDCard_ExtDevice>());
+	ExtDeviceProcessor* extdev_proc = PriorityTaskSheduler::AddTask<ExtDeviceProcessor>("EXTDEV_P", 200, 50);
+	for (ExtDevice* dev : ExtDevices)
+		extdev_proc->AddExtDevice(dev);
 }
 
 #include <Web/WebDevicesTask.hpp>

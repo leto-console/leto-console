@@ -37,6 +37,8 @@ namespace Setting_2
 };
 
 #include <UI/Menu/DialogMenu.hpp>
+#include <System/SystemRestart.hpp>
+
 #include <cstdio>
 
 class Settings_2 : public SettingsContainer
@@ -60,6 +62,11 @@ protected:
 	void OnTest()
 	{
 		SceneManager::Instance().SwitchScene(SceneID::TEST_SCENE);
+	}
+
+	void OnRestart()
+	{
+		SystemRestart();
 	}
 
     void InitClearQuestions()
@@ -89,6 +96,7 @@ public:
 
         AddSetting<ValueEditableSettingUI<uint32_t>>("Ser.Num:", Point2_i{-1, -1}, &SerialNumber, "%d", 0, 10000, 1, false);
 		AddSetting<ButtonCallInstanceSettingUI<Settings_2>>("ТЕСТ", Point2_i{-1, -1}, this, &Settings_2::OnTest);
+		AddSetting<ButtonCallInstanceSettingUI<Settings_2>>("РЕСТАРТ", Point2_i{-1, -1}, this, &Settings_2::OnRestart);
 
         InitClearQuestions();
 	}

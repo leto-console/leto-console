@@ -140,20 +140,53 @@ public:
 };
 
 
-#include <LetoAPI_V1_System/Web/WebDevicesList.hpp>
 #include <ExtDevice/UI/UI_ExtDeviceStatus.hpp>
 #include <SDCard/SDCard_ExtDevice.hpp>
 #include <Graphics/DefaultFont.hpp>
 
 class DevicesScene : public IScene
 {
-	UI_ExtDeviceStatus ui_status;
+	StaticList<UI_ExtDeviceStatus, 16> ui_devs;
 public:
-	DevicesScene() : ui_status{ sdcard_extdev }
+	DevicesScene()
 	{
-		ui_status.SetFont(&Default_Font_7x7_small);
+		for (ExtDevice* device : ExtDevices)
+		{
+			UI_ExtDeviceStatus status;
+			status.SetFont(&Default_Font_7x7_small);
+			status.SetDevice(device);
+			ui_devs.push_back(status);
+		}
 	}
 
+	void Draw(IScreen& screen) override
+	{
+		using namespace DrawFunctions;
+
+		uint8_t idx = 0;
+		for (UI_ExtDeviceStatus& dev : ui_devs)
+		{
+			dev.Draw(screen, {0, idx * 16});
+			idx++;
+		}
+	}
+	bool ProcessInput(const AppEvent& event) override 
+	{
+		bool proccesed = false;
+		for (UI_ExtDeviceStatus& dev : ui_devs)
+		{
+			proccesed = dev.ProcessInput(event) || proccesed;
+		}
+		return proccesed;
+	}
+	bool Loop() override { return true; }
+};
+
+#include <LetoAPI_V1_System/Web/WebDevicesList.hpp>
+
+class NearScene : public IScene
+{
+public:
 	void Draw(IScreen& screen) override
 	{
 		using namespace DrawFunctions;
@@ -177,11 +210,9 @@ public:
 				break;
 		}
 		idx++;
-		ui_status.Draw(screen, {0, idx * 16});
 	}
 	bool ProcessInput(const AppEvent& event) override 
 	{
-		ui_status.ProcessInput(event);
 		return false; 
 	}
 	bool Loop() override { return true; }
@@ -653,6 +684,7 @@ SystemScene::SystemScene() : CommonMenuScene{ "-----СИСТЕМА----", 8 }
 {
 	menu.AppendMenuItem("Задачи",		CommonAllocator.Make<TasksScene>());
 	menu.AppendMenuItem("Устройства",	CommonAllocator.Make<DevicesScene>());
+	menu.AppendMenuItem("Рядом",		CommonAllocator.Make<NearScene>());
 	menu.AppendMenuItem("Связь",		CommonAllocator.Make<WebScene>());
 	menu.AppendMenuItem("Память",		CommonAllocator.Make<CapacitySettingScene>());
 	menu.AppendMenuItem("NRF24L01-R",	CommonAllocator.Make<NRF24L01ReadScene>());

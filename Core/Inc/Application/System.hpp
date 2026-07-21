@@ -1,8 +1,7 @@
-/*
- * System.hpp
- *
- *  Created on: Dec 29, 2024
- *      Author: Timur
+/**
+ * @file System.hpp
+ * @date Dec 29, 2024
+ * @author: Rakhimov T.
  */
 
 #ifndef INC_APPLICATION_SYSTEM_HPP_
@@ -105,6 +104,9 @@ protected:
 
 	// Иинициализация системного ввода
 	void InitInput();
+
+	// Инициализация внешних устройств
+	void InitExtDev();
 
 	/* SYSTEM */
 
