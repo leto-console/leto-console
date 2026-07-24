@@ -79,6 +79,8 @@ public:
 				currentSubScene = nullptr;
 				return true;
 			}
+
+			return true;
 		}
 
 		if (menu.ProcessInput(event))
