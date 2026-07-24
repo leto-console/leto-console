@@ -75,7 +75,7 @@ public:
 			// Возврат из подсцены приоритетнее
 			if (IsSystemReturnEvent(event))
 			{
-				currentSubScene->OnHide();
+				currentSubScene->MainOnHide();
 				currentSubScene = nullptr;
 				return true;
 			}
@@ -89,6 +89,7 @@ public:
 		if (IsSystemEnterEvent(event))
 		{
 			currentSubScene = menu.GetCurrentParam();
+			menu.OnHide();
 			if (currentSubScene)
 				currentSubScene->MainOnShow();
 			return true;
