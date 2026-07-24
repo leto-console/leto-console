@@ -168,7 +168,7 @@ int main(void)
   MX_SPI3_Init();
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
-#if defined(USE_HAL_DRIVER)
+#if 0
   DWT_Init(); // счётчик для микросекундных пауз
 
   uint8_t res = isChipConnected(); // проверяет подключён ли модуль к SPI
@@ -275,7 +275,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   HAL_UART_Receive_IT(&huart2, &buffer2, 1);
   HAL_UART_Receive_IT(&huart6, &buffer6, 1);
-#if defined(USE_HAL_DRIVER)
   while (1)
   {
 	  app.Loop();
@@ -284,100 +283,6 @@ int main(void)
 
 	    /* USER CODE BEGIN 3 */
   }
-#elif defined(USE_HAL_DRIVER)
-  openReadingPipe(1, NRF24L01::PipeAddress[3]);
-  startListening();
-
-  while (1)
-  {
-	///////////////////////////////////// ПРИЁМ /////////////////////////////////////////////
-	uint8_t nrf_data[32] = {0,}; // буфер указываем максимального размера
-	//static uint8_t remsg = 0;
-	uint8_t pipe_num = 0;
-
-	while (available(&pipe_num) && isPowerUp()) // проверяем пришло ли что-то
-	{
-		//remsg++;
-
-		//writeAckPayload(pipe_num, &remsg, sizeof(remsg)); // отправляем полезную нагрузку вместе с подтверждением
-
-		uint8_t count = getDynamicPayloadSize(); // смотрим сколько байт прилетело
-		read(&nrf_data, count); // Читаем данные в массив nrf_data и указываем сколько байт читать
-
-		if(pipe_num == 0) // проверяем в какую трубу пришли данные
-		{
-			HAL_UART_Transmit(&huart2, (uint8_t*)"pipe 0\n\r", strlen("pipe 0\n\r"), 1000);
-		}
-
-		else if(pipe_num == 1)
-		{
-			HAL_UART_Transmit(&huart2, (uint8_t*)"pipe 1\n\r", strlen("pipe 1\n\r"), 1000);
-
-			if (count > 14)
-			{
-				snprintf(str, 64, "%02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X %02X\n\r",
-						nrf_data[0], nrf_data[1], nrf_data[2],
-						nrf_data[3], nrf_data[4], nrf_data[5],
-						nrf_data[6], nrf_data[7], nrf_data[8],
-						nrf_data[9], nrf_data[10], nrf_data[11],
-						nrf_data[12], nrf_data[13], nrf_data[14]);
-				HAL_UART_Transmit(&huart2, (uint8_t*)str, strlen(str), 1000);
-			}
-		}
-
-		else if(pipe_num == 2)
-		{
-			HAL_UART_Transmit(&huart2, (uint8_t*)"pipe 2\n\r", strlen("pipe 2\n\r"), 1000);
-		}
-
-		else
-		{
-			//while(availableMy()) // если данные придут от неуказанной трубы, то попадут сюда
-			//{
-				//read(&nrf_data, sizeof(nrf_data));
-				HAL_UART_Transmit(&huart2, (uint8_t*)"Unknown pipe\n", strlen("Unknown pipe\n"), 1000);
-			//}
-		}
-	}
-	HAL_Delay(10000);
-
-	stopListening();
-	openWritingPipe(NRF24L01::PipeAddress[1]);
-    bool w = write((uint8_t*)"HELLO WORLD", sizeof("HELLO WORLD")); // отправляем данные
-    printf("write result: %d\n", w);
-	startListening();
-
-	HAL_Delay(10000);
-
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
-  }
-#else
-  stopListening();
-  openWritingPipe(NRF24L01::PipeAddress[3]);
-
-  while (1)
-  {
-	  ///////////////////////////////////// ПЕРЕДАЧА /////////////////////////////////////////////
-	  uint8_t nrf_data[32] = {0,}; // буфер указываем максимального размера
-	  nrf_data[0] = 77;
-	  nrf_data[1] = 86;
-	  nrf_data[2] = 97;
-
-	  if(write(&nrf_data, strlen((const char*)nrf_data))) // отправляем данные
-			HAL_UART_Transmit(&huart2, (uint8_t*)"Write!!!\n\r", strlen("Write!!!\n\r"), 1000);
-	  else
-			HAL_UART_Transmit(&huart2, (uint8_t*)"Not write\n\r", strlen("Not write\n\r"), 1000);
-
-	  HAL_Delay(1000);
-
-    /* USER CODE END WHILE */
-
-    /* USER CODE BEGIN 3 */
-  }
-
-#endif
   /* USER CODE END 3 */
 }
 

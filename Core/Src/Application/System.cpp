@@ -697,6 +697,7 @@ void Application::InitInput()
 
 #include <SDCard/SDCard_ExtDevice.hpp>
 #include <st7735/ST7735_ExtDevice.hpp>
+#include <NRF24L01/nRF24L01_ExtDevice.hpp>
 
 void Application::InitExtDev()
 {
@@ -708,6 +709,11 @@ void Application::InitExtDev()
 	{
 		static ST7735_ExtDevice dev;
 		st7735_extdev = &dev;
+		ExtDevices.push_back(&dev);
+	}
+	{
+		static nRF24L01_ExtDevice dev;
+		nrf24l01_extdev = &dev;
 		ExtDevices.push_back(&dev);
 	}
 }
