@@ -480,32 +480,13 @@ void Application::Init()
 
 #ifndef USE_HAL_DRIVER
 	fatfs_image_initialize(arg_parser.FindArg("--client") ? "client.img" : "server.img");
-#else 
-	/// TODO: Выделить SDCARD_Init в метод сущности SDCARD
-	// unselect all SPI devices first
-
-    // initialize SD-card as fast as possible, it glitches otherwise
-    // (this is important if SPI bus is shared by multiple devices)
-
-    // Перед инициализацией установите низкую частоту:
-    //SDCARD_SetSpeed(SPI_BAUDRATEPRESCALER_256);
-//
-    //int code = SDCARD_Init();
-//
-    //// После успешной инициализации можно увеличить скорость:
-    //SDCARD_SetSpeed(SPI_BAUDRATEPRESCALER_2);
-//
-    //if(code < 0) 
-	//{
-    //	VC_Printf("SDCARD_Init() failed", RedColor);
-    //	VC_Printf("code = %d\r\n", RedColor, code);
-    //	VC_Printf("R1 = %d\r\n", BlueColor, SDCARD_LastReadR1());
-    //}
 #endif
 
 	// Инициализация настроек обязательно должна идти перед остальными,
 	// поскольку на них может опираться инициализации периферии и прочего
 	SystemStorage.Init(eeprom_24c_08);
+
+	DateTime::InitCells(&RTC_Settings::LastExactTime, &RTC_Settings::LastExactDate, &RTC_Settings::SmoothCalibPulses);
 
 	SetDeviceID(SerialNumber.GetOrDefault());
 	InitDebugModeCell(&DebugMode);

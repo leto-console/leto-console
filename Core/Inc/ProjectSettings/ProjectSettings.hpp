@@ -17,6 +17,7 @@
 
 #include <stdint.h>
 #include <Data/StaticText.hpp>
+#include <Time/DateTime.hpp>
 
 // --------------------------------------------------
 
@@ -51,6 +52,13 @@ namespace NRF24L01
 	extern StoredDataCell<uint8_t> RxPipe;
 	extern StoredDataCell<uint8_t> TxPipe;
 	extern StoredDataCell<uint8_t> Channel;
+}
+
+namespace RTC_Settings
+{
+	extern StoredDataCell<TimeStruct> LastExactTime;
+	extern StoredDataCell<DateStruct> LastExactDate;
+	extern StoredDataCell<int32_t> SmoothCalibPulses;
 }
 
 #endif

@@ -6,19 +6,6 @@ Storage SystemStorage;
 
 // --------------------------------------------------
 
-static uint16_t USER_ADDR[]
-{
-	0x0400,
-	0x0800,
-	0x0C00,
-	0x1000,
-	0x1400,
-	0x1800,
-	0x1C00,
-};
-
-// --------------------------------------------------
-
 // Адрес: 0x0000,	Размер: 4 Б
 StoredDataCell<uint32_t>		StartsCount			(SystemSettingsStart + 0x00, &SystemStorage);
 // Адрес: 0x0004:0, Размер: 1 бит
@@ -42,4 +29,14 @@ StoredDataCell<uint8_t>			RxPipe				(SystemSettingsStart + 0x10, &SystemStorage)
 StoredDataCell<uint8_t>			TxPipe				(SystemSettingsStart + 0x11, &SystemStorage);
 // Адрес: 0x0012,	Размер:	1 Б
 StoredDataCell<uint8_t>			Channel				(SystemSettingsStart + 0x12, &SystemStorage);
+}
+
+namespace RTC_Settings
+{
+// Адрес: 0x0020, 	Размер: 3 Б
+StoredDataCell<TimeStruct> 		LastExactTime		(SystemSettingsStart + 0x20, &SystemStorage);
+// Адрес: 0x0023, 	Размер: 4 Б
+StoredDataCell<DateStruct> 		LastExactDate		(SystemSettingsStart + 0x23, &SystemStorage);
+// Адрес: 0x0027, 	Размер: 4 Б
+StoredDataCell<int32_t> 		SmoothCalibPulses	(SystemSettingsStart + 0x27, &SystemStorage);
 }
