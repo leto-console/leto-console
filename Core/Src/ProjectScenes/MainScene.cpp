@@ -31,6 +31,7 @@ static const MainMenuDef menu_def[]
 	{ "АККАУНТ",	SceneID::SETTING_ACCOUNT },
 	{ "СИСТЕМА",	SceneID::SYSTEM },
 	{ "EEPROM",		SceneID::EEPROM, (int) SystemMode::USER },
+	{ "ФАЙЛЫ",		SceneID::FILE_MANAGER },
 	{ "DEBUG",		SceneID::DEBUG_SCENE },
 };
 

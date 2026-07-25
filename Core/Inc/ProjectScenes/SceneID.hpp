@@ -24,6 +24,7 @@ enum class SceneID
 	EDIT_ACCOUNT,
 	DELETE_ACCOUNT,
 	SETTING_ACCOUNT,
+	FILE_MANAGER,
 	LOGOUT,				// Сцена выхода из текущего аккаунта/режима
 	__SCREENS_COUNT
 };

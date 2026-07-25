@@ -718,6 +718,7 @@ void Application::InitExtDev()
 #include <Auth/Account_EditScene.hpp>
 #include <Auth/Account_DeleteScene.hpp>
 #include <Auth/Account_SettingScene.hpp>
+#include <FatFs/FileManager.hpp>
 
 #include <System/CommonAllocator.hpp>
 
@@ -745,6 +746,9 @@ void Application::InitUserScenes()
 
 	// Игровой центр
 	SceneManager::Instance().AddSceneBuilder<GameCenter>(SceneID::GAMES_CENTER);
+
+	// Кадр "Файловый менеджер"
+	SceneManager::Instance().AddSceneBuilder<FileManager>(SceneID::FILE_MANAGER);
 
 	// ===========================================================================
 
@@ -815,6 +819,9 @@ void Application::InitSystemScenes()
 	// Кадр "Тест"
 	SceneManager::Instance().AddSceneBuilder<SystemTestScene>(SceneID::TEST_SCENE);
 
+	// Кадр "Файловый менеджер"
+	SceneManager::Instance().AddSceneBuilder<FileManager>(SceneID::FILE_MANAGER);
+
 	// ===========================================================================
 
 	// Кадр с выбором других кадров
@@ -838,7 +845,7 @@ void Application::InitSystemTasks()
 
 	PriorityTaskSheduler::AddTask<ResearchEncoderTask>("ENC_TSK", 10, 40);
 	PriorityTaskSheduler::AddTask<nRF24L01_ReadTask>("NRF_ST", 1000, 10);
-	PriorityTaskSheduler::AddTask<FatFsTask>("FF_TSK", 3000, 25, sdcard_extdev);
+	PriorityTaskSheduler::AddTask<FatFsTask>("FF_TSK", 100, 25, sdcard_extdev);
 
 	// TODO: можно попробовать поднять частоту опроса (но зачем? - чтобы дискретность изменений была ниже)
 	PriorityTaskSheduler::AddTask<DateTimeServer>("DT_SERV", 10, 50);
