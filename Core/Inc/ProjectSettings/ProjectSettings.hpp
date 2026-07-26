@@ -57,7 +57,7 @@ namespace NRF24L01
 namespace RTC_Settings
 {
 	extern StoredDataCell<DateTimeStruct> LastExactDateTime;
-	extern StoredDataCell<int32_t> SmoothCalibPulses;
+	extern StoredDataCell<int32_t> PPM;
 }
 
 #endif

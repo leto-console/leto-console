@@ -81,6 +81,7 @@ public:
 		edit_time->SetActive(false);
 		edit_date->SetActive(false);
 
+		settings.AddSetting<ValueSettingUI<int32_t>>("PPM", Point2_i{-1, -1}, &RTC_Settings::PPM, "%" PRIi32);
 		settings.AddSetting<ValueSettingUI<uint32_t>>("MS", Point2_i{-1, -1}, &cell_ms, "%" PRIu32);
 		settings.AddSetting<ValueSettingUI<uint32_t>>("MKS", Point2_i{-1, -1}, &cell_mks, "%" PRIu32);
 		button = settings.AddSetting<ButtonCallInstanceSettingUI<TimeScene>>("ИЗМЕНИТЬ", Point2_i{-1, -1}, this, &TimeScene::OnChange);

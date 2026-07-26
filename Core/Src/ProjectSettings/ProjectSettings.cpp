@@ -36,5 +36,5 @@ namespace RTC_Settings
 // Адрес: 0x0020, 	Размер: 7 Б
 StoredDataCell<DateTimeStruct> 	LastExactDateTime	(SystemSettingsStart + 0x20, &SystemStorage);
 // Адрес: 0x0027, 	Размер: 4 Б
-StoredDataCell<int32_t> 		SmoothCalibPulses	(SystemSettingsStart + 0x27, &SystemStorage);
+StoredDataCell<int32_t> 		PPM             	(SystemSettingsStart + 0x27, &SystemStorage);
 }

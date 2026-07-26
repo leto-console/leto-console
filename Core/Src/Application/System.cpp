@@ -486,7 +486,7 @@ void Application::Init()
 	// поскольку на них может опираться инициализации периферии и прочего
 	SystemStorage.Init(eeprom_24c_08);
 
-	DateTime::InitCells(&RTC_Settings::LastExactDateTime, &RTC_Settings::SmoothCalibPulses);
+	DateTime::InitCells(&RTC_Settings::LastExactDateTime, &RTC_Settings::PPM);
 
 	SetDeviceID(SerialNumber.GetOrDefault());
 	InitDebugModeCell(&DebugMode);
