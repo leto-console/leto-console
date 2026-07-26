@@ -56,8 +56,7 @@ namespace NRF24L01
 
 namespace RTC_Settings
 {
-	extern StoredDataCell<TimeStruct> LastExactTime;
-	extern StoredDataCell<DateStruct> LastExactDate;
+	extern StoredDataCell<DateTimeStruct> LastExactDateTime;
 	extern StoredDataCell<int32_t> SmoothCalibPulses;
 }
 

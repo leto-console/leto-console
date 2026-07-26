@@ -33,10 +33,8 @@ StoredDataCell<uint8_t>			Channel				(SystemSettingsStart + 0x12, &SystemStorage
 
 namespace RTC_Settings
 {
-// Адрес: 0x0020, 	Размер: 3 Б
-StoredDataCell<TimeStruct> 		LastExactTime		(SystemSettingsStart + 0x20, &SystemStorage);
-// Адрес: 0x0023, 	Размер: 4 Б
-StoredDataCell<DateStruct> 		LastExactDate		(SystemSettingsStart + 0x23, &SystemStorage);
+// Адрес: 0x0020, 	Размер: 7 Б
+StoredDataCell<DateTimeStruct> 	LastExactDateTime	(SystemSettingsStart + 0x20, &SystemStorage);
 // Адрес: 0x0027, 	Размер: 4 Б
 StoredDataCell<int32_t> 		SmoothCalibPulses	(SystemSettingsStart + 0x27, &SystemStorage);
 }

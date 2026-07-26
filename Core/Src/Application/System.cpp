@@ -486,7 +486,7 @@ void Application::Init()
 	// поскольку на них может опираться инициализации периферии и прочего
 	SystemStorage.Init(eeprom_24c_08);
 
-	DateTime::InitCells(&RTC_Settings::LastExactTime, &RTC_Settings::LastExactDate, &RTC_Settings::SmoothCalibPulses);
+	DateTime::InitCells(&RTC_Settings::LastExactDateTime, &RTC_Settings::SmoothCalibPulses);
 
 	SetDeviceID(SerialNumber.GetOrDefault());
 	InitDebugModeCell(&DebugMode);
@@ -830,7 +830,7 @@ void Application::InitSystemScenes()
 	SceneManager::Instance().SwitchScene(SceneID::MAIN);
 }
 
-#include <Time/DateTime.hpp>
+#include <Time/DateTimeServer.hpp>
 #include <FatFs/FatFsTask.hpp>
 #include <ExtDevice/ExtDeviceProcessor.hpp>
 
@@ -847,7 +847,6 @@ void Application::InitSystemTasks()
 	PriorityTaskSheduler::AddTask<nRF24L01_ReadTask>("NRF_ST", 1000, 10);
 	PriorityTaskSheduler::AddTask<FatFsTask>("FF_TSK", 100, 25, sdcard_extdev);
 
-	// TODO: можно попробовать поднять частоту опроса (но зачем? - чтобы дискретность изменений была ниже)
 	PriorityTaskSheduler::AddTask<DateTimeServer>("DT_SERV", 10, 50);
 
 	ExtDeviceProcessor* extdev_proc = PriorityTaskSheduler::AddTask<ExtDeviceProcessor>("EXTDEV_P", 200, 50);
