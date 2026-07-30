@@ -61,6 +61,8 @@ protected:
 	ISettingUI *edit_time, *edit_date;
 	ISettingUI *button;
 
+	int32_t ppm{}, appm{};
+
 	void OnChange()
 	{
 		time->SetActive(false);
@@ -68,6 +70,11 @@ protected:
 		edit_time->SetActive(true);
 		edit_date->SetActive(true);
 		button->SetActive(false);
+	}
+
+	void OnResetPPM()
+	{
+		DateTime::ResetActivePPM();
 	}
 
 public:
@@ -81,10 +88,12 @@ public:
 		edit_time->SetActive(false);
 		edit_date->SetActive(false);
 
-		settings.AddSetting<ValueSettingUI<int32_t>>("PPM", Point2_i{-1, -1}, &RTC_Settings::PPM, "%" PRIi32);
+		settings.AddSetting<ValueSettingUI<int32_t>>("PPM", Point2_i{-1, -1}, &ppm, "%" PRIi32);
+		settings.AddSetting<ValueSettingUI<int32_t>>("APPM", Point2_i{-1, -1}, &appm, "%" PRIi32);
 		settings.AddSetting<ValueSettingUI<uint32_t>>("MS", Point2_i{-1, -1}, &cell_ms, "%" PRIu32);
 		settings.AddSetting<ValueSettingUI<uint32_t>>("MKS", Point2_i{-1, -1}, &cell_mks, "%" PRIu32);
 		button = settings.AddSetting<ButtonCallInstanceSettingUI<TimeScene>>("ИЗМЕНИТЬ", Point2_i{-1, -1}, this, &TimeScene::OnChange);
+		settings.AddSetting<ButtonCallInstanceSettingUI<TimeScene>>("СБРОС PPM", Point2_i{-1, -1}, this, &TimeScene::OnResetPPM);
 		settings.Enable();
 
 		AddObject(&settings);
@@ -97,7 +106,12 @@ public:
 		return IsSystemPrevEvent(event) || IsSystemNextEvent(event);
 	}
 	
-	bool Loop() override { return true; }
+	bool Loop() override 
+	{ 
+		ppm = RTC_Settings::PPM.GetOrDefault().GetPPM();
+		appm = DateTime::GetActivePPM();
+		return true; 
+	}
 };
 
 class RandomScene : public IScene
