@@ -1,18 +1,29 @@
 {
     "version": 3,
     "configurePresets": [
-        {
-            "name": "stm32-base",
+		{
+			"name": "base",
             "hidden": true,
             "generator": "Ninja",
             "binaryDir": "${sourceDir}/build/${presetName}",
             "installDir": "${sourceDir}/out/install/${presetName}",
             "cacheVariables": {
+				"CMAKE_RUNTIME_OUTPUT_DIRECTORY": "${sourceDir}/bin/${presetName}",
+				"CMAKE_LIBRARY_OUTPUT_DIRECTORY": "${sourceDir}/lib/${presetName}",
+				"CMAKE_ARCHIVE_OUTPUT_DIRECTORY": "${sourceDir}/lib/${presetName}",
+                "CMAKE_PRESET_NAME": "${presetName}"
+            }
+		},
+        {
+            "name": "stm32-base",
+			"inherits": "base",
+			"hidden": true,
+            "cacheVariables": {
                 "CMAKE_TOOLCHAIN_FILE": {
                     "type": "FILEPATH",
                     "value": "${sourceDir}/cmake/toolchain-arm-none-eabi.cmake"
                 },
-                "PRESET_DEFINE_MACRO": "USE_HAL_DRIVER"
+				"PRESET_DEFINE_MACRO": "__STM32__"
             },
             "architecture": {
                 "value": "unspecified",
@@ -21,10 +32,8 @@
         },
         {
             "name": "windows-base",
-            "hidden": true,
-            "generator": "Ninja",
-            "binaryDir": "${sourceDir}/build/${presetName}",
-            "installDir": "${sourceDir}/out/install/${presetName}",
+			"inherits": "base",
+			"hidden": true,
             "architecture": {
                 "value": "x64",
                 "strategy": "external"
@@ -32,7 +41,8 @@
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "cl.exe",
                 "CMAKE_CXX_COMPILER": "cl.exe",
-                "PRESET_DEFINE_MACRO": "__WIN__"
+                "PRESET_DEFINE_MACRO": "__WIN__",
+                "CORE_BUILD_PRESET": "win-debug"
             },
             "condition": {
                 "type": "equals",
@@ -42,10 +52,8 @@
         },
         {
             "name": "ubuntu-base",
-            "hidden": true,
-            "generator": "Ninja",
-            "binaryDir": "${sourceDir}/build/${presetName}",
-            "installDir": "${sourceDir}/out/install/${presetName}",
+			"inherits": "base",
+			"hidden": true,
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "gcc",
                 "CMAKE_CXX_COMPILER": "g++",
@@ -64,21 +72,36 @@
             }
         },
         {
-            "name": "stm32-st7735-debug",
+            "name": "stm32f401xc-ssd1306-debug",
             "inherits": "stm32-base",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "PRESET_NAME": "stm32-st7735-debug",
-                "PRESET_DEFINE_SCREEN": "USE_ST7735"
+				"MCU_CHIP": "STM32F401xC",
+				"LINKER_SCRIPT": "STM32F401CCUX_FLASH.ld",
+                "USE_SCREEN": "USE_SSD1306",
+				"CORE_BUILD_PRESET": "stm32f401xc-debug"
             }
         },
         {
-            "name": "stm32-st7735-release",
+            "name": "stm32f401xc-st7735-debug",
             "inherits": "stm32-base",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release",
-                "PRESET_NAME": "stm32-st7735-release",
-                "PRESET_DEFINE_SCREEN": "USE_ST7735"
+                "CMAKE_BUILD_TYPE": "Debug",
+				"MCU_CHIP": "STM32F401xC",
+				"LINKER_SCRIPT": "STM32F401CCUX_FLASH.ld",
+                "USE_SCREEN": "USE_ST7735",
+				"CORE_BUILD_PRESET": "stm32f401xc-debug"
+            }
+        },
+        {
+            "name": "stm32f411xe-st7735-debug",
+            "inherits": "stm32-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+				"MCU_CHIP": "STM32F411xE",
+				"LINKER_SCRIPT": "STM32F411CEUX_FLASH.ld",
+				"USE_SCREEN" : "USE_ST7735",
+				"CORE_BUILD_PRESET": "stm32f411xe-debug"
             }
         },
         {
@@ -87,8 +110,7 @@
             "inherits": "windows-base",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "PRESET_NAME": "win-debug-ssd1306",
-                "PRESET_DEFINE_SCREEN": "USE_SSD1306"
+                "USE_SCREEN": "USE_SSD1306"
             }
         },
         {
@@ -97,8 +119,7 @@
             "inherits": "windows-base",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "PRESET_NAME": "win-debug-st7735",
-                "PRESET_DEFINE_SCREEN": "USE_ST7735"
+                "USE_SCREEN": "USE_ST7735"
             }
         },
         {
@@ -110,8 +131,7 @@
                 "strategy": "external"
             },
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug",
-                "PRESET_NAME": "ubuntu-debug"
+                "CMAKE_BUILD_TYPE": "Debug"
             }
         },
         {
@@ -123,8 +143,7 @@
                 "strategy": "external"
             },
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug",
-                "PRESET_NAME": "termux-debug"
+                "CMAKE_BUILD_TYPE": "Debug"
             }
         },
         {
@@ -137,20 +156,23 @@
             },
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "PRESET_NAME": "termux-win-debug",
                 "PRESET_DEFINE_MACRO": "__TERMUX__",
-                "PRESET_DEFINE_SCREEN": "USE_ST7735"
+                "USE_SCREEN": "USE_ST7735"
             }
         }
     ],
     "buildPresets": [
-        {
-            "name": "stm32-st7735-debug",
-            "configurePreset": "stm32-st7735-debug"
+		{
+            "name": "stm32f401xc-ssd1306-debug",
+            "configurePreset": "stm32f401xc-ssd1306-debug"
         },
         {
-            "name": "stm32-st7735-release",
-            "configurePreset": "stm32-st7735-release"
+            "name": "stm32f401xc-st7735-debug",
+            "configurePreset": "stm32f401xc-st7735-debug"
+        },
+        {
+            "name": "stm32f411xe-st7735-debug",
+            "configurePreset": "stm32f411xe-st7735-debug"
         },
         {
             "name": "win-debug-ssd1306",

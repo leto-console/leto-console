@@ -85,7 +85,7 @@ static void MX_SPI1_Init(void);
 #include <UART/UART_console_init.hpp>
 #include <CommandHandler/CommandHandler.hpp>
 #include <LetoAPI_V1_System/Web/WebPacketParser.hpp>
-#include <LetoAPI_V1/Web/WebConnection.hpp>
+#include <LetoAPI_V1/Web/WebConnection.h>
 //#include <NRF24L01/nrf24l01.h>
 /* USER CODE END PFP */
 
