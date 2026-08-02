@@ -457,7 +457,7 @@ void Application::InitOnSystemModeChanged()
 #include <stdarg.h>
 #include <FatFs/low_level/ff.h>
 #include <SDCard/sdcard.h>
-#include <st7735/low_level/st7735.h>
+#include <ST7735/low_level/st7735.h>
 
 
 #endif
@@ -677,7 +677,7 @@ void Application::InitInput()
 }
 
 #include <SDCard/SDCard_ExtDevice.hpp>
-#include <st7735/ST7735_ExtDevice.hpp>
+#include <ST7735/ST7735_ExtDevice.hpp>
 #include <NRF24L01/nRF24L01_ExtDevice.hpp>
 
 void Application::InitExtDev()
