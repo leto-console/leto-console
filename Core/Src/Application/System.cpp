@@ -457,7 +457,7 @@ void Application::InitOnSystemModeChanged()
 #include <stdarg.h>
 #include <FatFs/low_level/ff.h>
 #include <SDCard/sdcard.h>
-#include <ST7735/low_level/st7735.h>
+#include <ST7735/low_level/ST7735.h>
 
 
 #endif
