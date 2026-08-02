@@ -8,6 +8,9 @@
         },
         {
             "path": "../STM32F4_Libraries"
+        },
+        {
+            "path": "../LetoAPI"
         }
     ],
     "extensions": {
