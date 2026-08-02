@@ -48,7 +48,6 @@ if (${PRESET_DEFINE_MACRO} STREQUAL "__STM32__")
 		Drivers/CMSIS/Include
 		Drivers/STM32F4xx_HAL_Driver/Inc
 		Drivers/STM32F4xx_HAL_Driver/Inc/Legacy
-		../STM32F4_Libraries/Inc
 	)
 
 	# 5. Команда для автоматической генерации файлов прошивки (.bin и .hex) после сборки ELF
@@ -62,8 +61,6 @@ if (${PRESET_DEFINE_MACRO} STREQUAL "__STM32__")
 else ()
 
 	include_directories("Core/Inc")
-	include_directories("../STM32F4_Libraries/Inc")
-	include_directories("../STM32F4_Libraries/Src")
 
 	if (${PRESET_DEFINE_MACRO} STREQUAL "__WIN__")
 		if(MSVC)
@@ -80,7 +77,7 @@ else ()
 		
 	elseif (${PRESET_DEFINE_MACRO} STREQUAL "__TERMUX__")
 
-		file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/../STM32F4_Libraries/Inc/GraphicsPC/web" 
+		file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/../LetoCore/Inc/GraphicsPC/web" 
 			DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
 		add_executable ("${PROJECT_NAME}" "Core/Main/App.cpp" "${CPP_COURCES}")
@@ -93,10 +90,10 @@ if(LETO_PATH)
     message(STATUS "[${PROJECT_NAME}] Найдена переменная LETO_PATH. Подключаем готовые артефакты...")
 
 	target_link_directories(${PROJECT_NAME} PUBLIC "${LETO_PATH}/LetoAPI/lib/${CORE_BUILD_PRESET}")
-	target_link_directories(${PROJECT_NAME} PUBLIC "${LETO_PATH}/STM32F4_Libraries/lib/${CORE_BUILD_PRESET}")
+	target_link_directories(${PROJECT_NAME} PUBLIC "${LETO_PATH}/LetoCore/lib/${CORE_BUILD_PRESET}")
 
 	target_include_directories(${PROJECT_NAME} PUBLIC "${LETO_PATH}/LetoAPI/include")
-	target_include_directories(${PROJECT_NAME} PUBLIC "${LETO_PATH}/STM32F4_Libraries/Inc")
+	target_include_directories(${PROJECT_NAME} PUBLIC "${LETO_PATH}/LetoCore/Inc")
 else()
     message(STATUS "[${PROJECT_NAME}] Переменная LETO_PATH не найдена. Серверная сборка через FetchContent...")
 
