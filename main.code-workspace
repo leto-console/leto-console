@@ -7,10 +7,10 @@
             "path": "../STM32F4_GamesCollection"
         },
         {
-            "path": "../STM32F4_Libraries"
+            "path": "../LetoAPI"
         },
         {
-            "path": "../LetoAPI"
+            "path": "../LetoCore"
         }
     ],
     "extensions": {
