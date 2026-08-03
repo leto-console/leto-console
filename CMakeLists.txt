@@ -73,6 +73,10 @@ else ()
 		endif()
 		add_executable ("${PROJECT_NAME}" WIN32 "Core/Main/App.cpp" "${CPP_COURCES}")
 
+		if (LETO_PATH)
+			target_compile_definitions(${PROJECT_NAME} PRIVATE LETOCORE_SHARED)
+		endif()
+
 	elseif (${PRESET_DEFINE_MACRO} STREQUAL "__LINUX__")
 
 		find_package(Qt6 COMPONENTS Widgets REQUIRED Core)
