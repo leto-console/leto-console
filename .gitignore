@@ -374,6 +374,9 @@ Release*/
 .metadata/
 .settings/
 
+# Lib
+[Ll]ib/
+
 # ConfigIO (IO config files for imitations systems)
 Core/Src/Utils/ConfigIO
 *.eeprom
