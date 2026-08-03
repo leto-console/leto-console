@@ -41,8 +41,7 @@
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "cl.exe",
                 "CMAKE_CXX_COMPILER": "cl.exe",
-                "PRESET_DEFINE_MACRO": "__WIN__",
-                "CORE_BUILD_PRESET": "win-debug"
+                "PRESET_DEFINE_MACRO": "__WIN__"
             },
             "condition": {
                 "type": "equals",
@@ -110,7 +109,8 @@
             "inherits": "windows-base",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "USE_SCREEN": "USE_SSD1306"
+                "USE_SCREEN": "USE_SSD1306",
+                "CORE_BUILD_PRESET": "win-debug"
             }
         },
         {
@@ -119,7 +119,18 @@
             "inherits": "windows-base",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "USE_SCREEN": "USE_ST7735"
+                "USE_SCREEN": "USE_ST7735",
+                "CORE_BUILD_PRESET": "win-debug"
+            }
+        },
+        {
+            "name": "win-release-st7735",
+            "displayName": "win-release-st7735",
+            "inherits": "windows-base",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "USE_SCREEN": "USE_ST7735",
+                "CORE_BUILD_PRESET": "win-release"
             }
         },
         {
@@ -181,6 +192,10 @@
         {
             "name": "win-debug-st7735",
             "configurePreset": "win-debug-st7735"
+        },
+        {
+            "name": "win-release-st7735",
+            "configurePreset": "win-release-st7735"
         },
         {
             "name": "ubuntu-debug",
