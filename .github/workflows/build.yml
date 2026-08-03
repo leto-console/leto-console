@@ -1,0 +1,55 @@
+name: Multi-Platform Build (STM32 & Windows)
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  # 1. Сборка прошивок для микроконтроллеров STM32
+  build-and-pack:
+    strategy:
+      matrix:
+        include:
+          - preset: "stm32f401xc-debug"
+            os: ubuntu-latest
+          - preset: "stm32f411xe-debug"
+            os: ubuntu-latest
+          - preset: "win-debug"
+            os: windows-latest
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Dependencies (Linux)
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y ninja-build gcc-arm-none-eabi
+
+    - name: Install Dependencies (Windows)
+      if: runner.os == 'Windows'
+      run: choco install ninja
+
+    - name: Set up MSVC Developer Command Prompt (Windows)
+      if: runner.os == 'Windows'
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Configure CMake
+      run: cmake --preset ${{ matrix.preset }}
+
+    - name: Build Firmware
+      run: cmake --build --preset ${{ matrix.preset }}
+
+    - name: Install and Organize SDK
+      run: cmake --install build/${{ matrix.preset }} --prefix dist/${{ matrix.preset }}
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: leto-console-${{ matrix.preset }}
+        path: dist/${{ matrix.preset }}/
+        if-no-files-found: error
