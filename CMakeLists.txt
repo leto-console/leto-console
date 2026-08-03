@@ -77,7 +77,7 @@ else ()
 		
 	elseif (${PRESET_DEFINE_MACRO} STREQUAL "__TERMUX__")
 
-		file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/../LetoCore/Inc/GraphicsPC/web" 
+		file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/../LetoCore/include/GraphicsPC/web" 
 			DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 
 		add_executable ("${PROJECT_NAME}" "Core/Main/App.cpp" "${CPP_COURCES}")
@@ -93,7 +93,7 @@ if(LETO_PATH)
 	target_link_directories(${PROJECT_NAME} PUBLIC "${LETO_PATH}/LetoCore/lib/${CORE_BUILD_PRESET}")
 
 	target_include_directories(${PROJECT_NAME} PUBLIC "${LETO_PATH}/LetoAPI/include")
-	target_include_directories(${PROJECT_NAME} PUBLIC "${LETO_PATH}/LetoCore/Inc")
+	target_include_directories(${PROJECT_NAME} PUBLIC "${LETO_PATH}/LetoCore/include")
 else()
     message(STATUS "[${PROJECT_NAME}] Переменная LETO_PATH не найдена. Серверная сборка через FetchContent...")
 
