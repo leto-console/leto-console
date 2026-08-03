@@ -1,6 +1,11 @@
 add_compile_definitions(${PRESET_DEFINE_MACRO})
 add_compile_definitions(${USE_SCREEN})
 
+set(CMAKE_C_STANDARD 17)
+set(CMAKE_C_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
 file(GLOB CPP_COURCES 
 	"Core/Src/*/*.cpp" "Core/Src/*/*.c" 
 	"Core/Inc/*/*.cpp" "Core/Inc/*/*.c"
