@@ -12,9 +12,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - preset: "stm32f401xc-debug"
+          - preset: "stm32f401xc-st7735-debug"
             os: ubuntu-latest
-          - preset: "stm32f411xe-debug"
+          - preset: "stm32f411xe-st7735-debug"
             os: ubuntu-latest
           - preset: "win-debug-st7735"
             os: windows-latest
