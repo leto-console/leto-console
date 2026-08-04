@@ -57,11 +57,18 @@ if (${PRESET_DEFINE_MACRO} STREQUAL "__STM32__")
 
 	# 5. Команда для автоматической генерации файлов прошивки (.bin и .hex) после сборки ELF
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-        COMMAND ${CMAKE_OBJCOPY} -O ihex ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.elf ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.hex
-        COMMAND ${CMAKE_OBJCOPY} -O binary ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.elf ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.bin
-        COMMAND ${CMAKE_SIZE} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.elf
+		COMMAND ${CMAKE_OBJCOPY} -O ihex $<TARGET_FILE:${PROJECT_NAME}> ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.hex
+		COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:${PROJECT_NAME}> ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.bin
+		COMMAND ${CMAKE_SIZE} $<TARGET_FILE:${PROJECT_NAME}>
         COMMENT "Generating .hex, .bin and printing memory size..."
     )
+
+	install(FILES 
+		"${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.bin"
+		"${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.hex"
+		DESTINATION bin
+		COMPONENT app
+	)
 
 else ()
 
@@ -119,7 +126,6 @@ target_link_libraries("${PROJECT_NAME}" PUBLIC LetoAPI)
 target_link_libraries("${PROJECT_NAME}" PUBLIC LetoCore)
 
 install(TARGETS ${PROJECT_NAME}
-    RUNTIME DESTINATION bin     # Для исполняемых файлов
-    ARCHIVE DESTINATION lib     # Для статических библиотек
-    LIBRARY DESTINATION lib     # Для динамических библиотек
+    RUNTIME DESTINATION bin
+	COMPONENT app
 )
