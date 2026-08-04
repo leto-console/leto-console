@@ -7,7 +7,6 @@ on:
     branches: [ "main" ]
 
 jobs:
-  # 1. Сборка прошивок для микроконтроллеров STM32
   build-and-pack:
     strategy:
       matrix:
@@ -28,13 +27,7 @@ jobs:
 
     - name: Install Dependencies (Linux)
       if: runner.os == 'Linux'
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y ninja-build gcc-arm-none-eabi
-
-    - name: Install Dependencies (Windows)
-      if: runner.os == 'Windows'
-      run: choco install ninja
+      run: sudo apt-get install -y -q ninja-build gcc-arm-none-eabi
 
     - name: Set up MSVC Developer Command Prompt (Windows)
       if: runner.os == 'Windows'
@@ -44,7 +37,7 @@ jobs:
       run: cmake --preset ${{ matrix.preset }}
 
     - name: Build Firmware
-      run: cmake --build --preset ${{ matrix.preset }}
+      run: cmake --build --preset ${{ matrix.preset }} --parallel
 
     - name: Install and Organize SDK
       run: cmake --install build/${{ matrix.preset }} --prefix dist/${{ matrix.preset }}
