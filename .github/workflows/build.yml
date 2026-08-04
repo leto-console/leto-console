@@ -40,7 +40,7 @@ jobs:
       run: cmake --build --preset ${{ matrix.preset }} --parallel
 
     - name: Install and Organize SDK
-      run: cmake --install build/${{ matrix.preset }} --prefix dist/${{ matrix.preset }}
+      run: cmake --install build/${{ matrix.preset }} --prefix dist/${{ matrix.preset }} --component app
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
