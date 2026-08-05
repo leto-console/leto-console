@@ -17,6 +17,7 @@
 #include <Input/EncoderEvent.hpp>
 #include <Data/StaticText.hpp>
 #include <DrawFunctions/DrawText.hpp>
+#include <SceneManager/ISceneManager.hpp>
 
 class CommonMenuScene : public CommonScene
 {
@@ -26,8 +27,8 @@ protected:
 	StaticText32 title;
 
 public:
-	CommonMenuScene(StaticText32 title = "", uint8_t menu_height = 4)
-		: menu{ menu_height, {0, title.Empty() ? 0 : 8} }, title{ title }
+	CommonMenuScene(ISceneManager* scene_manager, StaticText32 title = "", uint8_t menu_height = 4)
+		: CommonScene{scene_manager}, menu{ menu_height, {0, title.Empty() ? 0 : 8} }, title{ title }
 	{
 		menu.InitBaseCatchers();
 		menu.Capture();
@@ -96,7 +97,7 @@ public:
 		}
 		else if (IsSystemReturnEvent(event))
 		{
-			SceneManager::Instance().Return();
+			scene_manager->Return();
 			menu.ResetCurrentID();
 			return true;
 		}

@@ -46,8 +46,8 @@ protected:
 	}
 
 public:
-	EEPROMReadScene(EEPROM_24C* eeprom)
-		: eeprom{ *eeprom }
+	EEPROMReadScene(ISceneManager* scene_manager, EEPROM_24C* eeprom)
+		: IScene{scene_manager}, eeprom{ *eeprom }
 	{
 	}
 	void DrawByteLine(IScreen& screen, Point2_i point, uint8_t* data, uint32_t size)
@@ -171,9 +171,10 @@ public:
 
 // ----------------------------------------------------------------------------------------------------
 
-EEPROMScene::EEPROMScene(EEPROM_24C* eeprom) : CommonMenuScene{ "-----EEPROM-----" }
+EEPROMScene::EEPROMScene(ISceneManager* scene_manager, EEPROM_24C* eeprom) 
+	: CommonMenuScene{ scene_manager, "-----EEPROM-----" }
 {
-	menu.AppendMenuItem("Смотреть", CommonAllocator.Make<EEPROMReadScene>(eeprom));
+	menu.AppendMenuItem("Смотреть", CommonAllocator.Make<EEPROMReadScene>(scene_manager, eeprom));
 //	menu.AppendMenuItem("Сохранение", CommonAllocator.Make<SaveReadScene>(eeprom));
 	menu.AppendMenuItem("Изменить", nullptr);
 }

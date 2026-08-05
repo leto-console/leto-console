@@ -5,7 +5,7 @@
 #include <Input/SystemInputID.hpp>
 
 #include <Input/ButtonEvent.hpp>
-#include <SceneManager/SceneManager.hpp>
+#include <SceneManager/SystemSceneManager.hpp>
 #include <Time/Timer.hpp>
 
 #include <Bitmaps/Eyes.hpp>
@@ -32,7 +32,8 @@ void EyesScene::WelcomeDraw(IScreen& screen)
 
 #include <System/SystemMode.hpp>
 
-EyesScene::EyesScene() :
+EyesScene::EyesScene(ISceneManager* scene_manager) :
+	CommonScene{scene_manager},
 	eye1_anim(GetEyeAnim(true), 80),
 	eye2_anim(GetEyeAnim(false), 80)
 {
@@ -59,7 +60,7 @@ bool EyesScene::Loop()
 	CommonScene::Loop();
 
 	if (!eye1_anim.IsPlaying() && !eye2_anim.IsPlaying())
-        SceneManager::Instance().SwitchScene(SceneID::MAIN);
+        SystemSceneManager::Instance().SwitchScene(SceneID::MAIN);
 
 	return true;
 }

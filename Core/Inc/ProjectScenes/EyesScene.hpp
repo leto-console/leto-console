@@ -24,7 +24,7 @@ protected:
 	void WelcomeDraw(IScreen& screen);
 
 public:
-	EyesScene();
+	EyesScene(ISceneManager* scene_manager);
 
 	void OnShow() override;
 

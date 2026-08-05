@@ -10,6 +10,8 @@
 
 #include <DrawFunctions/DrawText.hpp>
 
+#include <SceneManager/ISceneManager.hpp>
+
 void DebugScene::Draw(IScreen& screen)
 {
 	static StaticText8 clk_text = "CLK";
@@ -30,6 +32,6 @@ void DebugScene::Draw(IScreen& screen)
 bool DebugScene::ProcessInput(const AppEvent& event)
 {
 	if (IsSystemReturnEvent(event))
-		SceneManager::Instance().Return();
+		scene_manager->Return();
 	return true;
 }

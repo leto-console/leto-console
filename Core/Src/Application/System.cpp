@@ -8,8 +8,7 @@
 
 #include <LetoAPI_V1_System/Make.hpp>
 
-#include <SceneManager/LambdaScene.hpp>
-#include <SceneManager/SceneManager.hpp>
+#include <SceneManager/SystemSceneManager.hpp>
 
 #include <Time/TimeUtils.hpp>
 
@@ -408,7 +407,7 @@ void Application::InitOnSystemModeChanged()
 	SystemMode mode = GetSystemMode();
 
 	PriorityTaskSheduler::Clear();
-	SceneManager::Instance().ClearScenes();
+	SystemSceneManager::Instance().ClearScenes();
 
 	SystemAllocator.Clear();
 	CommonAllocator.Clear();
@@ -417,8 +416,8 @@ void Application::InitOnSystemModeChanged()
 
 	if (mode == SystemMode::AUTH)
 	{
-		SceneManager::Instance().AddSceneBuilder<AuthScene>(1);
-		SceneManager::Instance().SwitchScene(1);
+		SystemSceneManager::Instance().AddSceneBuilder<AuthScene>(1);
+		SystemSceneManager::Instance().SwitchScene(1);
 		VirtualConsole::Instance().Print("Auth Init", GreenColor);
 	}
 	else if (mode == SystemMode::ADMIN)
@@ -546,8 +545,8 @@ void Application::Init()
 				AuthHandler::Instance().Login(account.ID);
 				SetSystemMode(SystemMode::USER);
 				InitOnSystemModeChanged();
-				SceneManager::Instance().SwitchScene(SceneID::MAIN);
-				SceneManager::Instance().Loop();
+				SystemSceneManager::Instance().SwitchScene(SceneID::MAIN);
+				SystemSceneManager::Instance().Loop();
 				break;
 			}
 			cnt_idx++;
@@ -555,7 +554,7 @@ void Application::Init()
 
 		if (arg_parser.FindArg("--game"))
 		{
-			SceneManager::Instance().SwitchScene(SceneID::GAMES_CENTER);
+			SystemSceneManager::Instance().SwitchScene(SceneID::GAMES_CENTER);
 		}
 	}
 
@@ -727,41 +726,41 @@ void Application::InitUserScenes()
 	// ============================== MAIN SCENES ==============================
 
 	// Кадр с настройками 
-	SceneManager::Instance().AddSceneBuilder<ProjectSettingsScene>(SceneID::SETTINGS);
+	SystemSceneManager::Instance().AddSceneBuilder<ProjectSettingsScene>(SceneID::SETTINGS);
 
 	// Кадр с задачами (системный)
-	SceneManager::Instance().AddSceneBuilder<SystemScene>(SceneID::SYSTEM);
+	SystemSceneManager::Instance().AddSceneBuilder<SystemScene>(SceneID::SYSTEM);
 
 	// Изменение аккаунта
-	SceneManager::Instance().AddSceneBuilder<Account_EditScene>(SceneID::EDIT_ACCOUNT);
+	SystemSceneManager::Instance().AddSceneBuilder<Account_EditScene>(SceneID::EDIT_ACCOUNT);
 
 	// Удаление аккаунта
-	SceneManager::Instance().AddSceneBuilder<Account_DeleteScene>(SceneID::DELETE_ACCOUNT);
+	SystemSceneManager::Instance().AddSceneBuilder<Account_DeleteScene>(SceneID::DELETE_ACCOUNT);
 
 	// Настройка аккаунта
-	SceneManager::Instance().AddSceneBuilder<Account_SettingScene>(
+	SystemSceneManager::Instance().AddSceneBuilder<Account_SettingScene>(
 		SceneID::SETTING_ACCOUNT, 
 		(uint32_t) SceneID::EDIT_ACCOUNT, 
 		(uint32_t) SceneID::DELETE_ACCOUNT);
 
 	// Игровой центр
-	SceneManager::Instance().AddSceneBuilder<GameCenter>(SceneID::GAMES_CENTER);
+	SystemSceneManager::Instance().AddSceneBuilder<GameCenter>(SceneID::GAMES_CENTER);
 
 	// Кадр "Файловый менеджер"
-	SceneManager::Instance().AddSceneBuilder<FileManager>(SceneID::FILE_MANAGER);
+	SystemSceneManager::Instance().AddSceneBuilder<FileManager>(SceneID::FILE_MANAGER);
 
 	// ===========================================================================
 
 	// Кадр с выбором других кадров
-	SceneManager::Instance().AddSceneBuilder<MainScene>(SceneID::MAIN);
+	SystemSceneManager::Instance().AddSceneBuilder<MainScene>(SceneID::MAIN);
 
 	// Кадр приветствия
-	SceneManager::Instance().AddSceneBuilder<WelcomeScene>(SceneID::WELCOME);
+	SystemSceneManager::Instance().AddSceneBuilder<WelcomeScene>(SceneID::WELCOME);
 
 	// Кадр с "глазками"
-	SceneManager::Instance().AddSceneBuilder<EyesScene>(SceneID::EYES);
+	SystemSceneManager::Instance().AddSceneBuilder<EyesScene>(SceneID::EYES);
 
-	SceneManager::Instance().SwitchScene(SceneID::WELCOME);
+	SystemSceneManager::Instance().SwitchScene(SceneID::WELCOME);
 }
 
 
@@ -802,32 +801,32 @@ void Application::InitSystemScenes()
 	// ============================== MAIN SCENES ==============================
 
 	// Кадр "EEPROM"
-	SceneManager::Instance().AddSceneBuilder<EEPROMScene>(SceneID::EEPROM, &eeprom_24c_08);
+	SystemSceneManager::Instance().AddSceneBuilder<EEPROMScene>(SceneID::EEPROM, &eeprom_24c_08);
 
 	// Кадр "Debug"
-	SceneManager::Instance().AddSceneBuilder<DebugScene>(SceneID::DEBUG_SCENE);
+	SystemSceneManager::Instance().AddSceneBuilder<DebugScene>(SceneID::DEBUG_SCENE);
 
 	// Кадр с задачами (системный)
-	SceneManager::Instance().AddSceneBuilder<SystemScene>(SceneID::SYSTEM);
+	SystemSceneManager::Instance().AddSceneBuilder<SystemScene>(SceneID::SYSTEM);
 
 	// Кадр с настройками 
-	SceneManager::Instance().AddSceneBuilder<ProjectSettingsScene>(SceneID::SETTINGS);
+	SystemSceneManager::Instance().AddSceneBuilder<ProjectSettingsScene>(SceneID::SETTINGS);
 
 	// Кадр с настройками №2
-	SceneManager::Instance().AddSceneBuilder<ProjectSettingsScene2>(SceneID::SETTINGS2);
+	SystemSceneManager::Instance().AddSceneBuilder<ProjectSettingsScene2>(SceneID::SETTINGS2);
 
 	// Кадр "Тест"
-	SceneManager::Instance().AddSceneBuilder<SystemTestScene>(SceneID::TEST_SCENE);
+	SystemSceneManager::Instance().AddSceneBuilder<SystemTestScene>(SceneID::TEST_SCENE);
 
 	// Кадр "Файловый менеджер"
-	SceneManager::Instance().AddSceneBuilder<FileManager>(SceneID::FILE_MANAGER);
+	SystemSceneManager::Instance().AddSceneBuilder<FileManager>(SceneID::FILE_MANAGER);
 
 	// ===========================================================================
 
 	// Кадр с выбором других кадров
-	SceneManager::Instance().AddSceneBuilder<MainScene>(SceneID::MAIN);
+	SystemSceneManager::Instance().AddSceneBuilder<MainScene>(SceneID::MAIN);
 
-	SceneManager::Instance().SwitchScene(SceneID::MAIN);
+	SystemSceneManager::Instance().SwitchScene(SceneID::MAIN);
 }
 
 #include <Time/DateTimeServer.hpp>

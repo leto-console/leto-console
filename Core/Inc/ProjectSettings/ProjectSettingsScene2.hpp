@@ -16,7 +16,7 @@
 class ProjectSettingsScene2 : public CommonScene
 {
 public:
-	ProjectSettingsScene2();
+	ProjectSettingsScene2(ISceneManager* scene_manager);
 
 	bool ProcessInput(const AppEvent& event) override;
 

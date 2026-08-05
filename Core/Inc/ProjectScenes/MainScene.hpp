@@ -23,7 +23,7 @@ protected:
 	DialogParamMenu<bool, 8> exit_question;
 
 public:
-	MainScene();
+	MainScene(ISceneManager* scene_manager);
 
 	virtual bool Loop() override;
 
