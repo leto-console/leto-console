@@ -8,7 +8,7 @@
 #include <UI/ButtonSettingUI.hpp>
 
 #include "ProjectSettings/ProjectSettings.hpp"
-#include <SceneManager/SceneSettings.hpp>
+#include <SceneManager/SystemSceneSettings.hpp>
 
 #include <Data/StaticText.hpp>
 #include <Data/StaticList.hpp>
@@ -61,7 +61,7 @@ protected:
 
 	void OnTest()
 	{
-		SceneManager::Instance().SwitchScene(SceneID::TEST_SCENE);
+		SystemSceneManager::Instance().SwitchScene(SceneID::TEST_SCENE);
 	}
 
 	void OnRestart()
@@ -176,7 +176,7 @@ ButtonCallInstanceSettingUI<Settings_2>* Settings_2::clear_button{};
 
 // ====================================================================================================
 
-ProjectSettingsScene2::ProjectSettingsScene2()
+ProjectSettingsScene2::ProjectSettingsScene2(ISceneManager* scene_manager) : CommonScene{scene_manager}
 {
 	AddObject<Settings_2>()->Enable();
 }
@@ -188,7 +188,7 @@ bool ProjectSettingsScene2::ProcessInput(const AppEvent& event)
 
 	if (IsSystemReturnEvent(event))
 	{
-		SceneManager::Instance().SwitchScene(SceneID::MAIN);
+		SystemSceneManager::Instance().SwitchScene(SceneID::MAIN);
 		return true;
 	}
 

@@ -11,9 +11,13 @@
 #include "ProjectScenes/CommonScene.hpp"
 #include "ProjectScenes/SceneID.hpp"
 
+#include <SceneManager/ISceneBuilder.hpp>
+
 class DebugScene : public CommonScene
 {
 public:
+	DebugScene(ISceneManager* scene_manager) : CommonScene{scene_manager} {}
+
 	void Draw(IScreen& screen) override;
 	bool Loop() override { return true; };
 	bool ProcessInput(const AppEvent& event) override;

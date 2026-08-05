@@ -3,7 +3,7 @@
 StaticList<CommonScene::PrecipitationItem, 64> CommonScene::precipitation_list;
 Timer CommonScene::precipitation_timer;
 
-CommonScene::CommonScene()
+CommonScene::CommonScene(ISceneManager* scene_manager) : IScene{scene_manager}
 {
 }
 

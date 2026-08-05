@@ -9,7 +9,6 @@
 #define INC_PROJECT_SCENES_COMMON_SCENE_HPP_
 
 #include <SceneManager/IScene.hpp>
-#include <SceneManager/SceneManager.hpp>
 #include <Input/ButtonEvent.hpp>
 
 #include "ProjectScenes/SceneID.hpp"
@@ -54,7 +53,7 @@ protected:
 	void CheckModeChanged();
 
 public:
-	CommonScene();
+	CommonScene(ISceneManager* scene_manager);
 	virtual void Draw(IScreen& screen) override;
 	virtual bool Loop() override;
 	virtual bool ProcessInput(const AppEvent& event) override { return false; };

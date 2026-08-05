@@ -1,13 +1,13 @@
 #include "WelcomeScene.hpp"
 
-#include <SceneManager/SceneManager.hpp>
 #include "ProjectScenes/SceneID.hpp"
 #include <Graphics/DefaultFont.hpp>
 #include <Auth/AuthHandler.hpp>
 #include <DrawFunctions/DrawRectangle.hpp>
 #include <DrawFunctions/DrawText.hpp>
+#include <SceneManager/ISceneManager.hpp>
 
-WelcomeScene::WelcomeScene()
+WelcomeScene::WelcomeScene(ISceneManager* scene_manager) : CommonScene{scene_manager}
 {
 }
 
@@ -42,7 +42,7 @@ void WelcomeScene::Draw(IScreen& screen)
 bool WelcomeScene::Loop()
 {
 	if (timer.Expired())
-		SceneManager::Instance().SwitchScene(SceneID::EYES);
+		scene_manager->SwitchScene(SceneID::EYES);
 
 	return true;
 }
@@ -51,7 +51,7 @@ bool WelcomeScene::ProcessInput(const AppEvent& event)
 {
 	if (ButtonEvent::IsPressed(event))
 	{
-		SceneManager::Instance().SwitchScene(SceneID::EYES);
+		scene_manager->SwitchScene(SceneID::EYES);
 		return true;
 	}
 

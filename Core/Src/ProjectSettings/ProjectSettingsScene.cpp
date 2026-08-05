@@ -8,7 +8,7 @@
 #include <UI/ButtonSettingUI.hpp>
 
 #include "ProjectSettings/ProjectSettings.hpp"
-#include <SceneManager/SceneSettings.hpp>
+#include <SceneManager/SystemSceneSettings.hpp>
 
 #include <Data/StaticText.hpp>
 #include <Data/StaticList.hpp>
@@ -58,7 +58,7 @@ public:
 
 // ====================================================================================================
 
-ProjectSettingsScene::ProjectSettingsScene()
+ProjectSettingsScene::ProjectSettingsScene(ISceneManager* scene_manager) : CommonScene{scene_manager}
 {
 	AddObject<Settings_1>()->Enable();
 }
@@ -70,7 +70,7 @@ bool ProjectSettingsScene::ProcessInput(const AppEvent& event)
 
 	if (IsSystemReturnEvent(event))
 	{
-		SceneManager::Instance().SwitchScene(SceneID::MAIN);
+		SystemSceneManager::Instance().SwitchScene(SceneID::MAIN);
 		return true;
 	}
 

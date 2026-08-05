@@ -3,7 +3,6 @@
 #include <Input/SystemInputID.hpp>
 
 #include <Input/ButtonEvent.hpp>
-#include <SceneManager/SceneManager.hpp>
 #include <Time/Timer.hpp>
 
 #include <Bitmaps/Eyes.hpp>
@@ -11,6 +10,7 @@
 #include <Data/StaticList.hpp>
 #include <DrawFunctions/DrawBitmap.hpp>
 #include <Auth/AuthHandler.hpp>
+#include <SceneManager/ISceneManager.hpp>
 
 // ====================================================================================================
 
@@ -35,11 +35,11 @@ static const MainMenuDef menu_def[]
 	{ "DEBUG",		SceneID::DEBUG_SCENE },
 };
 
-MainScene::MainScene()
+MainScene::MainScene(ISceneManager* scene_manager) : CommonScene{scene_manager}
 {
 	for (const MainMenuDef& def : menu_def)
 	{
-		if (SceneManager::Instance().IsExists((uint32_t) def.ID) && !((int) GetSystemMode() & def.exclude_mode))
+		if (scene_manager->IsExists((uint32_t) def.ID) && !((int) GetSystemMode() & def.exclude_mode))
 			menu.AppendMenuItem(def.name, def.ID);
 	}
 
@@ -91,7 +91,7 @@ bool MainScene::ProcessInput(const AppEvent& event)
 		if (menu.GetCurrentParam() == SceneID::LOGOUT)
 			exit_question.Enable();
 		else
-			SceneManager::Instance().SwitchScene(menu.GetCurrentParam());
+			scene_manager->SwitchScene(menu.GetCurrentParam());
 		return true;
 	}
 

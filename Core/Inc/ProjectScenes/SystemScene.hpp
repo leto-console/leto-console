@@ -15,7 +15,7 @@
 class SystemScene : public CommonMenuScene
 {
 public:
-	SystemScene();
+	SystemScene(ISceneManager* scene_manager);
 
 	SCENE_NO_ARGS_BUILDER(SystemScene)
 };

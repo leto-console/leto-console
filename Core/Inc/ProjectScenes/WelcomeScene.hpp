@@ -26,7 +26,7 @@ protected:
 	Timer timer;
 
 public:
-	WelcomeScene();
+	WelcomeScene(ISceneManager* scene_manager);
 
 	void OnShow() override;
 
