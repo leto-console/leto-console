@@ -52,7 +52,7 @@ public:
 		CommonScene::Draw(screen);
 	}
 
-	bool Loop() override
+	void Loop() override
 	{
 		CommonScene::Loop();
 
@@ -60,8 +60,6 @@ public:
 			currentSubScene->MainLoop();
 		else
 			menu.Loop();
-
-		return true;
 	}
 
 	bool ProcessInput(const AppEvent& event) override

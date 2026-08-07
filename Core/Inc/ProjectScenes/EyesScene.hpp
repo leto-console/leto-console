@@ -30,7 +30,7 @@ public:
 
 	virtual void Draw(IScreen& screen) override;
 
-	virtual bool Loop() override;
+	virtual void Loop() override;
 
 	virtual bool ProcessInput(const AppEvent& event) override;
 

@@ -87,7 +87,7 @@ protected:
     }
 
 public:
-	Settings_2() : SettingsContainer{ "", &CommonAllocator }
+	Settings_2(ISceneManager* scene_manager) : SettingsContainer{ "", &scene_manager->GetCommonAllocator() }
 	{
 		using namespace Setting_2;
 
@@ -178,7 +178,7 @@ ButtonCallInstanceSettingUI<Settings_2>* Settings_2::clear_button{};
 
 ProjectSettingsScene2::ProjectSettingsScene2(ISceneManager* scene_manager) : CommonScene{scene_manager}
 {
-	AddObject<Settings_2>()->Enable();
+	AddObject<Settings_2>(scene_manager)->Enable();
 }
 
 bool ProjectSettingsScene2::ProcessInput(const AppEvent& event)

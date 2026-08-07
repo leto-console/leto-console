@@ -377,8 +377,8 @@ public:
 	}
 	void Handle(const StaticListView<StaticText32>& args) override
 	{
-		printf("CommonAllocator: %f\n", CommonAllocator.GetPercentage());
-		printf("SystemAllocator: %f\n", SystemAllocator.GetPercentage());
+		//printf("CommonAllocator: %f\n", CommonAllocator.GetPercentage());
+		//printf("SystemAllocator: %f\n", SystemAllocator.GetPercentage());
 		//printf("API_Allocator: %f\n", .GetPercentage());
 	}
 };
@@ -410,7 +410,6 @@ void Application::InitOnSystemModeChanged()
 	SystemSceneManager::Instance().ClearScenes();
 
 	SystemAllocator.Clear();
-	CommonAllocator.Clear();
 
 	InitSystemTasks();
 
@@ -718,8 +717,6 @@ void Application::InitExtDev()
 #include <Auth/Account_DeleteScene.hpp>
 #include <Auth/Account_SettingScene.hpp>
 #include <FatFs/FileManager.hpp>
-
-#include <System/CommonAllocator.hpp>
 
 void Application::InitUserScenes()
 {

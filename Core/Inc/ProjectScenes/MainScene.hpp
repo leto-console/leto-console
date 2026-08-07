@@ -25,7 +25,7 @@ protected:
 public:
 	MainScene(ISceneManager* scene_manager);
 
-	virtual bool Loop() override;
+	virtual void Loop() override;
 
 	virtual bool ProcessInput(const AppEvent& event) override;
 

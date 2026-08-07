@@ -39,7 +39,7 @@ public:
 		}
 		return false;
 	}
-	bool Loop() override { return true; }
+	void Loop() override { }
 };
 
 #include <Utils/random.hpp>
@@ -82,7 +82,7 @@ protected:
 public:
 	TimeScene(ISceneManager* scene_manager)
 		: IScene{scene_manager},
-		settings { "===== ВРЕМЯ =====", &CommonAllocator }, cell_ms{ false }, cell_mks{ true }
+		settings { "===== ВРЕМЯ =====", &scene_manager->GetCommonAllocator() }, cell_ms{ false }, cell_mks{ true }
 	{
 		time = settings.AddSetting<DateTimeSettingUI>("ВРЕМЯ", Point2_i{-1, -1}, DateTimeSettingUI::TIME);
 		date = settings.AddSetting<DateTimeSettingUI>("ДАТА", Point2_i{-1, -1}, DateTimeSettingUI::DATE);
@@ -110,11 +110,10 @@ public:
 		return IsSystemPrevEvent(event) || IsSystemNextEvent(event);
 	}
 	
-	bool Loop() override 
+	void Loop() override 
 	{ 
 		ppm = RTC_Settings::PPM.GetOrDefault().GetPPM();
 		appm = DateTime::GetActivePPM();
-		return true; 
 	}
 };
 
@@ -157,7 +156,7 @@ public:
 		}
 		return false;
 	}
-	bool Loop() override { return true; }
+	void Loop() override { }
 };
 
 
@@ -200,7 +199,7 @@ public:
 		}
 		return proccesed;
 	}
-	bool Loop() override { return true; }
+	void Loop() override { }
 };
 
 #include <LetoAPI_V1_System/Web/WebDevicesList.hpp>
@@ -238,7 +237,7 @@ public:
 	{
 		return false; 
 	}
-	bool Loop() override { return true; }
+	void Loop() override { }
 };
 
 #include <LetoAPI_V1_System/Web/WebManager.hpp>
@@ -484,7 +483,8 @@ protected:
 	ISettingUI* quit{};
 
 public:
-	WebScene(ISceneManager* scene_manager) : IScene{scene_manager}, settings { "===== СВЯЗЬ =====", &CommonAllocator }
+	WebScene(ISceneManager* scene_manager) 
+		: IScene{scene_manager}, settings { "===== СВЯЗЬ =====", &scene_manager->GetCommonAllocator() }
 	{
 		create = settings.AddSetting<ButtonSettingUI>("СОЗДАТЬ", Point2_i{0, 4 * H}, &CreateLobbyBtnCallback);
 		quit = settings.AddSetting<ButtonSettingUI>("ВЫЙТИ", Point2_i{0, 4 * H}, &QuitLobbyBtnCallback);
@@ -527,7 +527,7 @@ public:
 		}
 	}
 	bool ProcessInput(const AppEvent& event) override { return false; }
-	bool Loop() override { return true; }
+	void Loop() override { }
 };
 
 #include <NRF24L01/NRF24L01_data.hpp>
@@ -608,7 +608,7 @@ protected:
 public:
 	NRF24L01ReadScene(ISceneManager* scene_manager) 
 		: IScene{scene_manager}, 
-		settings { NRF24L01::PVariant.GetOrDefault() ? "====NRF24L01P===" : "====NRF24L01====", &CommonAllocator }
+		settings { NRF24L01::PVariant.GetOrDefault() ? "====NRF24L01P===" : "====NRF24L01====", &scene_manager->GetCommonAllocator() }
 	{
 		struct
 		{
@@ -633,10 +633,9 @@ public:
 		AddObject(&settings);
 	}
 
-	bool Loop() override
+	void Loop() override
 	{
 		settings.UpdateCurrentValue();
-		return true;
 	}
 };
 
@@ -649,7 +648,7 @@ protected:
 public:
 	NRF24L01SettingScene(ISceneManager* scene_manager) 
 		: IScene{scene_manager}, 
-		settings { NRF24L01::PVariant.GetOrDefault() ? "====NRF24L01P===" : "====NRF24L01====", &CommonAllocator }
+		settings { NRF24L01::PVariant.GetOrDefault() ? "====NRF24L01P===" : "====NRF24L01====", &scene_manager->GetCommonAllocator() }
 	{
 		using namespace NRF24L01_UI;
 
@@ -687,21 +686,20 @@ protected:
 	SettingsContainer settings;
 
 public:
-	CapacitySettingScene(ISceneManager* scene_manager) : IScene{scene_manager}, settings{ "ПАМЯТЬ", &CommonAllocator }
+	CapacitySettingScene(ISceneManager* scene_manager) : IScene{scene_manager}, settings{ "ПАМЯТЬ", &scene_manager->GetCommonAllocator() }
 	{
-		settings.AddSetting<CapacitySettingUI>("Scenes", Point2_i{-1, -1}, &CommonAllocator, CapacitySettingsStyle::STYLE_1);
-		settings.AddSetting<CapacitySettingUI>("Scenes", Point2_i{-1, -1}, &CommonAllocator, CapacitySettingsStyle::STYLE_3);
-		settings.AddSetting<CapacitySettingUI>("Tasks", Point2_i{-1, -1}, &CommonAllocator, CapacitySettingsStyle::STYLE_1);
-		settings.AddSetting<CapacitySettingUI>("Tasks", Point2_i{-1, -1}, &CommonAllocator, CapacitySettingsStyle::STYLE_3);
+		settings.AddSetting<CapacitySettingUI>("Scenes", Point2_i{-1, -1}, &scene_manager->GetCommonAllocator(), CapacitySettingsStyle::STYLE_1);
+		settings.AddSetting<CapacitySettingUI>("Scenes", Point2_i{-1, -1}, &scene_manager->GetCommonAllocator(), CapacitySettingsStyle::STYLE_3);
+		settings.AddSetting<CapacitySettingUI>("Tasks", Point2_i{-1, -1}, &scene_manager->GetCommonAllocator(), CapacitySettingsStyle::STYLE_1);
+		settings.AddSetting<CapacitySettingUI>("Tasks", Point2_i{-1, -1}, &scene_manager->GetCommonAllocator(), CapacitySettingsStyle::STYLE_3);
 
 		settings.Enable();
 		AddObject(&settings);
 	}
 
-	bool Loop() override
+	void Loop() override
 	{
 		settings.UpdateCurrentValue();
-		return true;
 	}
 
 };
@@ -711,15 +709,15 @@ public:
 SystemScene::SystemScene(ISceneManager* scene_manager) 
 	: CommonMenuScene{ scene_manager, "-----СИСТЕМА----", 8 }
 {
-	menu.AppendMenuItem("Задачи",		CommonAllocator.Make<TasksScene>(scene_manager));
-	menu.AppendMenuItem("Устройства",	CommonAllocator.Make<DevicesScene>(scene_manager));
-	menu.AppendMenuItem("Рядом",		CommonAllocator.Make<NearScene>(scene_manager));
-	menu.AppendMenuItem("Связь",		CommonAllocator.Make<WebScene>(scene_manager));
-	menu.AppendMenuItem("Память",		CommonAllocator.Make<CapacitySettingScene>(scene_manager));
-	menu.AppendMenuItem("NRF24L01-R",	CommonAllocator.Make<NRF24L01ReadScene>(scene_manager));
-	menu.AppendMenuItem("NRF24L01-S",	CommonAllocator.Make<NRF24L01SettingScene>(scene_manager));
-	menu.AppendMenuItem("Время",		CommonAllocator.Make<TimeScene>(scene_manager));
-	menu.AppendMenuItem("Рандом",		CommonAllocator.Make<RandomScene>(scene_manager));
+	menu.AppendMenuItem("Задачи",		scene_manager->GetCommonAllocator().Make<TasksScene>(scene_manager));
+	menu.AppendMenuItem("Устройства",	scene_manager->GetCommonAllocator().Make<DevicesScene>(scene_manager));
+	menu.AppendMenuItem("Рядом",		scene_manager->GetCommonAllocator().Make<NearScene>(scene_manager));
+	menu.AppendMenuItem("Связь",		scene_manager->GetCommonAllocator().Make<WebScene>(scene_manager));
+	menu.AppendMenuItem("Память",		scene_manager->GetCommonAllocator().Make<CapacitySettingScene>(scene_manager));
+	menu.AppendMenuItem("NRF24L01-R",	scene_manager->GetCommonAllocator().Make<NRF24L01ReadScene>(scene_manager));
+	menu.AppendMenuItem("NRF24L01-S",	scene_manager->GetCommonAllocator().Make<NRF24L01SettingScene>(scene_manager));
+	menu.AppendMenuItem("Время",		scene_manager->GetCommonAllocator().Make<TimeScene>(scene_manager));
+	menu.AppendMenuItem("Рандом",		scene_manager->GetCommonAllocator().Make<RandomScene>(scene_manager));
 }
 
 // ----------------------------------------------------------------------------------------------------

@@ -63,7 +63,7 @@ MainScene::MainScene(ISceneManager* scene_manager) : CommonScene{scene_manager}
 	AddObject(&menu);
 }
 
-bool MainScene::Loop()
+void MainScene::Loop()
 {
 	CommonScene::Loop();
 	
@@ -77,8 +77,6 @@ bool MainScene::Loop()
 		}
 		exit_question.Disable();
 	}
-
-	return true;
 }
 
 bool MainScene::ProcessInput(const AppEvent& event)
