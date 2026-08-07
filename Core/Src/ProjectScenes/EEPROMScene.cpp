@@ -146,7 +146,7 @@ public:
 
 		return false; 
 	}
-	bool Loop() override { return true; }
+	void Loop() override { }
 };
 //
 //#include "ProjectSettings/ProjectSettings.hpp"
@@ -174,7 +174,7 @@ public:
 EEPROMScene::EEPROMScene(ISceneManager* scene_manager, EEPROM_24C* eeprom) 
 	: CommonMenuScene{ scene_manager, "-----EEPROM-----" }
 {
-	menu.AppendMenuItem("Смотреть", CommonAllocator.Make<EEPROMReadScene>(scene_manager, eeprom));
+	menu.AppendMenuItem("Смотреть", scene_manager->GetCommonAllocator().Make<EEPROMReadScene>(scene_manager, eeprom));
 //	menu.AppendMenuItem("Сохранение", CommonAllocator.Make<SaveReadScene>(eeprom));
 	menu.AppendMenuItem("Изменить", nullptr);
 }

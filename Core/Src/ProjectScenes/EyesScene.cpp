@@ -55,14 +55,12 @@ void EyesScene::Draw(IScreen& screen)
 	}
 }
 
-bool EyesScene::Loop()
+void EyesScene::Loop()
 {
 	CommonScene::Loop();
 
 	if (!eye1_anim.IsPlaying() && !eye2_anim.IsPlaying())
         SystemSceneManager::Instance().SwitchScene(SceneID::MAIN);
-
-	return true;
 }
 
 bool EyesScene::ProcessInput(const AppEvent& event)

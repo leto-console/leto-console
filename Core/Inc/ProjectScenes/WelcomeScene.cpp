@@ -39,12 +39,10 @@ void WelcomeScene::Draw(IScreen& screen)
 	DrawText(screen, {64 - TextWidth(name) / 2, 40}, name, WhiteColor, BlackColor, true, &Default_Font_8x8);
 }
 
-bool WelcomeScene::Loop()
+void WelcomeScene::Loop()
 {
 	if (timer.Expired())
 		scene_manager->SwitchScene(SceneID::EYES);
-
-	return true;
 }
 
 bool WelcomeScene::ProcessInput(const AppEvent& event)

@@ -66,12 +66,12 @@ static bool RemovePred(CommonScene::PrecipitationItem& item)
 	return item.row > screen_height;
 }
 
-bool CommonScene::Loop()
+void CommonScene::Loop()
 {
 	CheckModeChanged();
 
 	if (!screen_width || !screen_height)
-		return true;
+		return;
 
 	if (EnableSnowfall.GetOrDefault())
 	{
@@ -114,6 +114,5 @@ bool CommonScene::Loop()
 
 		precipitation_list.RemoveIf(&RemovePred);
 	}
-	return true;
 }
 

@@ -19,7 +19,7 @@ public:
 	DebugScene(ISceneManager* scene_manager) : CommonScene{scene_manager} {}
 
 	void Draw(IScreen& screen) override;
-	bool Loop() override { return true; };
+	void Loop() override { };
 	bool ProcessInput(const AppEvent& event) override;
 
 	SCENE_NO_ARGS_BUILDER(DebugScene)

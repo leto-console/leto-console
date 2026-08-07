@@ -40,7 +40,7 @@ namespace Setting_1
 class Settings_1 : public SettingsContainer
 {
 public:
-	Settings_1() : SettingsContainer{ "", &CommonAllocator }
+	Settings_1(ISceneManager* scene_manager) : SettingsContainer{ "", &scene_manager->GetCommonAllocator() }
 	{
 		using namespace Setting_1;
 
@@ -60,7 +60,7 @@ public:
 
 ProjectSettingsScene::ProjectSettingsScene(ISceneManager* scene_manager) : CommonScene{scene_manager}
 {
-	AddObject<Settings_1>()->Enable();
+	AddObject<Settings_1>(scene_manager)->Enable();
 }
 
 bool ProjectSettingsScene::ProcessInput(const AppEvent& event)
