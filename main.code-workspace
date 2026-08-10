@@ -4,13 +4,13 @@
             "path": "."
         },
         {
-            "path": "../STM32F4_GamesCollection"
-        },
-        {
             "path": "../LetoAPI"
         },
         {
             "path": "../LetoCore"
+        },
+        {
+            "path": "../Battleship"
         }
     ],
     "extensions": {
