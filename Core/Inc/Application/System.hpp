@@ -68,9 +68,6 @@ protected:
 
 	StackGuard display_guard;
 
-	// Массив указателей на устройства пользовательского ввода
-	StaticList<UserInputDevice*, 32> UserInputs;
-
 public:
 	Application(int argc, char** argv);
 	~Application();
@@ -87,6 +84,8 @@ public:
 
 	Application(Periphery periphery);
 #endif
+	// Массив указателей на устройства пользовательского ввода
+	StaticList<UserInputDevice*, 32> UserInputs;
 
 	void Init();
 	bool Loop();
@@ -124,5 +123,7 @@ protected:
 	// Иинициализация пользовательских задач
 	void InitUserTasks();
 };
+
+extern Application* SysInstance;
 
 #endif /* INC_APPLICATION_SYSTEM_HPP_ */
