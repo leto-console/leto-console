@@ -19,6 +19,8 @@
 #include <string>
 #endif
 
+Application* SysInstance = nullptr;
+
 // ----------------------------------------------------------------------------------------------------
 //  Платформозависимые включения и инициализации приложения (HAL, Win32, Linux)
 // ----------------------------------------------------------------------------------------------------
@@ -464,12 +466,23 @@ void Application::InitOnSystemModeChanged()
 #include <System/DeviceID.hpp>
 
 #include "ProjectScenes/SceneID.hpp"
+#include "Common/ProjectHandlers.h"
+
+void __TIM1_Handler()
+{
+	if (!SysInstance) return;
+	for (UserInputDevice* user_input : SysInstance->UserInputs)
+			user_input->Tick();
+}
 
 void Application::Init()
 {
 //	__HAL_TIM_CLEAR_FLAG(htim, TIM_SR_UIF);
 //	HAL_TIM_Base_Start_IT(htim);
 	printf("init\n");
+
+	SysInstance = this;
+	TIM1_Handler = &__TIM1_Handler; 
 
 	SystemDisplay = &display;
 	DisplayStackGuard = &display_guard;
@@ -836,7 +849,9 @@ void Application::InitSystemTasks()
 	PriorityTaskSheduler::AddTask<IDisplay_LoopTask>("SCRN_L", 10, 45, &display);
 	PriorityTaskSheduler::AddTask<IDisplay_RenderTask>("SCRN_D", 10, 35, &display);
 
+#ifndef __STM32__
 	PriorityTaskSheduler::AddTask<UserInputTickTask>("INPUT", 4, 50, 		StaticListView<UserInputDevice*>{ UserInputs });
+#endif
 	PriorityTaskSheduler::AddTask<UserInputPopEventTask>("INPUT2", 20, 15, 	StaticListView<UserInputDevice*>{ UserInputs });
 
 	PriorityTaskSheduler::AddTask<ResearchEncoderTask>("ENC_TSK", 10, 40);

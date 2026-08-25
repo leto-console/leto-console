@@ -6,6 +6,60 @@
 #include <Time/TimeUtils.hpp>
 #include <DrawFunctions/DrawText.hpp>
 
+#include <Graphics/DefaultFont.hpp>
+
+
+#ifndef __STM32__
+uint32_t __DummyGetter() { return 123456; }
+#endif
+
+class CPUScene : public IScene
+{
+protected:
+	void DrawValue(IScreen& screen, Point2_i& pos, const char* name, uint32_t (*Getter)())
+	{
+		using namespace DrawFunctions;
+		StaticText32 str;
+		snprintf(str.CharPtr(), str.Capacity(), "%s: %d", name, Getter());
+		DrawText(screen, pos, str, WhiteColor, BlackColor, false, &Default_Font_7x7_small);
+		pos.y += 8;
+	}
+
+public:
+	CPUScene(ISceneManager* scene_manager) : IScene{scene_manager} {}
+
+	void Draw(IScreen& screen) override
+	{
+		using namespace DrawFunctions;
+		
+		Point2_i pos{0, 0};
+		DrawText(screen, pos, "========CPU========");
+		pos.y += 8;
+
+#ifdef __STM32__
+		DrawValue(screen, pos, "SysClock", &HAL_RCC_GetSysClockFreq);
+		DrawValue(screen, pos, "HCLK",     &HAL_RCC_GetHCLKFreq);
+		DrawValue(screen, pos, "PCLK1",    &HAL_RCC_GetPCLK1Freq);
+		DrawValue(screen, pos, "PCLK2",    &HAL_RCC_GetPCLK2Freq);
+#else
+		DrawValue(screen, pos, "SysClock", &__DummyGetter);
+		DrawValue(screen, pos, "HCLK",     &__DummyGetter);
+		DrawValue(screen, pos, "PCLK1",    &__DummyGetter);
+		DrawValue(screen, pos, "PCLK2",    &__DummyGetter);
+#endif
+	}
+
+	bool ProcessInput(const AppEvent& event) override
+	{
+		if (IsSystemPrevEvent(event) || IsSystemNextEvent(event))
+		{
+			return true;
+		}
+		return false;
+	}
+	void Loop() override { }
+};
+
 // Страница с информацией о текущих задачах
 class TasksScene : public IScene
 {
@@ -162,7 +216,6 @@ public:
 
 #include <ExtDevice/UI/UI_ExtDeviceStatus.hpp>
 #include <SDCard/SDCard_ExtDevice.hpp>
-#include <Graphics/DefaultFont.hpp>
 
 class DevicesScene : public IScene
 {
@@ -707,8 +760,9 @@ public:
 // ----------------------------------------------------------------------------------------------------
 
 SystemScene::SystemScene(ISceneManager* scene_manager) 
-	: CommonMenuScene{ scene_manager, "-----СИСТЕМА----", 8 }
+	: CommonMenuScene{ scene_manager, "-----СИСТЕМА----", 12 }
 {
+	menu.AppendMenuItem("Процессор",	scene_manager->GetCommonAllocator().Make<CPUScene>(scene_manager));
 	menu.AppendMenuItem("Задачи",		scene_manager->GetCommonAllocator().Make<TasksScene>(scene_manager));
 	menu.AppendMenuItem("Устройства",	scene_manager->GetCommonAllocator().Make<DevicesScene>(scene_manager));
 	menu.AppendMenuItem("Рядом",		scene_manager->GetCommonAllocator().Make<NearScene>(scene_manager));
