@@ -653,37 +653,467 @@ namespace NRF24L01_UI
 	};
 };
 
+#define BYTE_TO_BINARY(byte)  \
+  ((byte) & 0x80 ? '1' : '0'), \
+  ((byte) & 0x40 ? '1' : '0'), \
+  ((byte) & 0x20 ? '1' : '0'), \
+  ((byte) & 0x10 ? '1' : '0'), \
+  ((byte) & 0x08 ? '1' : '0'), \
+  ((byte) & 0x04 ? '1' : '0'), \
+  ((byte) & 0x02 ? '1' : '0'), \
+  ((byte) & 0x01 ? '1' : '0')
+
+void basic_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
+{
+	using namespace DrawFunctions;
+
+	StaticText32 str{};
+	snprintf(str.CharPtr(), str.Capacity(), "BIN: %c%c%c%c%c%c%c%c", BYTE_TO_BINARY(value));
+	DrawText(screen, pos, str, WhiteColor, BlackColor, false, &Default_Font_7x7_small);
+}
+
+struct RegBitInfo
+{
+	uint8_t bit;
+	const char* name;
+};
+
+template <uint32_t N>
+void reg_bit_draw(IScreen& screen, Point2_i& pos, uint8_t value, const RegBitInfo (&info)[N])
+{
+	using namespace DrawFunctions;
+	for (const RegBitInfo& bit : info)
+	{
+		if (bit.bit != 0xFF)
+		{
+			StaticText32 str{};
+			snprintf(str.CharPtr(), str.Capacity(), 
+					"%d %s", (value >> bit.bit) & 0x1, bit.name);
+			DrawText(screen, pos, str, WhiteColor, BlackColor, false, &Default_Font_7x7_small);
+		}
+		pos.y += 7;
+	}
+}
+
+#define REG_RESERVED "{ #9e9e9e }RESERVED{ # }"
+
+template <typename T>
+void draw_reg_cell_value(IScreen& screen, Point2_i& pos, const char* name, IDataCell<T>& cell, bool hex = true)
+{
+	StaticText32 str{};
+	snprintf(str.CharPtr(), str.Capacity(), hex ? "%s: %X" : "%s: %d", name, cell.GetOrDefault());
+	DrawFunctions::DrawText(screen, pos, str, WhiteColor, BlackColor, false, &Default_Font_7x7_small);
+	pos.y += 7;
+}
+
+void config_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
+{
+	static const RegBitInfo info[]
+	{
+		{ 7, REG_RESERVED  },
+		{ 6, "MASK_RX_DR" },
+		{ 5, "MASK_TX_DS" },
+		{ 4, "MASK_MAX_RT" },
+		{ 3, "EN_CRC" },
+		{ 2, "CRC0" },
+		{ 1, "PWR_UP" },
+		{ 0, "PRIM_RX" },
+	};
+
+	basic_reg_draw(screen, pos, value);
+	pos.y += 14;
+	reg_bit_draw(screen, pos, value, info);
+}
+
+void en_aa_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
+{
+	static const RegBitInfo info[]
+	{
+		{ 7, REG_RESERVED  },
+		{ 6, REG_RESERVED  },
+		{ 5, "ENAA_P5" },
+		{ 4, "ENAA_P4" },
+		{ 3, "ENAA_P3" },
+		{ 2, "ENAA_P2" },
+		{ 1, "ENAA_P1" },
+		{ 0, "ENAA_P0" },
+	};
+
+	basic_reg_draw(screen, pos, value);
+	pos.y += 14;
+	reg_bit_draw(screen, pos, value, info);
+}
+
+void en_rxaddr_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
+{
+	static const RegBitInfo info[]
+	{
+		{ 7, REG_RESERVED  },
+		{ 6, REG_RESERVED  },
+		{ 5, "ERX_P5" },
+		{ 4, "ERX_P4" },
+		{ 3, "ERX_P3" },
+		{ 2, "ERX_P2" },
+		{ 1, "ERX_P1" },
+		{ 0, "ERX_P0" },
+	};
+
+	basic_reg_draw(screen, pos, value);
+	pos.y += 14;
+	reg_bit_draw(screen, pos, value, info);
+}
+
+void setup_aw_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
+{
+	static const RegBitInfo info[]
+	{
+		{ 7, REG_RESERVED  },
+		{ 6, REG_RESERVED  },
+		{ 5, REG_RESERVED  },
+		{ 4, REG_RESERVED  },
+		{ 3, REG_RESERVED  },
+		{ 2, REG_RESERVED  },
+		{ 1, "AW:1" },
+		{ 0, "AW:0" },
+	};
+	static const char* aw_map[]
+	{
+		"illegal",
+		"3 bytes",
+		"4 bytes",
+		"5 bytes"
+	};
+
+	basic_reg_draw(screen, pos, value);
+	pos.y += 14;
+	reg_bit_draw(screen, pos, value, info);
+	pos.y -= 10;
+	pos.x += 48;
+	DrawFunctions::DrawText(screen, pos, aw_map[value & 0x3], GrayColor, BlackColor, true,
+			&Default_Font_7x7_small);
+}
+
+void setup_retr_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
+{
+	static const RegBitInfo info[]
+	{
+		{ 7, "ARD:3" },
+		{ 6, "ARD:2" },
+		{ 5, "ARD:1" },
+		{ 4, "ARD:0" },
+		{ 0xFF, "" },
+		{ 3, "ARC:3" },
+		{ 2, "ARC:2" },
+		{ 1, "ARC:1" },
+		{ 0, "ARC:0" },
+	};
+	static const char* ard_map[]
+	{
+		"250us",
+		"500us",
+		"750us",
+		"1000us",
+		
+		"1250us",
+		"1500us",
+		"1750us",
+		"2000us",
+		
+		"2250us",
+		"2500us",
+		"2750us",
+		"3000us",
+
+		"3250us",
+		"3500us",
+		"3750us",
+		"4000us"
+	};
+	static const char* arc_map[]
+	{
+		"DISBLD",
+		"1 RETR",
+		"2 RETR",
+		"3 RETR",
+		"4 RETR",
+		"5 RETR",
+		"6 RETR",
+		"7 RETR",
+		"8 RETR",
+		"9 RETR",
+		"10RETR",
+		"11RETR",
+		"12RETR",
+		"13RETR",
+		"14RETR",
+		"15RETR"
+	};
+
+	basic_reg_draw(screen, pos, value);
+	pos.y += 14;
+	Point2_i pos_add = pos;
+	pos_add.x += 55;
+	pos_add.y += 3;
+	reg_bit_draw(screen, pos, value, info);
+	DrawFunctions::DrawText(screen, pos_add, ard_map[(value >> 4) & 0xF], GrayColor, BlackColor, true,
+			&Default_Font_7x7_small);
+	pos_add.y += 35;
+	DrawFunctions::DrawText(screen, pos_add, arc_map[value & 0xF], GrayColor, BlackColor, true,
+			&Default_Font_7x7_small);
+}
+
+void rf_ch_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
+{
+	basic_reg_draw(screen, pos, value);
+	pos.y += 14;
+
+	StaticText32 str{};
+	snprintf(str.CharPtr(), str.Capacity(), "Channel: %d", value);
+	DrawFunctions::DrawText(screen, pos, str, WhiteColor, BlackColor, false, &Default_Font_7x7_small);
+}
+
+void rf_setup_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
+{
+	static const RegBitInfo info[]
+	{
+		{ 7, REG_RESERVED },
+		{ 6, REG_RESERVED },
+		{ 5, REG_RESERVED },
+		{ 4, "PLL_LOCK" },
+		{ 3, "RF_DR" },
+		{ 2, "RF_PWR" },
+		{ 1, "RF_PWR" },
+		{ 0, "LNA_HCURR" },
+	};
+	static const char* rf_pwr_map[]
+	{
+		"-18dBm",
+		"-12dBm",
+		"-6dBm",
+		"0dBm"
+	};
+
+	basic_reg_draw(screen, pos, value);
+	pos.y += 14;
+	reg_bit_draw(screen, pos, value, info);
+	pos.y -= 17;
+	pos.x += 60;
+	DrawFunctions::DrawText(screen, pos, rf_pwr_map[(value >> 1) & 0x3], GrayColor, BlackColor, true,
+			&Default_Font_7x7_small);
+}
+
+void status_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
+{
+	static const RegBitInfo info[]
+	{
+		{ 7, REG_RESERVED },
+		{ 6, "RX_DR" },
+		{ 5, "TX_DS" },
+		{ 4, "MAX_RT" },
+		{ 3, "RX_P_NO" },
+		{ 2, "RX_P_NO" },
+		{ 1, "RX_P_NO" },
+		{ 0, "TX_FULL" },
+	};
+	static const char* rx_p_no_map[]
+	{
+		"P0",
+		"P1",
+		"P2",
+		"P3",
+		"P4",
+		"P5",
+		"-",
+		"EMPTY"
+	};
+
+	basic_reg_draw(screen, pos, value);
+	pos.y += 14;
+	reg_bit_draw(screen, pos, value, info);
+	pos.y -= 24;
+	pos.x += 65;
+	DrawFunctions::DrawText(screen, pos, rx_p_no_map[(value >> 1) & 0x7], GrayColor, BlackColor, true,
+			&Default_Font_7x7_small);
+}
+
+void observe_tx_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
+{
+	basic_reg_draw(screen, pos, value);
+	pos.y += 14;
+	
+	StaticText32 str{};
+	snprintf(str.CharPtr(), str.Capacity(), "PLOS_CNT: %d", (value >> 4) & 0xF);
+	DrawFunctions::DrawText(screen, pos, str, WhiteColor, BlackColor, false, &Default_Font_7x7_small);
+	pos.y += 7;
+
+	snprintf(str.CharPtr(), str.Capacity(), "ARC_CNT: %d", value & 0xF);
+	DrawFunctions::DrawText(screen, pos, str, WhiteColor, BlackColor, false, &Default_Font_7x7_small);
+}
+
+void cd_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
+{
+	static const RegBitInfo info[]
+	{
+		{ 7, REG_RESERVED },
+		{ 6, REG_RESERVED },
+		{ 5, REG_RESERVED },
+		{ 4, REG_RESERVED },
+		{ 3, REG_RESERVED },
+		{ 2, REG_RESERVED },
+		{ 1, REG_RESERVED },
+		{ 0, "CD" },
+	};
+
+	basic_reg_draw(screen, pos, value);
+	pos.y += 14;
+	reg_bit_draw(screen, pos, value, info);
+}
+
+void fifo_status_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
+{
+	static const RegBitInfo info[]
+	{
+		{ 7, REG_RESERVED },
+		{ 6, "TX_REUSE" },
+		{ 5, "TX_FULL" },
+		{ 4, "TX_EMPTY" },
+		{ 3, REG_RESERVED },
+		{ 2, REG_RESERVED },
+		{ 1, "RX_FULL" },
+		{ 0, "RX_EMPTY" },
+	};
+
+	basic_reg_draw(screen, pos, value);
+	pos.y += 14;
+	reg_bit_draw(screen, pos, value, info);
+}
+
+void dynpd_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
+{
+	static const RegBitInfo info[]
+	{
+		{ 7, REG_RESERVED },
+		{ 6, REG_RESERVED },
+		{ 5, "DPL_P5" },
+		{ 4, "DPL_P4" },
+		{ 3, "DPL_P3" },
+		{ 2, "DPL_P2" },
+		{ 1, "DPL_P1" },
+		{ 0, "DPL_P0" },
+	};
+
+	basic_reg_draw(screen, pos, value);
+	pos.y += 14;
+	reg_bit_draw(screen, pos, value, info);
+}
+
+void feature_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
+{
+	static const RegBitInfo info[]
+	{
+		{ 7, REG_RESERVED },
+		{ 6, REG_RESERVED },
+		{ 5, REG_RESERVED },
+		{ 4, REG_RESERVED },
+		{ 3, REG_RESERVED },
+		{ 2, "EN_DPL" },
+		{ 1, "EN_ACK_PAY" },
+		{ 0, "EN_DYN_ACK" },
+	};
+
+	basic_reg_draw(screen, pos, value);
+	pos.y += 14;
+	reg_bit_draw(screen, pos, value, info);
+}
+
+void rx_addr_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
+{
+	basic_reg_draw(screen, pos, value);
+	pos.y += 14;
+
+	DrawFunctions::DrawText(screen, pos, "    0X", WhiteColor, BlackColor, false, &Default_Font_7x7_small);
+	pos.y += 7;
+	
+	draw_reg_cell_value(screen, pos, "P0", NRF24L01::Reg_0A);
+	draw_reg_cell_value(screen, pos, "P1", NRF24L01::Reg_0B);
+	draw_reg_cell_value(screen, pos, "P2", NRF24L01::Reg_0C);
+	draw_reg_cell_value(screen, pos, "P3", NRF24L01::Reg_0D);
+	draw_reg_cell_value(screen, pos, "P4", NRF24L01::Reg_0E);
+	draw_reg_cell_value(screen, pos, "P5", NRF24L01::Reg_0F);
+}
+
+void tx_addr_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
+{
+	basic_reg_draw(screen, pos, value);
+	pos.y += 14;
+
+	DrawFunctions::DrawText(screen, pos, "    0X", WhiteColor, BlackColor, false, &Default_Font_7x7_small);
+	pos.y += 7;
+	
+	draw_reg_cell_value(screen, pos, "TX", NRF24L01::Reg_10);
+}
+
+static DataCell<uint8_t> dummy;
+
+static const struct
+{
+	StaticText8 reg;
+	IDataCell<uint8_t>* cell;
+	const char* name;
+	void (*panel) (IScreen& screen, Point2_i pos, uint8_t value);
+} 
+NRF24L01_ReadItems[]
+{
+	{ "00", &NRF24L01::Reg_00, "CONFIG",      &config_reg_draw },
+	{ "01", &NRF24L01::Reg_01, "EN_AA",       &en_aa_reg_draw },
+	{ "02", &NRF24L01::Reg_02, "EN_RXADDR",   &en_rxaddr_reg_draw },
+	{ "03", &NRF24L01::Reg_03, "SETUP_AW",    &setup_aw_reg_draw },
+	{ "04", &NRF24L01::Reg_04, "SETUP_RETR",  &setup_retr_reg_draw },
+	{ "05", &NRF24L01::Reg_05, "RF_CH",       &rf_ch_reg_draw },
+	{ "06", &NRF24L01::Reg_06, "RF_SETUP",    &rf_setup_reg_draw },
+	{ "07", &NRF24L01::Reg_07, "STATUS",      &status_reg_draw },
+	{ "08", &NRF24L01::Reg_08, "OBSERVE_TX",  &observe_tx_reg_draw },
+	{ "09", &NRF24L01::Reg_09, "CD",          &cd_reg_draw },
+	{ "0X", &dummy,            "RX_ADDR",     &rx_addr_reg_draw },
+	{ "10", &dummy,            "TX_ADDR",     &tx_addr_reg_draw },
+	{ "17", &NRF24L01::Reg_17, "FIFO_STATUS", &fifo_status_reg_draw },
+	{ "1C", &NRF24L01::Reg_1C, "DYNPD",       &dynpd_reg_draw },
+	{ "1D", &NRF24L01::Reg_1D, "FEATURE",     &feature_reg_draw },
+};
+
 class NRF24L01ReadScene : public IScene
 {
 protected:
 	SettingsContainer settings;
-
+	
 public:
 	NRF24L01ReadScene(ISceneManager* scene_manager) 
 		: IScene{scene_manager}, 
 		settings { NRF24L01::PVariant.GetOrDefault() ? "====NRF24L01P===" : "====NRF24L01====", &scene_manager->GetCommonAllocator() }
 	{
-		struct
+		dummy.Set(0xFF);
+		for (auto item : NRF24L01_ReadItems)
 		{
-			StaticText32 name;
-			IDataCell<uint8_t>* cell;
-		} 
-		ReadItems[]
-		{
-			{ "CONFIG",	&NRF24L01::Config },
-			{ "STATUS",	&NRF24L01::Status },
-			{ "SETUP",	&NRF24L01::Setup },
-			{ "RETR",	&NRF24L01::SetupRetr },
-			{ "FIFO",	&NRF24L01::FifoStatus },
-		};
-
-		for (auto item : ReadItems)
-		{
-			settings.AddSetting<ValueSettingUI<uint8_t>>(item.name, Point2_i{-1, -1}, item.cell, "%02X");
+			settings.AddSetting<ValueSettingUI<uint8_t>>(item.reg, Point2_i{-1, -1}, item.cell, "%02X");
 		}
 		
 		settings.Enable();
 		AddObject(&settings);
+	}
+
+	void Draw(IScreen& screen) override
+	{
+		using namespace DrawFunctions;
+	
+		int cur = settings.GetCurrentSettingIdx();
+		auto item = NRF24L01_ReadItems[cur];
+			
+		DrawText(screen, {58, 12}, item.name, strlen(item.name), WhiteColor, BlackColor, true, &Default_Font_7x7_small);
+		
+		NRF24L01_ReadItems[cur].panel(
+				screen, 
+				{58, 19}, 
+				item.cell ? item.cell->GetOrDefault() : 0xFF);	
 	}
 
 	void Loop() override
