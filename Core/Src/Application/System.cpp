@@ -730,6 +730,7 @@ void Application::InitExtDev()
 #include <Auth/Account_DeleteScene.hpp>
 #include <Auth/Account_SettingScene.hpp>
 #include <FatFs/FileManager.hpp>
+#include <AppLoader/AppScene.hpp>
 
 void Application::InitUserScenes()
 {
@@ -752,9 +753,11 @@ void Application::InitUserScenes()
 		SceneID::SETTING_ACCOUNT, 
 		(uint32_t) SceneID::EDIT_ACCOUNT, 
 		(uint32_t) SceneID::DELETE_ACCOUNT);
+	
+	SystemSceneManager::Instance().AddSceneBuilder<AppScene>(SceneID::APP_SCENE);
 
 	// Игровой центр
-	SystemSceneManager::Instance().AddSceneBuilder<GameCenter>(SceneID::GAMES_CENTER);
+	SystemSceneManager::Instance().AddSceneBuilder<GameCenter>(SceneID::GAMES_CENTER, (uint32_t) SceneID::APP_SCENE);
 
 	// Кадр "Файловый менеджер"
 	SystemSceneManager::Instance().AddSceneBuilder<FileManager>(SceneID::FILE_MANAGER);

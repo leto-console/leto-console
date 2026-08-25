@@ -21,19 +21,7 @@ class EEPROMScene : public CommonMenuScene
 public:
 	EEPROMScene(ISceneManager* scene_manager, EEPROM_24C* eeprom);
 
-	class Builder : public ISceneBuilder
-	{
-	public:
-		Builder(ISceneManager* scene_manager, EEPROM_24C* eeprom) 
-			: ISceneBuilder{scene_manager}, eeprom{ eeprom } { }
-	protected:
-		EEPROM_24C* eeprom;
-
-		IScene* Create(IAllocator& allocator) override
-		{
-			return allocator.Make<EEPROMScene>(scene_manager, eeprom);
-		}
-	};
+	SCENE_ONE_ARG_BUILDER(EEPROMScene, EEPROM_24C*)
 };
 
 #endif
