@@ -858,7 +858,7 @@ void Application::InitSystemTasks()
 	PriorityTaskSheduler::AddTask<UserInputPopEventTask>("INPUT2", 20, 15, 	StaticListView<UserInputDevice*>{ UserInputs });
 
 	PriorityTaskSheduler::AddTask<ResearchEncoderTask>("ENC_TSK", 10, 40);
-	PriorityTaskSheduler::AddTask<nRF24L01_ReadTask>("NRF_ST", 1000, 10);
+	PriorityTaskSheduler::AddTask<nRF24L01_ReadTask>("NRF_ST", 300, 10);
 	PriorityTaskSheduler::AddTask<FatFsTask>("FF_TSK", 100, 25, sdcard_extdev);
 
 	PriorityTaskSheduler::AddTask<DateTimeServer>("DT_SERV", 10, 50);
