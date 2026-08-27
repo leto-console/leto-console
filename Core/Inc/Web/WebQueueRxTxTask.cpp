@@ -11,26 +11,6 @@ WebQueueRxTxTask::WebQueueRxTxTask(const StaticText32& name, uint32_t period_ms,
 	: PriorityTask{ name, period_ms, priority }
 {	
 	buffer_wait_timer.Start(1000);
-
-	uint8_t pipe;
-	if (NRF24L01::RxPipe.Get(pipe) && pipe > 0 && pipe < 6)
-	{
-		rx_pipe_idx = pipe;
-	}
-
-	if (NRF24L01::TxPipe.Get(pipe) && pipe > 0 && pipe < 6)
-	{
-		tx_pipe = NRF24L01::PipeAddress[pipe];
-	}
-
-	if (!NRF24L01::Channel.Get(nrf_chan))
-		nrf_chan = 32;
-
-#if defined(USE_HAL_DRIVER)
-	setChannel(nrf_chan);
-	openReadingPipe(1, NRF24L01::PipeAddress[rx_pipe_idx]);
-	startListening();
-#endif
 }
 
 WebQueueRxTxTask::~WebQueueRxTxTask()
@@ -55,7 +35,33 @@ void WebQueueRxTxTask::Init(bool server, std::string pipe_name)
 
 // ====================================================================================================
 
-bool WebQueueRxTxTask::DoTx(uint8_t channel, WebPacket_V1& msg_out)
+void WebQueueRxTxTask::UpdateSettings()
+{
+	uint8_t pipe;
+	if (NRF24L01::RxPipe.Get(pipe) && pipe > 0 && pipe < 6)
+	{
+		rx_pipe_idx = pipe;
+	}
+
+	if (NRF24L01::TxPipe.Get(pipe) && pipe > 0 && pipe < 6)
+	{
+		tx_pipe = NRF24L01::PipeAddress[pipe];
+	}
+
+	uint8_t chan;
+	if (!NRF24L01::Channel.Get(chan))
+		chan = 32;
+	
+	if (nrf_chan != chan)
+	{
+		nrf_chan = chan;
+#if defined(USE_HAL_DRIVER)
+		setChannel(nrf_chan);
+#endif
+	}
+}
+
+bool WebQueueRxTxTask::DoTx(uint8_t channel, WebPacket_V1 &msg_out)
 {
 	bool success = false;
 	if (!channel || channel == WC_CHANNEL_UART)
@@ -143,7 +149,7 @@ bool WebQueueRxTxTask::DoTxNRF(WebPacket_V1& msg_out)
     bool w = write(&msg_out, sizeof(msg_out)); // отправляем данные
 	printf("[TX] (res: %d): ", w);
 	
-	for (int i = 0; i < sizeof(msg_out); ++i)
+	for (unsigned i = 0; i < sizeof(msg_out); ++i)
 		printf("%02X ", ((uint8_t*)&msg_out)[i]);
 	printf("\n");
 
@@ -161,6 +167,7 @@ bool WebQueueRxTxTask::DoTxNRF(WebPacket_V1& msg_out)
 
 bool WebQueueRxTxTask::Do()
 {
+	UpdateSettings();
 	DoRxUART();
 	DoRxNRF();
 

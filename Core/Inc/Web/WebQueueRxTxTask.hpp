@@ -44,6 +44,8 @@ protected:
 	Timer ping_timer;
 	Timer buffer_wait_timer;
 
+	void UpdateSettings();
+
 	bool DoTx(uint8_t channel, WebPacket_V1& msg_out);
 
 	void DoRxUART();
