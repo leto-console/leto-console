@@ -586,73 +586,6 @@ public:
 #include <NRF24L01/NRF24L01_data.hpp>
 #include <ProjectSettings/ProjectSettings.hpp>
 
-namespace NRF24L01_UI
-{
-	static StaticList<ListSettingItem<uint8_t>, 6> pipes
-	{
-		{ "1", 1 },
-		{ "2", 2 },
-		{ "3", 3 },
-		{ "4", 4 },
-		{ "5", 5 },
-		{ "6", 6 },
-	};
-
-	class ScanSettingUI : public ISettingUI
-	{
-	protected:
-		StaticText32 CurrentValueRepr() override
-		{
-			return "";
-		}
-
-		void UpdateCurrentValue()
-		{
-		}
-
-	public:
-		ScanSettingUI(StaticText32 name, Point2_i position)
-			: ISettingUI{ name, position }
-		{
-			delimiter = false;
-		}
-
-		void Draw(IScreen& screen, Point2_i offset = {}) override
-		{
-			if (!IsCaptured())
-				ISettingUI::Draw(screen, offset);
-			else
-			{
-				NRF24L01::Scanner.Draw(screen, offset);
-			}
-		}
-
-		bool ProcessInput(const AppEvent& event) override
-		{
-			// Если не выделен и не захвачен, обработка передается следующему элементу в списке
-			// + в инкапсуляции состояния, и отсутствии необходимости извне опрашивать состояние кнопки
-			if (!IsSelected())
-				return false;
-
-			if (!IsCaptured())
-			{
-				if (IsSystemEnterEvent(event, true))
-				{
-					Capture();
-					NRF24L01::Scanner.SetActive(true);
-					return true;
-				}
-				return false;
-			}
-
-			if (IsSystemLeftEvent(event, true))
-				Capture(false);
-
-			return true;
-		}
-	};
-};
-
 #define BYTE_TO_BINARY(byte)  \
   ((byte) & 0x80 ? '1' : '0'), \
   ((byte) & 0x40 ? '1' : '0'), \
@@ -1122,6 +1055,71 @@ public:
 	}
 };
 
+namespace NRF24L01_UI
+{
+	static StaticList<ListSettingItem<uint8_t>, 5> pipes
+	{
+		{ "1", 1 },
+		{ "2", 2 },
+		{ "3", 3 },
+		{ "4", 4 },
+		{ "5", 5 },
+	};
+
+	class ScanSettingUI : public ISettingUI
+	{
+	protected:
+		StaticText32 CurrentValueRepr() override
+		{
+			return "";
+		}
+
+		void UpdateCurrentValue()
+		{
+		}
+
+	public:
+		ScanSettingUI(StaticText32 name, Point2_i position)
+			: ISettingUI{ name, position }
+		{
+			delimiter = false;
+		}
+
+		void Draw(IScreen& screen, Point2_i offset = {}) override
+		{
+			if (!IsCaptured())
+				ISettingUI::Draw(screen, offset);
+			else
+			{
+				NRF24L01::Scanner.Draw(screen, offset);
+			}
+		}
+
+		bool ProcessInput(const AppEvent& event) override
+		{
+			// Если не выделен и не захвачен, обработка передается следующему элементу в списке
+			// + в инкапсуляции состояния, и отсутствии необходимости извне опрашивать состояние кнопки
+			if (!IsSelected())
+				return false;
+
+			if (!IsCaptured())
+			{
+				if (IsSystemEnterEvent(event, true))
+				{
+					Capture();
+					NRF24L01::Scanner.SetActive(true);
+					return true;
+				}
+				return false;
+			}
+
+			if (IsSystemLeftEvent(event, true))
+				Capture(false);
+
+			return true;
+		}
+	};
+};
 
 class NRF24L01SettingScene : public IScene
 {
