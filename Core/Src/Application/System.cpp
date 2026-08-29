@@ -468,6 +468,8 @@ void Application::InitOnSystemModeChanged()
 #include "ProjectScenes/SceneID.hpp"
 #include "Common/ProjectHandlers.h"
 
+#include <AppLoader/AppScene.hpp>
+
 void __TIM1_Handler()
 {
 	if (!SysInstance) return;
@@ -566,7 +568,11 @@ void Application::Init()
 
 		if (arg_parser.FindArg("--game"))
 		{
+			std::string game = arg_parser.FindValue("--game", "");
+			AppPath = game.c_str();
 			SystemSceneManager::Instance().SwitchScene(SceneID::GAMES_CENTER);
+			SystemSceneManager::Instance().Loop();
+			SystemSceneManager::Instance().SwitchScene(SceneID::APP_SCENE);
 		}
 	}
 
