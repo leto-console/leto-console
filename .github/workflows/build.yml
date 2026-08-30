@@ -15,9 +15,9 @@ jobs:
             os: ubuntu-latest
           - preset: "stm32f411xe-st7735-debug"
             os: ubuntu-latest
-          - preset: "win-debug-st7735"
+          - preset: "win-st7735-debug"
             os: windows-latest
-          - preset: "win-release-st7735"
+          - preset: "win-st7735-release"
             os: windows-latest
     runs-on: ${{ matrix.os }}
 
