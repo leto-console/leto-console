@@ -8,12 +8,6 @@
         },
         {
             "path": "../LetoCore"
-        },
-        {
-            "path": "../Battleship"
-        },
-        {
-            "path": "../game-template"
         }
     ],
     "extensions": {

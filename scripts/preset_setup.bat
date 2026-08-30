@@ -4,6 +4,10 @@ if "%LETO_PATH%"=="" (
 	echo Задайте её один раз командой: setx LETO_PATH "C:/путь/к/папке/с/репозиториями"
 	exit /b 1
 )
-cd /d "%~1"
+echo [%~1] Собираем конфигурацию %~2
+setlocal 
+cd /d "%~dp0/.."
 cmake --preset %~2
-cmake --build -j --preset %~2
+cmake --build --preset %~2 -j
+cmake --install build/%~2 --prefix "%LETO_PATH%Console/%~2" --component app
+endlocal
