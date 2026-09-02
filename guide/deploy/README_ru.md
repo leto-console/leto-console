@@ -161,5 +161,5 @@ STM32CubeProgrammer, OpenOCD или `st-flash`. Сессии отладки дл
 | `setup.bat` упал где-то в середине | Перезапустите `scripts/setup.bat` того репозитория, на котором всё встало: он печатает имя пресета. |
 
 <p align="center">
-  <sub><a href="../../README.md">← К README проекта</a></sub>
+  <sub><a href="../../README_ru.md">← К README проекта</a></sub>
 </p>

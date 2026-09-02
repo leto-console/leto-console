@@ -17,9 +17,10 @@ Start with [`README.md`](README.md) for what this project is, and with
    plus at least one `stm32f4*-…-debug` preset whenever hardware code is touched.
 4. Link the issue, describe the user-visible change, and attach a screenshot or recording for UI work —
    the emulator makes this cheap.
-5. Keep the documentation honest: update [`guide/deploy/`](guide/deploy) whenever setup steps or runtime
-   behavior change, in both [`README.md`](guide/deploy/README.md) and
-   [`README_ru.md`](guide/deploy/README_ru.md).
+5. Keep the documentation honest: every page exists in two languages — [`README.md`](README.md) with
+   [`README_ru.md`](README_ru.md), and [`guide/deploy/README.md`](guide/deploy/README.md) with
+   [`README_ru.md`](guide/deploy/README_ru.md) — so setup steps and runtime behavior changes land in both
+   halves of a pair in the same commit.
 
 Good first issues are labeled in the [issue tracker](https://github.com/leto-console/leto-console/issues).
 
@@ -82,4 +83,6 @@ normally a copy of the closest existing one with `MCU_CHIP`, `LINKER_SCRIPT`, `U
 
 Match the file you are editing. Headers use `.hpp` and live in `Core/Inc/`, one class per file, named
 after what it does rather than what it drives. Comments in the source are in Russian — that is the
-language of the team and of the issue tracker; documentation for outsiders is written in English.
+language of the team and of the issue tracker. Documentation is bilingual instead: the `*_ru.md` pages are
+kept as structural twins of the English ones, same sections in the same order, so a change translates
+without a rewrite.

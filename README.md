@@ -21,7 +21,7 @@ the same scenes, the same menus, the same games.
 [Contributing](#-contributing) ·
 [License](#-license)
 
-🌐 <b>EN</b> • <a href="guide/deploy/README_ru.md" title="Setup guide in Russian">Русский</a>
+🌐 <b>EN</b> • <a href="./README_ru.md" title="Версия на русском">Русский</a>
 
 </div>
 
