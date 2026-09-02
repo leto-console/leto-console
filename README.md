@@ -145,32 +145,31 @@ leto-console.exe --client --user 0 --game
 [`build.yml`](.github/workflows/build.yml) runs on every push and pull request to `main`
 (`stm32f401xc-st7735-debug`, `stm32f411xe-st7735-debug` on Ubuntu, `win-st7735-debug`,
 `win-st7735-release` on Windows). Each job uploads `dist/<preset>/` as the artifact
-`leto-console-<preset>` — grab a build there instead of compiling locally. An STM32 build also produces
-`.hex` / `.bin` next to the `.elf`, flashed to `0x08000000` with STM32CubeProgrammer, OpenOCD or
-`st-flash`.
+`leto-console-<preset>` — grab a build there instead of compiling locally, and see the
+[setup guide](guide/deploy/README.md) for flashing it onto a board.
 
 ## 📚 Documentation
 
 | Document | Contents |
 | --- | --- |
 | [`guide/deploy/README.md`](guide/deploy/README.md) · [`README_ru.md`](guide/deploy/README_ru.md) | setup, build, flash, troubleshooting (EN / RU) |
-| [`CONTRIBUTING.md`](CONTRIBUTING.md) | branch and commit conventions, house rules, recipes for scenes and settings |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md) | branch and commit conventions, house rules, how the build resolves `LetoAPI` / `LetoCore`, recipes for scenes and settings |
 | [`scripts/README.md`](scripts/README.md) | the local build scripts and the `LETO_PATH` convention (RU) |
 | [`LetoAPI`](https://github.com/leto-console/LetoAPI) · [`LetoCore`](https://github.com/leto-console/LetoCore) | the other two halves of the SDK |
 
 ## 🗺️ Status
 
 Pre-1.0 and moving: `main` is the working branch, releases are tagged up to `v0.0.5`, and design
-discussions happen in the [issue tracker](https://github.com/leto-console/leto-console/issues).
-Current focus — the Linux/Termux half of the setup guide, the nRF24L01 multiplayer protocol, and growing
-the game catalog built against the `LetoAPI` v1 ABI.
+discussions happen in the [issue tracker](https://github.com/leto-console/leto-console/issues). Current
+focus — the Linux/Termux half of the setup guide, the nRF24L01 multiplayer protocol and a growing game
+catalog built against the `LetoAPI` v1 ABI.
 
 ## 🤝 Contributing
 
 Fork, branch from `main` as `NN-short-slug` (the issue number), keep the commit prefixes
 (`feature:`, `fix:`, `docs:`) and make the CI matrix pass locally before opening a pull request.
-[`CONTRIBUTING.md`](CONTRIBUTING.md) has the conventions, the recipes for adding a scene or a persistent
-setting, and the troubleshooting table. Good first issues are labeled in the tracker.
+[`CONTRIBUTING.md`](CONTRIBUTING.md) has the conventions, the two dependency-resolution paths and the
+recipes for adding a scene or a persistent setting. Good first issues are labeled in the tracker.
 
 ## 📄 License
 

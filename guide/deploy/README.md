@@ -9,21 +9,17 @@ Everything needed to build the SDK from source: the toolchain, the folder layout
 scripts and what to do when something refuses to configure.
 
 > [!TIP]
-> In a hurry? On Windows the whole thing is two commands — [jump to step 2](#step-2--clone-and-build).
+> Tools from [step 1](#step-1--install-the-tools) already installed? Then on Windows the rest is two
+> commands, with one terminal restart in between — [jump to step 2](#step-2--clone-and-build).
 
-## What you are building
+## What you need to know first
 
-The SDK lives in three repositories that are designed to sit next to each other:
-
-| Repository | Role | Produces |
-| --- | --- | --- |
-| [`LetoAPI`](https://github.com/leto-console/LetoAPI) | The public contract: the system API headers every game links against | shared lib on host, static lib on target |
-| [`LetoCore`](https://github.com/leto-console/LetoCore) | Implementation: display drivers, input, storage, scene/task managers, app loader, radios | shared lib on host, static lib on target |
-| [`leto-console`](https://github.com/leto-console/leto-console) | The console itself: peripheral setup, system scenes, settings, emulator shell | `leto-console.exe` / `leto-console.elf` |
-
-Presets are shared across the three projects — `win-debug` and `stm32f411xe-debug` for the libraries,
-`win-st7735-debug` and `stm32f411xe-st7735-debug` for the console. Every artifact is installed into one
-common output tree, so a preset name always means the same folder everywhere.
+The SDK is three repositories — [`LetoAPI`](https://github.com/leto-console/LetoAPI) (the API contracts),
+[`LetoCore`](https://github.com/leto-console/LetoCore) (drivers and services) and
+[`leto-console`](https://github.com/leto-console/leto-console) (this product) — that expect to sit side by
+side in one folder; the bootstrap script in step 2 clones all three for you. Preset names are shared
+across the projects, and every artifact lands in one common output tree, so a preset name always means the
+same folder in any repository.
 
 ## Step 1 — Install the tools
 
@@ -73,8 +69,9 @@ setup.bat
 ```
 
 Each repository's `scripts/setup.bat` configures, builds and installs its presets: libraries go to
-`%LETO_PATH%Common\<preset>`, the console to `%LETO_PATH%Console\<preset>`. Expect a few minutes on a
-clean machine; a failing step prints the preset it was building, so scroll up, not down.
+`%LETO_PATH%Common\<preset>`, the console to `%LETO_PATH%Console\<preset>`. Every preset of all three
+repositories gets compiled, so budget tens of minutes on a first run rather than a few; a failing step
+prints the preset it was building, so scroll up, not down.
 
 ## Step 3 — Make the DLLs reachable
 
@@ -116,20 +113,9 @@ C:\LETO\                      <- LETO_PATH
 `%LETO_PATH%Common` rather than `%LETO_PATH%\Common`. Both expand to the same place; keep the spelling
 the scripts use.
 
-## How dependencies get resolved
-
-`CMakeLists.txt` reads `$ENV{LETO_PATH}` and takes one of two paths:
-
-- **`LETO_PATH` is set** (this guide) — CMake consumes the *already built* artifacts of the sibling
-  repositories: headers from their `include/` folders, libraries from
-  `%LETO_PATH%Common/<CORE_BUILD_PRESET>/lib`, plus the host-side shared libraries from step 3.
-  `CORE_BUILD_PRESET` in `CMakePresets.json` pins which core build folder is consumed, so after
-  touching `LetoCore` you rebuild that library preset first.
-- **`LETO_PATH` is unset** — `LetoCore` is fetched from GitHub with `FetchContent` and built statically
-  from source, and it pulls `LetoAPI` (and `cpp-httplib` for the web display) the same way. This is the
-  path CI takes: one clone, no environment, a slower configure step.
-
-Both paths compile the same sources; only where the dependencies come from differs.
+With `LETO_PATH` set the build consumes the shared libraries this guide has just produced. Leave it unset
+and the same presets fetch and build their dependencies through `FetchContent` instead — which is what CI
+does. [`CONTRIBUTING.md`](../../CONTRIBUTING.md) covers both paths.
 
 ## Building by hand (any OS, no scripts)
 
@@ -139,40 +125,28 @@ cd "$LETO_PATH/leto-console"
 
 cmake --preset win-st7735-debug             # configure
 cmake --build --preset win-st7735-debug -j  # build
-```
-
-Binaries land in `bin/<preset>/`, libraries in `lib/<preset>/`, build trees in `build/<preset>/` — the
-`base` preset pins all three, so nothing is written next to the sources. To install into the SDK layout
-the way `scripts/setup.bat` does:
-
-```sh
 cmake --install build/win-st7735-debug --prefix "$LETO_PATH/Console/win-st7735-debug" --component app
 ```
 
-`scripts/preset_setup.bat <repo> <preset>` wraps those three calls for a single preset, and
-`scripts/build.sh` drives the ARM chain on Linux. Both read the same `LETO_PATH` convention described in
-[`scripts/README.md`](../../scripts/README.md).
+Binaries land in `bin/<preset>/`, libraries in `lib/<preset>/` and build trees in `build/<preset>/` — the
+`base` preset pins all three, so nothing appears next to the sources. `scripts/preset_setup.bat <repo>
+<preset>` wraps those three calls for a single preset, `scripts/build.sh` drives the ARM chain on Linux,
+and both read the same `LETO_PATH` convention described in [`scripts/README.md`](../../scripts/README.md).
 
 ## Flashing the firmware
 
-An STM32 build produces `leto-console.elf` plus `.hex` / `.bin` (generated post-build by `objcopy`,
-together with a memory-usage report). Flash them to `0x08000000` with STM32CubeProgrammer, OpenOCD or
-`st-flash`. Debug sessions for STM32CubeIDE are provided by the `*.launch` files in the repository root.
-
-> [!NOTE]
-> `Drivers/` and the `MX*_Init()` blocks are generated from `leto-console.ioc`. Change the `.ioc` in
-> STM32CubeMX and regenerate rather than hand-patching generated files.
+An STM32 build produces `leto-console.elf` plus `.hex` / `.bin`, flashed to `0x08000000` with
+STM32CubeProgrammer, OpenOCD or `st-flash`; the `*.launch` files in the repository root set up the
+STM32CubeIDE debug sessions.
 
 ## Linux and Termux
 
-🚧 This section is still in progress (also in the [Russian version](README_ru.md)). What is known today:
+🚧 Still in progress (also in the [Russian version](README_ru.md)).
 
-- `ubuntu-debug` requires Qt 6 Widgets — it is the only preset with that dependency.
-- `termux-*` presets serve the display to a browser over HTTP and additionally copy
-  `../LetoCore/include/GraphicsPC/web` next to the executable, so they assume the sibling layout above
-  rather than the `FetchContent` fallback.
-- `termux-win-debug` is a configure-only preset for debugging the web display on a Windows host with no
-  phone attached.
+- `ubuntu-debug` is the only preset that requires Qt 6 Widgets.
+- `termux-*` presets serve the display to a browser over HTTP and assume the sibling layout of this guide
+  rather than the `FetchContent` fallback; `termux-win-debug` only configures, for debugging that display
+  on a Windows host without a phone.
 
 ## Troubleshooting
 
@@ -180,10 +154,7 @@ together with a memory-usage report). Flash them to `0x08000000` with STM32CubeP
 | --- | --- |
 | `LETO_PATH` warning, API headers not found | `setx LETO_PATH "C:/LETO"` (or `export`), then **restart the terminal and the IDE**. |
 | Emulator starts with a "missing DLL" error | `%LETO_PATH%Common\win-debug\bin` is not on `PATH` — see step 3, then reopen the terminal. |
-| `arm-none-eabi-gcc: command not found` | Add the ARM toolchain's `bin/` to `PATH`. |
-| `cl` not found while configuring a `win-*` preset | Run from *x64 Native Tools Command Prompt for VS* (CI uses `ilammy/msvc-dev-cmd`). |
 | `Qt6Config.cmake not found` on `ubuntu-debug` | Install Qt 6 Widgets, or use a `termux-*` / `win-*` preset. |
-| Links against a stale core | `CORE_BUILD_PRESET` pins which `LetoCore` build folder is consumed — rebuild that preset first. |
 | `setup.bat` failed somewhere in the middle | Re-run the failing repository's own `scripts/setup.bat`; it names the preset it was building. |
 
 <p align="center">

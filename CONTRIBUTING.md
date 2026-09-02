@@ -38,6 +38,20 @@ Good first issues are labeled in the [issue tracker](https://github.com/leto-con
 - **Don't patch generated code.** Everything under `Drivers/` and the `MX*_Init()` blocks comes from
   `leto-console.ioc` — edit the `.ioc` in STM32CubeMX and regenerate.
 
+## Dependencies: two resolution paths
+
+`CMakeLists.txt` branches on whether `LETO_PATH` is defined:
+
+- **`LETO_PATH` set** — the console consumes the shared builds of `LetoCore` and `LetoAPI` from
+  `%LETO_PATH%Common/<preset>`, which is what `scripts/setup.bat` produces in the order API → core →
+  console. `CORE_BUILD_PRESET` in `CMakePresets.json` pins which core build folder is consumed, so after
+  touching `LetoCore` you rebuild that library preset first.
+- **`LETO_PATH` unset** — `LetoCore` is fetched from GitHub with `FetchContent` and built statically from
+  source, and it pulls `LetoAPI` (and `cpp-httplib` for the web display) the same way. This is the path CI
+  takes: one clone, no environment, a slower configure step.
+
+Both paths compile the same sources; only where the dependencies come from differs.
+
 ## Recipes
 
 ### Adding a scene
