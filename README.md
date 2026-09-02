@@ -1,10 +1,9 @@
 <div align="center">
 
-<img src="assets/leto-cover.jpg" alt="LETO" width="232" />
-
 # LETO Console
+<img src="assets/leto-cover.jpg" alt="LETO" width="120" align="right" />
 
-**Firmware and desktop emulator of an open-source handheld game console.**
+**A compact hobbyist game console built on the STM32.**
 
 One C++ codebase that boots on an STM32F4 board *and* on your desktop —
 the same scenes, the same menus, the same games.
@@ -40,11 +39,10 @@ The trick that makes development possible is that the exact same logic is compil
 | | **Firmware** | **Emulator** |
 | --- | --- | --- |
 | Entry point | `Core/Src/main.cpp` | `Core/Main/App.cpp` |
-| Screen | SSD1306 128×64 mono · ST7735 160×128 color | native Win32 window · Qt6 window · browser over HTTP |
+| Screen | • SSD1306 128×64 mono <br>• ST7735 160×128 color | • native Win32 window <br>• Qt6 window <br>• browser over HTTP |
 | Why | the real handheld | development, CI, demos, extra console nodes |
 
-Prototype a scene on the laptop in seconds, flash the board, see it byte-for-byte identical — no
-hardware required to start contributing.
+Prototype a scene on the laptop in seconds, flash the board, see it byte-for-byte identical — no hardware required to start contributing.
 
 ## ✨ Highlights
 
@@ -152,7 +150,7 @@ leto-console.exe --client --user 0 --game
 
 | Document | Contents |
 | --- | --- |
-| [`guide/deploy/README.md`](guide/deploy/README.md) · [`README_ru.md`](guide/deploy/README_ru.md) | setup, build, flash, troubleshooting (EN / RU) |
+| [`guide/deploy/README.md`](guide/deploy/README.md) <br> [`guide/deploy/README_ru.md`](guide/deploy/README_ru.md) | setup, build, flash, troubleshooting (EN / RU) |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | branch and commit conventions, house rules, how the build resolves `LetoAPI` / `LetoCore`, recipes for scenes and settings |
 | [`scripts/README.md`](scripts/README.md) | the local build scripts and the `LETO_PATH` convention (RU) |
 | [`LetoAPI`](https://github.com/leto-console/LetoAPI) · [`LetoCore`](https://github.com/leto-console/LetoCore) | the other two halves of the SDK |
