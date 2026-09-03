@@ -3,16 +3,16 @@
 # LETO Console
 <img src="assets/leto-cover.jpg" alt="LETO" width="120" align="right" />
 
-**Компактная хоббийная игровая консоль на STM32.**
+**Компактная любительская игровая консоль на STM32**
 
 Одна кодовая база на C++, которая стартует и на плате STM32F4, *и* на рабочем столе —
 те же сцены, то же меню, те же игры.
 
-[![CI](https://github.com/leto-console/leto-console/actions/workflows/build.yml/badge.svg)](https://github.com/leto-console/leto-console/actions/workflows/build.yml)
+[![Hardware](https://img.shields.io/badge/STM32F401%20%C2%B7%20F411-SSD1306%20%C2%B7%20ST7735-orange)](leto-console.ioc)
 [![C++17](https://img.shields.io/badge/C%2B%2B-17-blue?logo=cplusplus&logoColor=white)](CMakeLists.txt)
 [![CMake](https://img.shields.io/badge/CMake-3.20%2B-064F8C?logo=cmake&logoColor=white)](CMakePresets.json)
-[![Hardware](https://img.shields.io/badge/STM32F401%20%C2%B7%20F411-SSD1306%20%C2%B7%20ST7735-orange)](leto-console.ioc)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+[![CI](https://github.com/leto-console/leto-console/actions/workflows/build.yml/badge.svg)](https://github.com/leto-console/leto-console/actions/workflows/build.yml)
 
 [Быстрый старт](#-быстрый-старт) ·
 [Железо](#-железо) ·
@@ -46,12 +46,10 @@
 
 ## ✨ Возможности
 
-- 🎮 **Полная оболочка консоли** — заставка, аккаунты с аватарами, главное меню, игровой центр,
-  файловый менеджер, системные / отладочные / EEPROM-сцены и страницы настроек.
+- 🎮 **Полная оболочка консоли** — аккаунты с аватарами, главное меню, игровой центр,
+  файловый менеджер, системные / отладочные сцены и страницы настроек.
 - 🧩 **Игры как внешние модули** — приложения подгружаются во время исполнения через версионируемое
-  ABI из `LetoAPI`, поэтому игра переживает обновление прошивки.
-- 💾 **Постоянные типизированные настройки** — декларативные значения `StoredDataCell<T>` в
-  хранилище на EEPROM, применяемые на лету.
+  ABI из `LetoAPI`.
 - 📡 **Беспроводной мультиплеер** — радиомодуль nRF24L01 на 2.4 ГГц с настраиваемыми трубами (pipes)
   и каналом; два экземпляра эмулятора на одном ноутбуке уже слышат друг друга.
 - 🧊 **Ни STL, ни исключений на целевой платформе** — `-fno-exceptions -fno-rtti` на ARM, контейнеры
@@ -66,39 +64,26 @@
 
 ## 🔌 Железо
 
-Плата описана в [`leto-console.ioc`](leto-console.ioc); `Core/Src/main.cpp` передаёт инициализированную
-периферию в `Application::Periphery`. Из коробки консоль управляет:
+🚧 Схема платы будет добавлена позже. 
+
+Игровая консоль состоит из следующих компонентов:
 
 | | |
 | --- | --- |
-| **MCU** | STM32F401CC (256 КБ flash / 64 КБ RAM) или STM32F411CE (512 КБ / 128 КБ), Cortex-M4 с hard float |
-| **Дисплей** | SSD1306 128×64 монохром по I²C *или* ST7735 160×128 цвет по SPI1 — выбор за пресетом |
-| **Ввод** | 7 кнопок плюс энкодер, абстракция `UserInputDevice` из `LetoCore` |
-| **Память** | 32 КБ EEPROM на I²C1 (настройки, аккаунты, сохранения) и micro-SD на SPI1 через FatFs |
-| **Радио** | nRF24L01 на SPI3 для игры консоль-с-консолью |
-| **Обвязка** | отладочная консоль USART2 @19200, веб-мост на USART6, RTC от LSE, аппаратный CRC, TIM1, DMA, статусный LED |
+| **MCU** | • STM32F411CE (512 КБ flash / 128 КБ RAM) <br> • STM32F401CC (256 КБ / 64 КБ) - урезанная версия |
+| **Дисплей** | • ST7735 160×128 цветной по SPI <br> • SSD1306 128×64 монохромный по I²C  |
+| **Ввод** | • 4 кнопки направления  <br> • 2 кнопки действия (A и B) <br> • кнопка "Меню" <br> • энкодер |
+| **Память** | • 32 КБ EEPROM по I²C (настройки, аккаунты, сохранения) <br> • micro-SD по SPI через FatFs |
+| **Радио** | • nRF24L01 по SPI |
+| **Прочее** | • отладочная консоль по UART <br> • UART канал между консолями <br> • RTC от LSE <br> • аппаратный CRC, TIM, DMA |
 
 ## 🚀 Быстрый старт
 
-Установи [VS Build Tools](https://visualstudio.microsoft.com/downloads/),
-[Arm GNU toolchain](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads), CMake, Ninja
-и Git, затем скопируй [`clone_env.bat`](guide/deploy/clone_env.bat) и [`setup.bat`](guide/deploy/setup.bat)
-в пустую папку — она станет `LETO_PATH`. Дальше из **x64 Native Tools Command Prompt**:
+Первую игру для LETO Console можно написать и протестировать прямо на компьютере, без необходимости иметь физическую консоль.
 
-```bat
-cd /d C:\LETO
-:: клонирует LetoAPI, LetoCore и leto-console, создаёт Common\ и Apps\, прописывает LETO_PATH
-clone_env.bat
-:: закрой приглашение, открой новое x64 Native Tools, затем:
-setup.bat
-:: собирает и устанавливает все пресеты всех трёх репозиториев
-"%LETO_PATH%Console\win-st7735-debug\bin\leto-console.exe"
-```
+> На текущий момент реализована среда разработки для Windows, включающая эмулятор консоли. Поддержка других платформ планируется в будущих версиях.
 
-Окно с интерфейсом консоли означает, что SDK в порядке. В
-[руководстве по развёртыванию](guide/deploy/README_ru.md) — ручной путь сборки, `PATH` для
-shared-библиотек, прошивка, Linux/Termux и устранение неполадок; есть и
-[английская версия](guide/deploy/README.md).
+Инструкция по настройке Leto SDK и запуску проекта описана в [руководстве по развёртыванию](guide/deploy/README_ru.md). 
 
 ## 🏗️ Сборка
 
