@@ -14,5 +14,5 @@ echo "[$1] Собираем конфигурацию $2"
     cmake --preset "$2"
     cmake --build --preset "$2" -j
     
-    cmake --install "build/$2" --prefix "${LETO_PATH}/Common/$2" -component app
+    cmake --install "build/$2" --prefix "${LETO_PATH}/Console/$2" --component app
 )
