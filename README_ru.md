@@ -12,12 +12,13 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 [![CI](https://github.com/leto-console/leto-console/actions/workflows/build.yml/badge.svg)](https://github.com/leto-console/leto-console/actions/workflows/build.yml)
 
-[Быстрый старт](#-быстрый-старт) ·
-[Железо](#-железо) ·
-[Сборка](#-сборка) ·
-[Документация](#-документация) ·
-[Участие](#-участие) ·
-[Лицензия](#-лицензия)
+[Быстрый старт](#-1-быстрый-старт-) ·
+[Железо](#2-железо) ·
+[Сборка](#3-сборка) ·
+[Цели](#4-цели) ·
+[Документация](#5-документация) ·
+[Участие](#6-участие) ·
+[Лицензия](#7-лицензия)
 
 🌐 <a href="./README.md" title="English version">English</a> • <b>Русский</b>
 
@@ -202,7 +203,8 @@ leto-console.exe --user 0 --game %LETO_PATH%\Apps\win-debug\Battleship\Battleshi
 CMSIS и HAL в `Drivers/` остаются под собственными условиями лицензии STM32 (`Drivers/*/LICENSE.txt`).
 
 <div align="center">
+<br>
 
-Создано сообществом LETO
+<i>Создано сообществом LETO</i>
 
 </div>
