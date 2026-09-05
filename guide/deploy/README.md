@@ -1,5 +1,9 @@
 <p align="center">
-  <b>English</b> •
+  <sub><a href="../../README.md">← Back to the project README</a></sub>
+</p>
+
+<p align="center">
+  🌐 <b>English</b> •
   <a href="./README_ru.md" title="Версия на русском">Русский</a>
 </p>
 
