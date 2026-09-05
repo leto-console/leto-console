@@ -6,7 +6,7 @@
 
 **Портативная игровая консоль на STM32**
 
-[![Hardware](https://img.shields.io/badge/STM32F401%20%C2%B7%20F411-SSD1306%20%C2%B7%20ST7735-orange)](leto-console.ioc)
+[![Hardware](https://img.shields.io/badge/STM32F411%20%C2%B7%20F401-ST7735%20%C2%B7%20SSD1306-orange)](leto-console.ioc)
 [![C++17](https://img.shields.io/badge/C%2B%2B-17-blue?logo=cplusplus&logoColor=white)](CMakeLists.txt)
 [![CMake](https://img.shields.io/badge/CMake-3.20%2B-064F8C?logo=cmake&logoColor=white)](CMakePresets.json)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
