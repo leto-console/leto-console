@@ -1,181 +1,217 @@
 <div align="center">
 
 # LETO Console
+
 <img src="assets/leto-cover.jpg" alt="LETO" width="120" align="right" />
 
-**A compact hobbyist game console built on the STM32.**
+**A portable game console built on STM32**
 
-One C++ codebase that boots on an STM32F4 board *and* on your desktop —
-the same scenes, the same menus, the same games.
-
-[![CI](https://github.com/leto-console/leto-console/actions/workflows/build.yml/badge.svg)](https://github.com/leto-console/leto-console/actions/workflows/build.yml)
+[![Hardware](https://img.shields.io/badge/STM32F411%20%C2%B7%20F401-ST7735%20%C2%B7%20SSD1306-orange)](leto-console.ioc)
 [![C++17](https://img.shields.io/badge/C%2B%2B-17-blue?logo=cplusplus&logoColor=white)](CMakeLists.txt)
 [![CMake](https://img.shields.io/badge/CMake-3.20%2B-064F8C?logo=cmake&logoColor=white)](CMakePresets.json)
-[![Hardware](https://img.shields.io/badge/STM32F401%20%C2%B7%20F411-SSD1306%20%C2%B7%20ST7735-orange)](leto-console.ioc)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green)](LICENSE)
+[![CI](https://github.com/leto-console/leto-console/actions/workflows/build.yml/badge.svg)](https://github.com/leto-console/leto-console/actions/workflows/build.yml)
 
-[Quick start](#-quick-start) ·
-[Hardware](#-hardware) ·
-[Building](#-building) ·
-[Documentation](#-documentation) ·
-[Contributing](#-contributing) ·
-[License](#-license)
+[Quick start](#-1-quick-start-) ·
+[Hardware](#2-hardware) ·
+[Building](#3-building) ·
+[Goals](#4-goals) ·
+[Documentation](#5-documentation) ·
+[Contributing](#6-contributing) ·
+[License](#7-license)
 
-🌐 <b>EN</b> • <a href="./README_ru.md" title="Версия на русском">Русский</a>
+🌐 <b>English</b> • <a href="./README_ru.md" title="Версия на русском">Русский</a>
 
 </div>
 
 ---
 
+<div align="center">
+
 ## What is this?
 
-**LETO** is a hobby project in the "retro handheld + SDK" genre. This repository is the **system layer
-of the console**: it boots the device, draws the UI, manages user accounts and saved data, launches
-games and exposes the system API to them. It is one of three repositories — `LetoAPI` holds the public
-contracts, `LetoCore` the drivers and services, `leto-console` the product itself.
-
-The trick that makes development possible is that the exact same logic is compiled twice:
-
-| | **Firmware** | **Emulator** |
-| --- | --- | --- |
-| Entry point | `Core/Src/main.cpp` | `Core/Main/App.cpp` |
-| Screen | • SSD1306 128×64 mono <br>• ST7735 160×128 color | • native Win32 window <br>• Qt6 window <br>• browser over HTTP |
-| Why | the real handheld | development, CI, demos, extra console nodes |
-
-Prototype a scene on the laptop in seconds, flash the board, see it byte-for-byte identical — no hardware required to start contributing.
-
-## ✨ Highlights
-
-- 🎮 **Full console shell** — welcome screen, avatar-based accounts, main menu, game center, file
-  manager, system / debug / EEPROM scenes and settings pages.
-- 🧩 **Games as external modules** — apps are loaded at runtime through a versioned ABI from `LetoAPI`,
-  so a game survives a firmware update.
-- 💾 **Persistent typed settings** — declarative `StoredDataCell<T>` values in EEPROM-backed storage,
-  applied on the fly.
-- 📡 **Wireless multiplayer** — nRF24L01 2.4 GHz radio with configurable pipes and channel; two emulator
-  instances on one laptop already talk to each other.
-- 🧊 **No STL, no exceptions on target** — `-fno-exceptions -fno-rtti` on ARM, fixed-size containers
-  (`StaticList`, `StaticText`, `BitmapView`) from `LetoCore`.
-- 🤖 **CI builds both halves** — a GitHub Actions matrix compiles firmware *and* Windows binaries and
-  uploads ready-to-flash artifacts.
-
-<div align="center">
-  <img src="assets/leto-games.jpg" alt="LETO Games" width="232" /><br/>
-  <sub>Games are compiled as external modules against the <code>LetoAPI</code> ABI.</sub>
 </div>
 
-## 🔌 Hardware
+<div align="center">
+  <img src="assets/1.jpg" alt="LETO Console" width="450px"/><br/>
+  <sub>The way the debug prototype of the console looks</sub>
+</div>
+<br>
 
-The board is described by [`leto-console.ioc`](leto-console.ioc); `Core/Src/main.cpp` hands the
-peripheral handles to `Application::Periphery`. Out of the box the console drives:
+**LETO** is a hobby project of a portable game console, inspired by:
+- the *retro aesthetics* of the second half of the last century (sometimes of the first one as well)
+- the *spirit of the enthusiasts* who, at that time, were creating genuinely brilliant things
+- the wish *to understand the `C++` language more deeply*
+- an existential need *to take part in creating* something
+
+The project grows following the principles of free and open source software: it can be studied, run,
+modified, broken, fixed, and so on.
+
+<div align="center">
+
+## Features
+
+<div align="center">
+  <img src="assets/6_1.jpg" alt="LETO Console" width="450px"/><br/>
+  <sub>"Battleship", launched from an SD card</sub>
+</div>
+<br>
+
+</div>
+
+- **System shell** — accounts with avatars, a main menu, a game center, a file manager,
+  system / debug scenes and settings pages.
+- **Games as external modules** — applications are loaded on the fly at runtime, through the ABI
+  and the versioned API of `LetoAPI`.
+- **Wireless multiplayer** — a radio module with configurable channels, plus a ready high-level
+  data routing implementation.
+- **CI builds** — GitHub Actions compiles the software both for the STM32 target platform and for
+  debugging under Windows, and publishes ready-to-use artifacts.
+
+<div align="right">
+
+## ⚡ 1. Quick start ⚡
+
+</div>
+
+Your first game for the LETO Console can be written and tested right on a computer, without the need to
+own a physical device.
+
+> At the moment the development environment is available for Windows only, and it includes the console
+> emulator. Support for other platforms is planned for future versions.
+
+Setting up the Leto SDK and running the project is described in the [setup guide](guide/deploy/README.md).
+
+<div align="center">
+  <img src="assets/win-debug.png" alt="LETO Console"/><br/>
+  <sub>Debugging the code in VS Code — <i>a breakpoint on opening a scene</i></sub>
+</div>
+<br>
+
+<div align="center">
+  <img src="assets/win-debug2.png" alt="LETO Console"/><br/>
+  <sub>Debugging the code in VS Code — <i>a breakpoint on selecting a menu item</i></sub>
+</div>
+<br>
+
+<div align="center">
+  <img src="assets/win-debug3.png" alt="LETO Console"/><br/>
+  <sub>Debugging the code in VS Code — <i>stepping into a function of the LetoCore library</i></sub>
+</div>
+<br>
+
+
+<div align="right">
+
+## 2. Hardware
+
+</div>
+
+🚧 The board schematic will be added later.
+
+The game console consists of the following components:
 
 | | |
 | --- | --- |
-| **MCU** | STM32F401CC (256 KB flash / 64 KB RAM) or STM32F411CE (512 KB / 128 KB), Cortex-M4 with hard float |
-| **Display** | SSD1306 128×64 mono over I²C *or* ST7735 160×128 color over SPI1, chosen by a preset |
-| **Input** | 7 buttons plus a rotary encoder, abstracted by `UserInputDevice` from `LetoCore` |
-| **Storage** | 32 KB EEPROM on I²C1 (settings, accounts, saves) and micro-SD on SPI1 through FatFs |
-| **Radio** | nRF24L01 on SPI3 for console-to-console play |
-| **Comms** | USART2 debug console @19200, USART6 web bridge, LSE-driven RTC, hardware CRC, TIM1, DMA, status LED |
+| **MCU** | • `STM32F411CE` (512 KB flash / 128 KB RAM) <br> • `STM32F401CC` (256 KB / 64 KB) — a cut-down version |
+| **Display** | • `ST7735` 160×128 color over SPI <br> • `SSD1306` 128×64 monochrome over I²C |
+| **Input** | • 4 direction buttons <br> • 2 action buttons (A and B) <br> • a "Menu" button <br> • an encoder |
+| **Memory** | • 32 KB EEPROM over I²C (settings, accounts, saves) <br> • micro-SD over SPI through FatFs |
+| **Radio** | • `nRF24L01` over SPI |
+| **Other** | • a debug console over UART <br> • a UART channel between the consoles <br> • RTC fed from LSE <br> • hardware CRC, TIM, DMA |
 
-## 🚀 Quick start
+<div align="right">
 
-Install [VS Build Tools](https://visualstudio.microsoft.com/downloads/), the
-[Arm GNU toolchain](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads), CMake, Ninja
-and Git, then copy [`clone_env.bat`](guide/deploy/clone_env.bat) and [`setup.bat`](guide/deploy/setup.bat)
-into an empty folder — that folder becomes `LETO_PATH`. From an **x64 Native Tools Command Prompt**:
+## 3. Building
 
-```bat
-cd /d C:\LETO
-:: clones LetoAPI, LetoCore and leto-console, creates Common\ and Apps\, registers LETO_PATH
-clone_env.bat
-:: close the prompt, open a fresh x64 Native Tools one, then:
-setup.bat
-:: builds and installs every preset of all three repositories
-"%LETO_PATH%Console\win-st7735-debug\bin\leto-console.exe"
+</div>
+
+Building the software for the various configurations is done through **CMake presets**:
+
 ```
-
-A window showing the console UI means the SDK is healthy. The
-[setup guide](guide/deploy/README.md) covers the manual route, `PATH` for the shared libraries,
-flashing the firmware, Linux/Termux and troubleshooting — and there is a
-[Russian version](guide/deploy/README_ru.md).
-
-## 🏗️ Building
-
-Everything goes through **CMake presets** — no manual `-D` flags:
-
-```sh
-cmake --preset win-st7735-debug        # configure
+cmake --preset win-st7735-debug
 cmake --build --preset win-st7735-debug -j
 ```
 
-The `base` preset pins the output layout: binaries in `bin/<preset>/`, libraries in `lib/<preset>/`,
-build trees in `build/<preset>/`.
+The `leto-console` project provides the following presets:
 
-| Preset family | Target | Notes |
-| --- | --- | --- |
-| `win-ssd1306-debug` · `win-st7735-debug` · `win-st7735-release` | Windows emulator (MSVC) | `win-st7735-debug` is the default dev target, all three built in CI |
-| `stm32f401xc-ssd1306-debug` · `stm32f401xc-st7735-debug` · `stm32f411xe-st7735-debug` | STM32F4 firmware | cross-compiled with `gcc-arm-none-eabi`, the last two built in CI |
-| `ubuntu-debug` | Linux emulator (GCC) | the only preset that needs Qt6 Widgets |
-| `termux-debug` · `termux-win-debug` | HTTP display | serve the console UI to a browser; the second is configure-only, for testing without a phone |
-
-[`scripts/`](scripts/) wraps the same calls: `setup.bat` builds the two shipping presets and installs
-them under `%LETO_PATH%Console/`, `preset_setup.bat <repo> <preset>` handles one, `build.sh` drives the
-ARM chain on Linux.
+| Preset family | Purpose |
+| --- | --- |
+| • `win-st7735-debug` <br>• `win-st7735-release` <br>• `win-ssd1306-debug` | the emulator on Windows (MSVC) |
+| • `stm32f411xe-st7735-debug` <br>• `stm32f401xc-ssd1306-debug` <br>• `stm32f401xc-st7735-debug` | STM32F4 firmware |
+| • `ubuntu-debug` | the emulator on Linux (GCC) |
+| • `termux-debug` <br>• `termux-win-debug` | the emulator over HTTP |
 
 ### Running the emulator
 
 ```bat
 leto-console.exe
-:: a plain run acts as the "server" node — server.eeprom / server.img
-leto-console.exe --client --user 0 --game
-:: a client node with its own storage images, auto-login and auto-launch
+:: a plain run
+leto-console.exe --user 0 --game %LETO_PATH%Apps\win-debug\Battleship\Battleship.dll
+:: a run with auto-login and auto-launch of an application
 ```
+
+`LETO_PATH` is provided by the SDK setup and already ends with a separator, which is why the path above has
+no extra backslash after it.
 
 | Flag | Effect |
 | --- | --- |
-| `--client` / `-c` | client node: uses `client.eeprom` / `client.img` instead of the `server.*` files |
-| `--user <n>` | auto-authenticate account *n* at boot (default `0`) |
-| `--game <name>` | auto-load and start the given app right after login |
+| `--client` / `-c` | a client node: uses the `client.eeprom` / `client.img` files instead of `server.*` |
+| `--user <n>` | automatically authenticate account *n* at start-up (default `0`) |
+| `--game <path>` | load and start the given application right after login (handled inside the `--user` branch, so `--user` has to be present as well) |
 
-### Artifacts
+<div align="right">
 
-[`build.yml`](.github/workflows/build.yml) runs on every push and pull request to `main`
-(`stm32f401xc-st7735-debug`, `stm32f411xe-st7735-debug` on Ubuntu, `win-st7735-debug`,
-`win-st7735-release` on Windows). Each job uploads `dist/<preset>/` as the artifact
-`leto-console-<preset>` — grab a build there instead of compiling locally, and see the
-[setup guide](guide/deploy/README.md) for flashing it onto a board.
+## 4. Goals
 
-## 📚 Documentation
+</div>
 
-| Document | Contents |
-| --- | --- |
-| [`guide/deploy/README.md`](guide/deploy/README.md) <br> [`guide/deploy/README_ru.md`](guide/deploy/README_ru.md) | setup, build, flash, troubleshooting (EN / RU) |
-| [`CONTRIBUTING.md`](CONTRIBUTING.md) | branch and commit conventions, house rules, how the build resolves `LetoAPI` / `LetoCore`, recipes for scenes and settings |
-| [`scripts/README.md`](scripts/README.md) | the local build scripts and the `LETO_PATH` convention (RU) |
-| [`LetoAPI`](https://github.com/leto-console/LetoAPI) · [`LetoCore`](https://github.com/leto-console/LetoCore) | the other two halves of the SDK |
+Before version 1.0 it is planned to:
 
-## 🗺️ Status
+- Make it fully possible to develop applications on `Linux`
+- Add an API for working with fonts on the application side
+- Set up a mechanism for adding new fonts to the system
+- Move to `C++20`
+- Add a `Dirty rectangles` rendering algorithm
+- Add a pleasant retro-style system UI
+- Design a new power system for the device, based on a rechargeable battery
+- Extend the game collection
 
-Pre-1.0 and moving: `main` is the working branch, releases are tagged up to `v0.0.5`, and design
-discussions happen in the [issue tracker](https://github.com/leto-console/leto-console/issues). Current
-focus — the Linux/Termux half of the setup guide, the nRF24L01 multiplayer protocol and a growing game
-catalog built against the `LetoAPI` v1 ABI.
+<div align="right">
 
-## 🤝 Contributing
+## 5. Documentation
 
-Fork, branch from `main` as `NN-short-slug` (the issue number), keep the commit prefixes
-(`feature:`, `fix:`, `docs:`) and make the CI matrix pass locally before opening a pull request.
-[`CONTRIBUTING.md`](CONTRIBUTING.md) has the conventions, the two dependency-resolution paths and the
-recipes for adding a scene or a persistent setting. Good first issues are labeled in the tracker.
+</div>
 
-## 📄 License
+🚧 This section is in progress. A detailed description of the system will be available later.
 
-Released under the **MIT License** — see [`LICENSE`](LICENSE). Vendored STMicroelectronics CMSIS and HAL
-sources under `Drivers/` stay governed by their own STM32 license terms (`Drivers/*/LICENSE.txt`).
+<div align="right">
+
+## 6. Contributing
+
+</div>
+
+To contribute a change you have to:
+- create an issue describing the change (or pick up an existing one)
+- branch off `main` into a `NN-task-name` branch (the issue number and a title)
+- commit the changes with a `feature:`, `fix:`, `docs:` or other prefix
+- open a pull request and make sure that all CI operations pass
+- go through code review and, after the approval, merge the changes into the main branch
+
+🚧 Detailed contribution conventions will be described later in `CONTRIBUTING.md`.
+
+<div align="right">
+
+## 7. License
+
+</div>
+
+Published under the **MIT License** — see [`LICENSE`](LICENSE). The vendored STMicroelectronics CMSIS and
+HAL sources in `Drivers/` stay under their own STM32 license terms (`Drivers/*/LICENSE.txt`).
 
 <div align="center">
+<br>
 
-Built by the LETO community · *hardware you can hold, code you can read.*
+<i>Created by the LETO community</i>
 
 </div>

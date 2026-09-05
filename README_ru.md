@@ -141,17 +141,20 @@ cmake --build --preset win-st7735-debug -j
 ### Запуск эмулятора
 
 ```bat
-leto-console.exe 
+leto-console.exe
 :: обычный запуск
-leto-console.exe --user 0 --game %LETO_PATH%\Apps\win-debug\Battleship\Battleship.dll
+leto-console.exe --user 0 --game %LETO_PATH%Apps\win-debug\Battleship\Battleship.dll
 :: запуск с авто-входом и авто-запуском приложения
 ```
+
+`LETO_PATH` задаётся при развёртывании SDK и уже заканчивается разделителем, поэтому лишний обратный слэш
+после неё в пути не пишется.
 
 | Флаг | Действие |
 | --- | --- |
 | `--client` / `-c` | клиентский узел: использует `client.eeprom` / `client.img` вместо файлов `server.*` |
 | `--user <n>` | автоматически аутентифицировать аккаунт *n* при загрузке (по умолчанию `0`) |
-| `--game <path>` | сразу загрузить и запустить указанное приложение после входа  |
+| `--game <path>` | сразу загрузить и запустить указанное приложение после входа (обработка находится внутри ветки `--user`, поэтому `--user` тоже должен быть указан) |
 
 <div align="right">
 
