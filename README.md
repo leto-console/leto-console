@@ -174,6 +174,7 @@ Before version 1.0 it is planned to:
 - Move to `C++20`
 - Add a `Dirty rectangles` rendering algorithm
 - Add a pleasant retro-style system UI
+- Make the interface multilingual, with the ability to switch between languages
 - Design a new power system for the device, based on a rechargeable battery
 - Extend the game collection
 
