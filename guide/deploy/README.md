@@ -1,58 +1,101 @@
-# Инструкция по разворачиванию Leto SDK
+<p align="center">
+  <sub><a href="../../README.md">← Back to the project README</a></sub>
+</p>
 
-## Разработка на Windows
+<p align="center">
+  🌐 <b>English</b> •
+  <a href="./README_ru.md" title="Версия на русском">Русский</a>
+</p>
 
-### 1. Установка инструментов сборки и версионирования кода
+# Setting up the Leto SDK on Windows
 
-#### 1.1 Необходимые инструменты:
-1. Build Tools для Visual Studio (для сборки ПО под Windows)
-2. GNU Arm Embedded Toolchain (для сборки ПО под STM32)
-3. Ninja
-4. CMake
-5. Git
+## What you need to know first
 
-#### 1.2 Ссылки:
-1. https://visualstudio.microsoft.com/ru/downloads/
-2. https://gitlab.arm.com/tooling/gnu-toolchains-for-arm
-3. https://github.com/ninja-build/ninja
-4. https://cmake.org/download/
-5. https://git-scm.com/install/windows
+The SDK consists of three repositories that have to sit in one folder: [`LetoAPI`](https://github.com/leto-console/LetoAPI) (the API contracts),
+[`LetoCore`](https://github.com/leto-console/LetoCore) (drivers and services) and
+[`leto-console`](https://github.com/leto-console/leto-console) (the console itself). Deploying takes several steps: the
+repositories are cloned, an environment variable called `LETO_PATH` is created with the path to their common folder, and
+then every repository is built step by step for two presets — `win-debug` and `stm32f411xe-debug` for the libraries,
+`win-st7735-debug` and `stm32f411xe-st7735-debug` for the console.
 
-#### 1.3 Примечания:
-2. После установки GNU Arm Embedded Toolchain необходимо будет добавить путь к папке bin (с файлами arm-none-eabi-\*.exe) в переменную окружения PATH
+The build results are placed into the `Common` (libraries) and `Console` (executables) folders.
 
-#### 1.4 Проверка корректности установки инструментов
+## Step 1 — Install the tools
 
-Выполните следующие команды в терминале:
-```bash
-cmake --version
-ninja --version
-arm-none-eabi-gcc --version
-git --version
+| Tool | Download | Verify |
+| --- | --- | --- |
+| Visual Studio Build Tools | https://visualstudio.microsoft.com/downloads/ | `cl` inside *x64 Native Tools* |
+| GNU Arm Embedded Toolchain | https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads | `arm-none-eabi-gcc --version` |
+| CMake | https://cmake.org/download/ | `cmake --version` |
+| Ninja | https://github.com/ninja-build/ninja/releases | `ninja --version` |
+| Git | https://git-scm.com/downloads | `git --version` |
+
+After installing, check two things:
+
+- The GNU Arm toolchain installer does **not** add its own `bin` folder to `PATH` by default — you have to
+  add it manually (the one that contains `arm-none-eabi-gcc.exe`).
+- The MSVC tools are visible only in `x64 Native Tools Command Prompt for VS` — in a plain `cmd`, configuring a `win-*` preset will fail.
+
+## Step 2 — Clone and build
+
+**1. Create a folder for the SDK** — it becomes `LETO_PATH`. The path can be anything, `C:\LETO` is used everywhere below.
+
+**2. Copy the two scripts from [`guide/deploy/`](.) into it:**
+
 ```
-Все команды должны вернуть номера версий без ошибок.
+C:\LETO\clone_env.bat
+C:\LETO\setup.bat
+```
 
-### 2. Установка и настройка SDK
-1. Создать папку для SDK
-2. Скопировать скрипты `clone_env.bat`, `setup.bat` в корень папки для SDK
-3. Найти и запустить `x64 Native Tools Command Prompt for VS`
-4. Перейти в папку с SDK и выполнить скрипт `clone_env.bat`
-5. Перезапустить терминал (закрыть и снова выполнить п.3)
-6. Выполнить скрипт `setup.bat`
+**3. Start `x64 Native Tools` and run the following commands in it:**
 
-### 3. Настройка переменных окружения:
-Необходимо в переменную окружения `%Path%` (можно как в системную, так и пользовательскую)
-добавить путь к динамическим библиотекам Leto: 
+```bat
+cd /d C:\LETO
+clone_env.bat
+```
+
+**4. Restart the terminal — close it and open it again.**
+
+This is needed so that the new (or updated) `LETO_PATH` environment variable takes effect.
+
+**5. Build everything:**
+
+```bat
+setup.bat
+```
+
+The build can take a while — it all depends on your computer.
+
+## Step 3 — Put the libraries on PATH
+
+The console emulator is linked dynamically to the `LetoAPI` and `LetoCore` libraries — that is what makes debugging fast.
+For the system to find the built `.dll` files, add the path to the LETO libraries to the `PATH` environment variable
+(the user-level one is enough):
+
 ```
 %LETO_PATH%Common\win-debug\bin
 ```
-Переменная окружения `LETO_PATH` при настройке SDK устанавливается автоматически. 
 
-### 4. Проверка корректности установки SDK
-Запустите файл `leto-console.exe` из папки `%LETO_PATH%\Console\win-st7735-debug\bin`.
-Программа должна запустить без ошибок, отобразив окно игровой консоли.
+You can do this under *System → Environment Variables*.
 
+## Step 4 — Verify
 
-## Разработка на Linux 
+Run the emulator:
 
-🚧 *Этот раздел находится в разработке. Информация будет добавлена позже.* 🚧
+```bat
+"%LETO_PATH%Console\win-st7735-debug\bin\leto-console.exe"
+```
+
+The program should start without errors and show the game console window.
+
+## Linux and Termux
+
+🚧 This section is still being written (same in the [Russian version](README_ru.md)).
+
+- `ubuntu-debug` is the only preset that requires Qt6.
+- `termux-*` show the display output in a browser over HTTP.
+- `termux-win-debug` is needed to debug the web output on Windows without a phone.
+
+<p align="center">
+  <sub><a href="../../README.md">← Back to the project README</a></sub>
+</p>
