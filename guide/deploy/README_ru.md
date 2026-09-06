@@ -19,13 +19,13 @@ SDK состоит из трёх репозиториев, которые дол
 
 ## Шаг 1 — Устанавливаем инструменты
 
-| Инструмент | Для чего | Скачать | Проверка |
-| --- | --- | --- | --- |
-| Visual Studio Build Tools | эмулятор | [visualstudio.microsoft.com/ru/downloads](https://visualstudio.microsoft.com/ru/downloads/) | `cl` внутри *x64 Native Tools* |
-| GNU Arm Embedded Toolchain | прошивка | [загрузки Arm GNU toolchain](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads) | `arm-none-eabi-gcc --version` |
-| CMake ≥ 3.20 | всё остальное | [cmake.org/download](https://cmake.org/download/) | `cmake --version` |
-| Ninja | всё остальное | [релизы ninja-build](https://github.com/ninja-build/ninja/releases) | `ninja --version` |
-| Git | всё остальное | [git-scm.com](https://git-scm.com/downloads) | `git --version` |
+| Инструмент | Скачать | Проверка |
+| --- | --- | --- |
+| Visual Studio Build Tools | https://visualstudio.microsoft.com/ru/downloads/ | `cl` внутри *x64 Native Tools* |
+| GNU Arm Embedded Toolchain | https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads | `arm-none-eabi-gcc --version` |
+| CMake | https://cmake.org/download/ | `cmake --version` |
+| Ninja | https://github.com/ninja-build/ninja/releases | `ninja --version` |
+| Git | https://git-scm.com/downloads | `git --version` |
 
 Два момента, на которых спотыкаются чаще всего:
 

@@ -21,13 +21,13 @@ The build results are placed into the `Common` (libraries) and `Console` (execut
 
 ## Step 1 — Install the tools
 
-| Tool | Needed for | Download | Verify |
-| --- | --- | --- | --- |
-| Visual Studio Build Tools | the emulator | [visualstudio.microsoft.com/downloads](https://visualstudio.microsoft.com/downloads/) | `cl` inside *x64 Native Tools* |
-| GNU Arm Embedded Toolchain | the firmware | [Arm GNU toolchain downloads](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads) | `arm-none-eabi-gcc --version` |
-| CMake ≥ 3.20 | everything else | [cmake.org/download](https://cmake.org/download/) | `cmake --version` |
-| Ninja | everything else | [ninja-build releases](https://github.com/ninja-build/ninja/releases) | `ninja --version` |
-| Git | everything else | [git-scm.com](https://git-scm.com/downloads) | `git --version` |
+| Tool | Download | Verify |
+| --- | --- | --- |
+| Visual Studio Build Tools | https://visualstudio.microsoft.com/downloads/ | `cl` inside *x64 Native Tools* |
+| GNU Arm Embedded Toolchain | https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads | `arm-none-eabi-gcc --version` |
+| CMake | https://cmake.org/download/ | `cmake --version` |
+| Ninja | https://github.com/ninja-build/ninja/releases | `ninja --version` |
+| Git | https://git-scm.com/downloads | `git --version` |
 
 Two things people trip over most often:
 
