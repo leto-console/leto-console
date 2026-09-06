@@ -27,12 +27,11 @@ SDK состоит из трёх репозиториев, которые дол
 | Ninja | https://github.com/ninja-build/ninja/releases | `ninja --version` |
 | Git | https://git-scm.com/downloads | `git --version` |
 
-Два момента, на которых спотыкаются чаще всего:
+После установки инструментов важно обратить внимание на следующие моменты:
 
 - На Windows установщик GNU Arm toolchain **не** добавляет свою папку `bin` в `PATH` — это делается
   вручную (нужна та, где лежит `arm-none-eabi-gcc.exe`).
-- MSVC виден только из *Developer*-приглашения. Все команды ниже рассчитаны на
-  **x64 Native Tools Command Prompt for VS**; в обычном `cmd` конфигурация пресета `win-*` упадёт.
+- Инструменты MSVC видны только из `x64 Native Tools Command Prompt for VS`, в обычном `cmd` конфигурация пресета `win-*` упадёт.
 
 ## Шаг 2 — Клонируем и собираем
 

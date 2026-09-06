@@ -29,12 +29,11 @@ The build results are placed into the `Common` (libraries) and `Console` (execut
 | Ninja | https://github.com/ninja-build/ninja/releases | `ninja --version` |
 | Git | https://git-scm.com/downloads | `git --version` |
 
-Two things people trip over most often:
+After installing the tools, it is important to pay attention to the following points:
 
 - On Windows the GNU Arm toolchain installer does **not** add its own `bin` folder to `PATH` — you have to do
   it manually (the one that contains `arm-none-eabi-gcc.exe`).
-- MSVC is visible only from a *Developer* prompt. Every command below assumes the
-  **x64 Native Tools Command Prompt for VS**; in a plain `cmd` the configuration of a `win-*` preset will fail.
+- MSVC tools is visible only in `x64 Native Tools Command Prompt for VS`, in a plain `cmd` the configuration of a `win-*` preset will fail.
 
 ## Step 2 — Clone and build
 
