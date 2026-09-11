@@ -14,7 +14,7 @@ file(GLOB CPP_COURCES
 cmake_minimum_required(VERSION 3.20)
 project("leto-console" C CXX ASM)
 
-if (${PRESET_DEFINE_MACRO} STREQUAL "__STM32__")
+if ("${PRESET_DEFINE_MACRO}" STREQUAL "__STM32__")
 
 	file(GLOB HW_COURCES
 		"Drivers/STM32F4xx_HAL_Driver/Src/*.c"
@@ -57,15 +57,15 @@ if (${PRESET_DEFINE_MACRO} STREQUAL "__STM32__")
 
 	# 5. Команда для автоматической генерации файлов прошивки (.bin и .hex) после сборки ELF
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-		COMMAND ${CMAKE_OBJCOPY} -O ihex $<TARGET_FILE:${PROJECT_NAME}> ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.hex
-		COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:${PROJECT_NAME}> ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.bin
+		COMMAND ${CMAKE_OBJCOPY} -O ihex $<TARGET_FILE:${PROJECT_NAME}> ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.hex
+		COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:${PROJECT_NAME}> ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.bin
 		COMMAND ${CMAKE_SIZE} $<TARGET_FILE:${PROJECT_NAME}>
         COMMENT "Generating .hex, .bin and printing memory size..."
     )
 
 	install(FILES 
-		"${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.bin"
-		"${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.hex"
+		"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.bin"
+		"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${PROJECT_NAME}.hex"
 		DESTINATION bin
 		COMPONENT app
 	)
@@ -104,6 +104,15 @@ endif ()
 
 if(DEFINED ENV{LETO_PATH})
     message(STATUS "[${PROJECT_NAME}] Найдена переменная окружения LETO_PATH. Подключаем готовые артефакты...")
+
+	target_link_directories(${PROJECT_NAME} PUBLIC "$ENV{LETO_PATH}/Common/${CMAKE_PRESET_NAME}/lib")
+	target_include_directories(${PROJECT_NAME} PUBLIC "$ENV{LETO_PATH}/LetoAPI/include")
+
+	add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+		COMMAND ${CMAKE_COMMAND} -E copy_directory
+		"${CMAKE_RUNTIME_OUTPUT_DIRECTORY}"
+		"$ENV{LETO_PATH}/Console/${CMAKE_PRESET_NAME}/bin/"
+	)
 
 	target_link_directories(${PROJECT_NAME} PUBLIC "$ENV{LETO_PATH}/Common/${CORE_BUILD_PRESET}/lib")
 
