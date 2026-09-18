@@ -136,7 +136,7 @@ public:
 		: ConsoleCommand{ name, descr }
 	{
 	}
-	void Handle(const StaticListView<StaticText32>& args) override
+	void Handle(const StaticListView<StaticText32>& args) const override
 	{
 		if (args.size() == 1)
 		{
@@ -209,7 +209,7 @@ public:
 		: ConsoleCommand{ my_name, descr }, hi2c{ hi2c }
 	{
 	}
-	void Handle(const StaticListView<StaticText32>& args) override
+	void Handle(const StaticListView<StaticText32>& args) const override
 	{
 		if (args.size() == 2)
 		{
@@ -350,7 +350,7 @@ public:
 		: ConsoleCommand{ my_name, descr }, huart{ huart }
 	{
 	}
-	void Handle(const StaticListView<StaticText32>& args) override
+	void Handle(const StaticListView<StaticText32>& args) const override
 	{
 		if (args.size() == 2)
 		{
@@ -377,7 +377,7 @@ public:
 		: ConsoleCommand{ my_name, descr }
 	{
 	}
-	void Handle(const StaticListView<StaticText32>& args) override
+	void Handle(const StaticListView<StaticText32>& args) const override
 	{
 		//printf("CommonAllocator: %f\n", CommonAllocator.GetPercentage());
 		//printf("SystemAllocator: %f\n", SystemAllocator.GetPercentage());
@@ -523,10 +523,10 @@ void Application::Init()
 	if (UARTConsoleOnStart.GetOrDefault())
 		uart_log_init(huart_console);
 
-	static I2CCom 		i2c_com		("i2c", "i2c command", hi2c);
-	static NRFCom 		nrf_com		("nrf", "nrf command", huart_console);
-	static PrintCommand print_com	("print", "dummy command");
-	static AllocCom 	alloc_com	("alloc", "alloc info");
+	static const I2CCom 		i2c_com		("i2c", "i2c command", hi2c);
+	static const NRFCom 		nrf_com		("nrf", "nrf command", huart_console);
+	static const PrintCommand 	print_com	("print", "dummy command");
+	static const AllocCom 		alloc_com	("alloc", "alloc info");
 
 	CommandHandler::RegConsoleCommand(&i2c_com);
 	CommandHandler::RegConsoleCommand(&nrf_com);
