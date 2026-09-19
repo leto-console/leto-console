@@ -417,7 +417,7 @@ void Application::InitOnSystemModeChanged()
 
 	if (mode == SystemMode::AUTH)
 	{
-		SystemSceneManager::Instance().AddSceneBuilder<AuthScene>(1);
+		SystemSceneManager::Instance().AddSceneBuilder<AuthScene>(1, &SerialNumber);
 		SystemSceneManager::Instance().SwitchScene(1);
 		VirtualConsole::Instance().Print("Auth Init", GreenColor);
 	}
