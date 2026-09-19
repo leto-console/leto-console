@@ -71,16 +71,19 @@ protected:
 
     void InitClearQuestions()
     {
+		clear_question.InitBaseCatchers();
         clear_question.SetText(0, "ВНИМАНИЕ!");
 		clear_question.SetText(1, "ПОЛНЫЙ СБРОС");
 		clear_question.SetText(2, "EEPROM");
 		clear_question.AppendMenuItem("ОТМЕНИТЬ", false);
 		clear_question.AppendMenuItem("ПРОДОЛЖИТЬ", true);
 		clear_question.SetPosition({64, 0});
+		clear_question.Disable();
 
 		reset_question.SetText(1, "ПЕРЕЗАГРУЗИТЕ");
 		reset_question.SetText(2, "КОНСОЛЬ");
 		reset_question.SetPosition({64, 0});
+		reset_question.Disable();
 
         clear_button = AddSetting<ButtonCallInstanceSettingUI<Settings_2>>("СБРОСИТЬ", Point2_i{-1, -1});
 		clear_button->InitScene(this, &Settings_2::OnClear);
@@ -132,18 +135,14 @@ public:
 			SettingsContainer::Draw(screen, offset);
 		}
 
-		clear_question.Draw(screen);
-		reset_question.Draw(screen);
+		clear_question.MainDraw(screen);
+		reset_question.MainDraw(screen);
 	}
 
 	bool ProcessInput(const AppEvent& event) override
 	{
-		if (part >= 0)
-			return true;
-
-		if (clear_question.IsCaptured() && clear_question.ProcessInput(event))
-			return true;
-
+		if (part >= 0) return true;
+		if (clear_question.MainProcessInput(event)) return true;
 		return SettingsContainer::ProcessInput(event);
 	}
 

@@ -46,8 +46,10 @@ MainScene::MainScene(ISceneManager* scene_manager) : CommonScene{scene_manager}
 	menu.InitBaseCatchers();
 	menu.AppendMenuItem("ВЫЙТИ", SceneID::LOGOUT);
 	menu.SetResetOnShow(false);
+	menu.EnableReadyLogic();
 	menu.Enable();
 
+	exit_question.InitBaseCatchers();
 	exit_question.SetText(0, "ВЫ");
 	exit_question.SetText(1, "УВЕРЕНЫ?");
 	exit_question.SetText(2, "А?");
@@ -77,21 +79,22 @@ void MainScene::Loop()
 		}
 		exit_question.Disable();
 	}
+
+	SceneID scene;
+	if (menu.IsResultParamReady(scene))
+	{
+		if (scene == SceneID::LOGOUT)
+			exit_question.Enable();
+		else
+			scene_manager->SwitchScene(scene);
+		menu.SubmitReady();
+	}
 }
 
 bool MainScene::ProcessInput(const AppEvent& event)
 {
 	if (CommonScene::ProcessInput(event)) 
 		return true;
-
-	if (IsSystemEnterEvent(event))
-	{
-		if (menu.GetCurrentParam() == SceneID::LOGOUT)
-			exit_question.Enable();
-		else
-			scene_manager->SwitchScene(menu.GetCurrentParam());
-		return true;
-	}
 
 	return true;
 }
