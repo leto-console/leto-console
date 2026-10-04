@@ -6,6 +6,10 @@ chmod +x ./LetoAPI/scripts/preset_setup.sh
 chmod +x ./LetoCore/scripts/preset_setup.sh 
 chmod +x ./leto-console/preset_setup/setup.sh
 
+set -e
 ./LetoAPI/scripts/setup.sh
 ./LetoCore/scripts/setup.sh
 ./leto-console/scripts/setup.sh
+
+echo
+echo [LetoSDK] Сборка успешно завершена!

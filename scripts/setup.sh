@@ -1,6 +1,7 @@
 #!/bin/bash
 
 echo "[LetoAPI] Собираем проект..."
+set -e
 
 (
     cd "$(dirname "${BASH_SOURCE}")" || exit 1

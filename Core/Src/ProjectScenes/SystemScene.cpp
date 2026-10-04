@@ -226,7 +226,6 @@ public:
 		for (ExtDevice* device : ExtDevices)
 		{
 			UI_ExtDeviceStatus status;
-			status.SetFont(&Default_Font_7x7_small);
 			status.SetDevice(device);
 			ui_devs.push_back(status);
 		}

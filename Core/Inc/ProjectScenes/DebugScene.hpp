@@ -12,6 +12,7 @@
 #include "ProjectScenes/SceneID.hpp"
 
 #include <SceneManager/ISceneBuilder.hpp>
+#include <Input/Catchers/IEncoderCatcher.hpp>
 
 class DebugScene : public CommonScene
 {
@@ -23,6 +24,10 @@ public:
 	bool ProcessInput(const AppEvent& event) override;
 
 	SCENE_NO_ARGS_BUILDER(DebugScene)
+protected:
+	bool reverse{};
+	uint8_t mode{0};
+	uint8_t bonus_part{0};
 };
 
 #endif
