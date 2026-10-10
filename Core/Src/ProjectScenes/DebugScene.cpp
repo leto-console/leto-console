@@ -55,8 +55,8 @@ void DebugScene::Draw(IScreen& screen)
 	{
 	case _DM_ENCODERS:
 	{
-		static StaticText8 clk_text = "CLK";
-		static StaticText8 dt_text = "DT";
+		static constexpr StaticText8 clk_text = "CLK";
+		static constexpr StaticText8 dt_text = "DT";
 
 		DrawFunctions::DrawText(screen, {0, 0}, clk_text);
 		DEBUG_ENCODER_CLK.Draw(screen, {0, 0});

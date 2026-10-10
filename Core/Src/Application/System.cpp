@@ -464,6 +464,7 @@ void Application::InitOnSystemModeChanged()
 
 #include <FatFs/FatFsTest.hpp>
 #include <System/DeviceID.hpp>
+#include <System/SystemLanguage.hpp>
 
 #include "ProjectScenes/SceneID.hpp"
 #include "Common/ProjectHandlers.h"
@@ -503,6 +504,7 @@ void Application::Init()
 
 	SetDeviceID(SerialNumber.GetOrDefault());
 	InitDebugModeCell(&DebugMode);
+	InitSystemLanguageCell(&SystemLanguage);
 
 	// Инициализация обработчика аутентификации и авторизации
 	AuthHandler::Instance().Init(AuthHandlerStart, SystemStorage, 7, 0x0400, 0x0400);

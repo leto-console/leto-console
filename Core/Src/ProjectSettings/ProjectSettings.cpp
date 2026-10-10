@@ -16,7 +16,8 @@ StoredDataCell<bool>			UARTConsoleOnStart	(SystemSettingsStart + 0x04, 1, &Syste
 StoredDataCell<bool>			EnableSnowfall		(SystemSettingsStart + 0x04, 2, &SystemStorage);
 // Адрес: 0x0004:3, Размер: 1 бит
 StoredDataCell<bool>			DebugMode			(SystemSettingsStart + 0x04, 3, &SystemStorage);
-
+// Адрес: 0x0007,   Размер: 1 Б
+StoredDataCell<LetoLanguage_V1>	SystemLanguage      (SystemSettingsStart + 0x07, &SystemStorage);
 // Адрес: 0x0008,	Размер: 4 Б
 StoredDataCell<uint32_t>		SerialNumber		(SystemSettingsStart + 0x08, &SystemStorage);
 
