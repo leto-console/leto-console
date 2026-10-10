@@ -116,8 +116,8 @@ public:
 
 		if (part >= 0)
 		{
-			static StaticText32 empty_text = "                ";
-			static StaticText32 process_text = "ПРОЦЕСС ОЧИСТКИ";
+			static constexpr StaticText32 empty_text = "                ";
+			static constexpr StaticText32 process_text = "ПРОЦЕСС ОЧИСТКИ";
 
 			DrawText(screen, {0, 0}, empty_text);
 			DrawText(screen, {0, 8}, empty_text);

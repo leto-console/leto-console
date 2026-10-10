@@ -15,9 +15,11 @@
 
 #include <Data/IDataCell.hpp>
 
-#include <stdint.h>
+#include <cstdint>
 #include <Data/StaticText.hpp>
 #include <Time/DateTime.hpp>
+
+#include <LetoAPI_V1/Globals/LetoLanguage_V1.h>
 
 // --------------------------------------------------
 
@@ -43,6 +45,9 @@ extern StoredDataCell<bool>				EnableSnowfall;
 
 // Режим отладки
 extern StoredDataCell<bool>				DebugMode;
+
+// Язык системы
+extern StoredDataCell<LetoLanguage_V1>	SystemLanguage;
 
 // Серийный номер устройства
 extern StoredDataCell<uint32_t>			SerialNumber;
