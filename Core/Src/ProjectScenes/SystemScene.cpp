@@ -328,6 +328,10 @@ protected:
 		if (size < sizeof(AppEvent)) return;
 		memcpy(&get_data, data, sizeof(AppEvent));
 	}
+
+	void OnTimeout() override
+	{ 
+	}
 };
 
 static LobbyDataProcessor* data_processor{};

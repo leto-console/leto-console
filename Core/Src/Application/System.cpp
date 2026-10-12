@@ -631,17 +631,17 @@ void Application::InitInput()
 //#endif
 
 	// Создание объектов кнопок
-	static ButtonDevice button[7]{};
+	static ButtonDevice buttons[7]{};
 
 	// Инициализация кнопок
 #ifdef USE_HAL_DRIVER
-	button[0].Init(SYSTEM_BTN_UP, BTN_1_GPIO_Port, BTN_1_Pin);
-	button[1].Init(SYSTEM_BTN_DOWN, BTN_2_GPIO_Port, BTN_2_Pin);
-	button[2].Init(SYSTEM_BTN_LEFT, BTN_3_GPIO_Port, BTN_3_Pin);
-	button[3].Init(SYSTEM_BTN_RIGHT, BTN_4_GPIO_Port, BTN_4_Pin);
-	button[4].Init(SYSTEM_BTN_ENTER, BTN_5_GPIO_Port, BTN_5_Pin);
-	button[5].Init(SYSTEM_BTN_MENU, BTN_6_GPIO_Port, BTN_6_Pin);
-	button[6].Init(SYSTEM_BTN_ALT, BTN_7_GPIO_Port, BTN_7_Pin);
+	buttons[0].Init(SYSTEM_BTN_UP, BTN_1_GPIO_Port, BTN_1_Pin);
+	buttons[1].Init(SYSTEM_BTN_DOWN, BTN_2_GPIO_Port, BTN_2_Pin);
+	buttons[2].Init(SYSTEM_BTN_LEFT, BTN_3_GPIO_Port, BTN_3_Pin);
+	buttons[3].Init(SYSTEM_BTN_RIGHT, BTN_4_GPIO_Port, BTN_4_Pin);
+	buttons[4].Init(SYSTEM_BTN_ENTER, BTN_5_GPIO_Port, BTN_5_Pin);
+	buttons[5].Init(SYSTEM_BTN_MENU, BTN_6_GPIO_Port, BTN_6_Pin);
+	buttons[6].Init(SYSTEM_BTN_ALT, BTN_7_GPIO_Port, BTN_7_Pin);
 #else
 	constexpr int Left_key = 37;
 	constexpr int Up_key = 38;
@@ -651,19 +651,32 @@ void Application::InitInput()
 	constexpr int Escape_key = 27;
 	constexpr int Space_key = 32;
 
-	button[0].Init(SYSTEM_BTN_UP, Up_key);
-	button[1].Init(SYSTEM_BTN_DOWN, Down_key);
-	button[2].Init(SYSTEM_BTN_LEFT, Left_key);
-	button[3].Init(SYSTEM_BTN_RIGHT, Right_key);
-	button[4].Init(SYSTEM_BTN_ENTER, Enter_key);
-	button[5].Init(SYSTEM_BTN_MENU, Escape_key);
-	button[6].Init(SYSTEM_BTN_ALT, Space_key);
+	buttons[0].Init(SYSTEM_BTN_UP, Up_key);
+	buttons[1].Init(SYSTEM_BTN_DOWN, Down_key);
+	buttons[2].Init(SYSTEM_BTN_LEFT, Left_key);
+	buttons[3].Init(SYSTEM_BTN_RIGHT, Right_key);
+	buttons[4].Init(SYSTEM_BTN_ENTER, Enter_key);
+	buttons[5].Init(SYSTEM_BTN_MENU, Escape_key);
+	buttons[6].Init(SYSTEM_BTN_ALT, Space_key);
+
+	// Дублеры событий с помощью мыши
+	constexpr int Mouse_Left = 1;
+	constexpr int Mouse_Right = 2;
+	constexpr int Mouse_Middle = 4;
+
+	static ButtonDevice add_button[1]{};
+
+	add_button[0].Init(SYSTEM_BTN_ENTER, Mouse_Middle);
+	//add_button[1].Init(SYSTEM_BTN_RIGHT, Mouse_Right);
+	//add_button[2].Init(SYSTEM_BTN_ENTER, Mouse_Middle);
+
+	for (ButtonDevice& button : add_button)
+		UserInputs.Push(&button);
+
 #endif
 
-	for (uint8_t i = 0; i < sizeof(button) / sizeof(button[0]); ++i)
-	{
-		UserInputs.Push(&button[i]);
-	}
+	for (ButtonDevice& button : buttons)
+		UserInputs.Push(&button);
 
 	// Создание и инициализация энкодера
 	static EncoderDevice encoder1{};
@@ -671,7 +684,7 @@ void Application::InitInput()
 #ifdef USE_HAL_DRIVER
 	encoder1.Init(SYSTEM_ENC_MAIN, ENC_CLK_GPIO_Port, ENC_CLK_Pin, ENC_DT_GPIO_Port, ENC_DT_Pin);
 #else
-	encoder1.Init(SYSTEM_ENC_MAIN, 189, 187);
+	encoder1.Init(SYSTEM_ENC_MAIN, 189, 187, true);
 #endif
 
 	encoder1.SetReverse(EncoderReverse.GetOrDefault());
