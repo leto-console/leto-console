@@ -1,3 +1,6 @@
+cmake_minimum_required(VERSION 3.20)
+project("leto-console" C CXX ASM)
+
 add_compile_definitions(${PRESET_DEFINE_MACRO})
 add_compile_definitions(${USE_SCREEN})
 
@@ -10,9 +13,6 @@ file(GLOB CPP_COURCES
 	"Core/Src/*/*.cpp" "Core/Src/*/*.c" 
 	"Core/Inc/*/*.cpp" "Core/Inc/*/*.c"
 )
-
-cmake_minimum_required(VERSION 3.20)
-project("leto-console" C CXX ASM)
 
 if ("${PRESET_DEFINE_MACRO}" STREQUAL "__STM32__")
 
@@ -111,10 +111,45 @@ if(DEFINED ENV{LETO_PATH})
 		"$ENV{LETO_PATH}/Console/${CMAKE_PRESET_NAME}/bin/"
 	)
 
-	target_link_directories(${PROJECT_NAME} PUBLIC "$ENV{LETO_PATH}/Common/${CORE_BUILD_PRESET}/lib")
+	set(LIB_DIR "$ENV{LETO_PATH}/Common/${CORE_BUILD_PRESET}/lib")
+	set(BIN_DIR "$ENV{LETO_PATH}/Common/${CORE_BUILD_PRESET}/bin")
 
-	target_include_directories(${PROJECT_NAME} PUBLIC "$ENV{LETO_PATH}/LetoAPI/include")
-	target_include_directories(${PROJECT_NAME} PUBLIC "$ENV{LETO_PATH}/LetoCore/include")
+    if(WIN32)
+		set(LIB_PREFIX "")
+        set(LIB_EXT "lib")
+
+		add_library(LetoAPI SHARED IMPORTED GLOBAL)
+		set_target_properties(LetoAPI PROPERTIES
+			IMPORTED_IMPLIB "${LIB_DIR}/${LIB_PREFIX}LetoAPI.${LIB_EXT}"
+			IMPORTED_LOCATION "${BIN_DIR}/LetoAPI.dll"
+			INTERFACE_INCLUDE_DIRECTORIES "$ENV{LETO_PATH}/LetoAPI/include"
+		)
+
+		add_library(LetoCore SHARED IMPORTED GLOBAL)
+		set_target_properties(LetoCore PROPERTIES
+			IMPORTED_IMPLIB "${LIB_DIR}/${LIB_PREFIX}LetoCore.${LIB_EXT}"
+			IMPORTED_LOCATION "${BIN_DIR}/LetoCore.dll"
+			INTERFACE_INCLUDE_DIRECTORIES "$ENV{LETO_PATH}/LetoCore/include"
+			INTERFACE_COMPILE_DEFINITIONS "LETOCORE_SHARED" # макрос привязан к библиотеке!
+		)
+    else()
+        set(LIB_PREFIX "lib")
+        set(LIB_EXT "a")
+
+		add_library(LetoAPI STATIC IMPORTED GLOBAL)
+		set_target_properties(LetoAPI PROPERTIES
+			IMPORTED_LOCATION "${LIB_DIR}/${LIB_PREFIX}LetoAPI.${LIB_EXT}"
+			INTERFACE_INCLUDE_DIRECTORIES "$ENV{LETO_PATH}/LetoAPI/include"
+		)
+
+		add_library(LetoCore STATIC IMPORTED GLOBAL)
+		set_target_properties(LetoCore PROPERTIES
+			IMPORTED_LOCATION "${LIB_DIR}/${LIB_PREFIX}LetoCore.${LIB_EXT}"
+			INTERFACE_INCLUDE_DIRECTORIES "$ENV{LETO_PATH}/LetoCore/include"
+			INTERFACE_COMPILE_DEFINITIONS "LETOCORE_SHARED" # макрос привязан к библиотеке!
+		)
+    endif()
+
 else()
     message(STATUS "[${PROJECT_NAME}] Переменная окружения LETO_PATH не найдена. Серверная сборка через FetchContent...")
 
@@ -127,8 +162,7 @@ else()
     FetchContent_MakeAvailable(LetoCore)
 endif()
 
-target_link_libraries("${PROJECT_NAME}" PUBLIC LetoAPI)
-target_link_libraries("${PROJECT_NAME}" PUBLIC LetoCore)
+target_link_libraries("${PROJECT_NAME}" PUBLIC LetoAPI LetoCore)
 
 install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION bin
