@@ -664,11 +664,11 @@ void Application::InitInput()
 	constexpr int Mouse_Right = 2;
 	constexpr int Mouse_Middle = 4;
 
-	static ButtonDevice add_button[3]{};
+	static ButtonDevice add_button[1]{};
 
-	add_button[0].Init(SYSTEM_BTN_LEFT, Mouse_Left);
-	add_button[1].Init(SYSTEM_BTN_RIGHT, Mouse_Right);
-	add_button[2].Init(SYSTEM_BTN_ENTER, Mouse_Middle);
+	add_button[0].Init(SYSTEM_BTN_ENTER, Mouse_Middle);
+	//add_button[1].Init(SYSTEM_BTN_RIGHT, Mouse_Right);
+	//add_button[2].Init(SYSTEM_BTN_ENTER, Mouse_Middle);
 
 	for (ButtonDevice& button : add_button)
 		UserInputs.Push(&button);
