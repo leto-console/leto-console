@@ -5,6 +5,7 @@
 
 #include <ProjectSettings/ProjectSettings.hpp>
 #include <NRF24L01/NRF24L01_data.hpp>
+#include <VirtualConsole/VirtualConsole.hpp>
 
 
 WebQueueRxTxTask::WebQueueRxTxTask(const StaticText32& name, uint32_t period_ms, uint8_t priority)
@@ -61,13 +62,15 @@ void WebQueueRxTxTask::UpdateSettings()
 	}
 }
 
-bool WebQueueRxTxTask::DoTx(uint8_t channel, WebPacket_V1 &msg_out)
+bool WebQueueRxTxTask::DoTx(uint8_t channel, WebPacket_V1& msg_out)
 {
 	bool success = false;
 	if (!channel || channel == WC_CHANNEL_UART)
 		success = DoTxUART(msg_out) || success;
 	if (!channel || channel == WC_CHANNEL_NRF)
 		success = DoTxNRF(msg_out) || success;
+	VC_Printf("%d>%d:%d:%02X%02X%02X%02X%02X%02X%02X%02X", success ? GreenColor : RedColor, msg_out.id_from, msg_out.id_to, msg_out.port,
+		msg_out.data[0], msg_out.data[1], msg_out.data[2], msg_out.data[3], msg_out.data[4], msg_out.data[5], msg_out.data[6], msg_out.data[7]);
 	return success;
 }
 
