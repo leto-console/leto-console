@@ -1,0 +1,36 @@
+# По умолчанию для всех текстовых файлов используем автоопределение с LF в репозитории
+* text=auto eol=lf
+
+# Исходный код и Linux-скрипты — строго в формате Linux (LF)
+*.cpp text eol=lf
+*.h text eol=lf
+*.hpp text eol=lf
+*.sh text eol=lf
+*.cmake text eol=lf
+CMakeLists.txt text eol=lf
+
+# Windows-скрипты — принудительно в формате Windows (CRLF)
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Обычные текстовые файлы и документация (Linux LF)
+*.md text eol=lf
+*.txt text eol=lf
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.ini text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+
+# Бинарные файлы (оставляем без изменений)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.eeprom binary
+*.img binary
+*.dll binary
+*.exe binary
