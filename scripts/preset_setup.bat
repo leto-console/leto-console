@@ -1,4 +1,6 @@
 @echo off
+chcp 65001 > nul
+
 if "%LETO_PATH%"=="" (
 	echo [ERROR] Переменная окружения LETO_PATH не задана.
 	echo Задайте её один раз командой: setx LETO_PATH "C:/путь/к/папке/с/репозиториями"

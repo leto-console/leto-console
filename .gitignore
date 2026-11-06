@@ -382,3 +382,6 @@ Core/Src/Utils/ConfigIO
 *.eeprom
 *.img
 apps/
+
+# MacOS
+.DS_Store
