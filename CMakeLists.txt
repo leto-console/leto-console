@@ -14,6 +14,68 @@ file(GLOB CPP_COURCES
 	"Core/Inc/*/*.cpp" "Core/Inc/*/*.c"
 )
 
+# Функция добавления импортированной библиотеки Leto
+# Использование:
+#   add_leto_library(LetoAPI)
+#   add_leto_library(LetoCore COMPILE_DEFINITIONS <...>)
+#   add_leto_library(LetoAPI LIB_DIR <...> BIN_DIR <...>)
+#   add_leto_library(LetoCore LIB_DIR <...> BIN_DIR <...> COMPILE_DEFINITIONS <...>)
+function(add_leto_library LIB_NAME)
+
+    # Разбор именованных аргументов
+    set(options "")
+    set(oneValueArgs LIB_DIR BIN_DIR)
+    set(multiValueArgs COMPILE_DEFINITIONS)
+    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
+
+	# Если не переданы, используем глобальные переменные
+    if(NOT ARG_LIB_DIR)
+        set(ARG_LIB_DIR "${LIB_DIR}")
+    endif()
+    if(NOT ARG_BIN_DIR)
+        set(ARG_BIN_DIR "${BIN_DIR}")
+    endif()
+
+    # Платформо-зависимые настройки
+    if(WIN32)
+        set(_type SHARED)
+        set(_prefix "")
+        set(_ext "lib")
+        set(_implib "${ARG_LIB_DIR}/${LIB_NAME}.${_ext}")
+        set(_location "${ARG_BIN_DIR}/${LIB_NAME}.dll")
+    else()
+        set(_type STATIC)
+        set(_prefix "lib")
+        set(_ext "a")
+        set(_implib "")
+        set(_location "${ARG_LIB_DIR}/${_prefix}${LIB_NAME}.${_ext}")
+    endif()
+
+    # Создание импортированной цели
+    add_library(${LIB_NAME} ${_type} IMPORTED GLOBAL)
+
+    # Базовые свойства (общие для всех библиотек)
+    set_target_properties(${LIB_NAME} PROPERTIES
+        IMPORTED_LOCATION "${_location}"
+        INTERFACE_INCLUDE_DIRECTORIES "$ENV{LETO_PATH}/${LIB_NAME}/include"
+    )
+
+    # IMPORTED_IMPLIB нужен только для Windows (SHARED)
+    if(_implib)
+        set_target_properties(${LIB_NAME} PROPERTIES
+            IMPORTED_IMPLIB "${_implib}"
+        )
+    endif()
+
+    # Дополнительные compile definitions (если переданы)
+    if(ARG_COMPILE_DEFINITIONS)
+        set_target_properties(${LIB_NAME} PROPERTIES
+            INTERFACE_COMPILE_DEFINITIONS "${ARG_COMPILE_DEFINITIONS}"
+        )
+    endif()
+	
+endfunction()
+
 if ("${PRESET_DEFINE_MACRO}" STREQUAL "__STM32__")
 
 	file(GLOB HW_COURCES
@@ -114,41 +176,9 @@ if(DEFINED ENV{LETO_PATH})
 	set(LIB_DIR "$ENV{LETO_PATH}/Common/${CORE_BUILD_PRESET}/lib")
 	set(BIN_DIR "$ENV{LETO_PATH}/Common/${CORE_BUILD_PRESET}/bin")
 
-    if(WIN32)
-		set(LIB_PREFIX "")
-        set(LIB_EXT "lib")
-
-		add_library(LetoAPI SHARED IMPORTED GLOBAL)
-		set_target_properties(LetoAPI PROPERTIES
-			IMPORTED_IMPLIB "${LIB_DIR}/${LIB_PREFIX}LetoAPI.${LIB_EXT}"
-			IMPORTED_LOCATION "${BIN_DIR}/LetoAPI.dll"
-			INTERFACE_INCLUDE_DIRECTORIES "$ENV{LETO_PATH}/LetoAPI/include"
-		)
-
-		add_library(LetoCore SHARED IMPORTED GLOBAL)
-		set_target_properties(LetoCore PROPERTIES
-			IMPORTED_IMPLIB "${LIB_DIR}/${LIB_PREFIX}LetoCore.${LIB_EXT}"
-			IMPORTED_LOCATION "${BIN_DIR}/LetoCore.dll"
-			INTERFACE_INCLUDE_DIRECTORIES "$ENV{LETO_PATH}/LetoCore/include"
-			INTERFACE_COMPILE_DEFINITIONS "LETOCORE_SHARED" # макрос привязан к библиотеке!
-		)
-    else()
-        set(LIB_PREFIX "lib")
-        set(LIB_EXT "a")
-
-		add_library(LetoAPI STATIC IMPORTED GLOBAL)
-		set_target_properties(LetoAPI PROPERTIES
-			IMPORTED_LOCATION "${LIB_DIR}/${LIB_PREFIX}LetoAPI.${LIB_EXT}"
-			INTERFACE_INCLUDE_DIRECTORIES "$ENV{LETO_PATH}/LetoAPI/include"
-		)
-
-		add_library(LetoCore STATIC IMPORTED GLOBAL)
-		set_target_properties(LetoCore PROPERTIES
-			IMPORTED_LOCATION "${LIB_DIR}/${LIB_PREFIX}LetoCore.${LIB_EXT}"
-			INTERFACE_INCLUDE_DIRECTORIES "$ENV{LETO_PATH}/LetoCore/include"
-			INTERFACE_COMPILE_DEFINITIONS "LETOCORE_SHARED" # макрос привязан к библиотеке!
-		)
-    endif()
+	add_leto_library(LetoAPI)
+	add_leto_library(LetoCore)
+	add_leto_library(LetoOS)
 
 else()
     message(STATUS "[${PROJECT_NAME}] Переменная окружения LETO_PATH не найдена. Серверная сборка через FetchContent...")
@@ -160,9 +190,16 @@ else()
         GIT_TAG        main
     )
     FetchContent_MakeAvailable(LetoCore)
+
+	FetchContent_Declare(
+        LetoOS
+        GIT_REPOSITORY https://github.com/leto-console/LetoOS
+        GIT_TAG        main
+    )
+    FetchContent_MakeAvailable(LetoOS)
 endif()
 
-target_link_libraries("${PROJECT_NAME}" PUBLIC LetoAPI LetoCore)
+target_link_libraries("${PROJECT_NAME}" PUBLIC LetoOS LetoCore LetoAPI)
 
 install(TARGETS ${PROJECT_NAME}
     RUNTIME DESTINATION bin

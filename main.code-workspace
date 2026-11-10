@@ -8,6 +8,9 @@
         },
         {
             "path": "../LetoCore"
+        },
+        {
+            "path": "../LetoOS"
         }
     ],
     "extensions": {
