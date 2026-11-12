@@ -5,7 +5,7 @@
 #include <Input/SystemInputID.hpp>
 
 #include <Input/ButtonEvent.hpp>
-#include <SceneManager/SystemSceneManager.hpp>
+#include <System/SystemSceneManager.hpp>
 #include <Time/Timer.hpp>
 
 #include <Bitmaps/Eyes.hpp>

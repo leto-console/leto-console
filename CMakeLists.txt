@@ -176,9 +176,9 @@ if(DEFINED ENV{LETO_PATH})
 	set(LIB_DIR "$ENV{LETO_PATH}/Common/${CORE_BUILD_PRESET}/lib")
 	set(BIN_DIR "$ENV{LETO_PATH}/Common/${CORE_BUILD_PRESET}/bin")
 
-	add_leto_library(LetoAPI)
-	add_leto_library(LetoCore)
-	add_leto_library(LetoOS)
+	add_leto_library(LetoAPI COMPILE_DEFINITIONS LETOCORE_SHARED)
+	add_leto_library(LetoCore COMPILE_DEFINITIONS LETOCORE_SHARED)
+	add_leto_library(LetoOS COMPILE_DEFINITIONS LETO_OS_SHARED)
 
 else()
     message(STATUS "[${PROJECT_NAME}] Переменная окружения LETO_PATH не найдена. Серверная сборка через FetchContent...")
