@@ -1161,7 +1161,7 @@ public:
 //};
 
 #include <UI/CapacitySettingUI.hpp>
-#include <SceneManager/SystemSceneManager.hpp>
+#include <SceneManager/ISceneManager.hpp>
 #include <TaskHandler/PriorityTaskSheduler.hpp>
 
 class CapacitySettingScene : public IScene

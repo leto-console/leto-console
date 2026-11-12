@@ -8,7 +8,7 @@
 #include <UI/ButtonSettingUI.hpp>
 
 #include "ProjectSettings/ProjectSettings.hpp"
-#include <SceneManager/SystemSceneSettings.hpp>
+#include <System/SystemSceneSettings.hpp>
 
 #include <Data/StaticText.hpp>
 #include <Data/StaticList.hpp>

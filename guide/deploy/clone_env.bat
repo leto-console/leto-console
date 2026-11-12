@@ -27,6 +27,7 @@ if %USE_SSH%==1 (
 :: 2. Клонирование репозиториев проекта LETO
 git clone "%BASE_URL%/LetoAPI%SUFFIX%"
 git clone "%BASE_URL%/LetoCore%SUFFIX%"
+git clone "%BASE_URL%/LetoOS%SUFFIX%"
 git clone "%BASE_URL%/leto-console%SUFFIX%"
 
 mkdir Common
