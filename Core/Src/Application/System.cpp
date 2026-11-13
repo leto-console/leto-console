@@ -25,7 +25,7 @@ Application* SysInstance = nullptr;
 //  Платформозависимые включения и инициализации приложения (HAL, Win32, Linux)
 // ----------------------------------------------------------------------------------------------------
 
-#ifdef USE_HAL_DRIVER
+#ifdef __STM32__
 
 #include <HAL_include/HAL.hpp>
 #include "main.h"
@@ -39,7 +39,7 @@ Application* SysInstance = nullptr;
 
 // ------------------------------------- Инициализация HAL-версии -------------------------------------
 
-#ifdef USE_HAL_DRIVER
+#ifdef __STM32__
 
 Application::Application(Periphery periphery) :
 	hi2c{ periphery.hi2c },
@@ -61,17 +61,20 @@ Application::~Application()
 }
 #endif
 
-// ----------------------------------- Инициализация Windows-версии -----------------------------------
+// -------------------------------------- Инициализация PC-версии -------------------------------------
 
-#ifdef __WIN__
-#include <windows.h>
+#ifndef __STM32__
+
+// #if defined(__WIN__)
+// #include <windows.h>
+// #endif
 
 Application::Application(int argc, char** argv) :
 	arg_parser{ argc, argv },
 	eeprom_24c_08{ (256 / 8) * 1024, arg_parser.FindArg("--client") ? "client.eeprom" : "server.eeprom" },
 #if defined(USE_SSD1306)
 	display{ 128, 64, 3 }
-#else if defined(USE_ST7735)
+#elif defined(USE_ST7735)
 	display{ 160, 128, 3 }
 #endif
 {
@@ -80,45 +83,6 @@ Application::~Application()
 {
 }
 #endif
-
-// ------------------------------------- Инициализация Linux-версии -------------------------------------
-
-#ifdef __LINUX__
-#include <SSD1306/SSD1306_QtWindow.hpp>
-#include <QThread>
-
-Application::Application()
-{
-	int _ = 0; qapp = new QApplication(_, nullptr);
-	ssd1306_w = new SSD1306_QtWindow();
-}
-Application::~Application()
-{
-	delete ssd1306_w;
-	delete qapp;
-}
-#endif
-
-// ------------------------------------- Инициализация HTTP-версии -------------------------------------
-
-#ifdef __TERMUX__
-#include <GraphicsPC/HttpDisplay.hpp>
-
-Application::Application(int argc, char** argv) :
-	arg_parser{ argc, argv },
-	eeprom_24c_08{ (256 / 8) * 1024, arg_parser.FindArg("--client") ? "client.eeprom" : "server.eeprom" },
-#if defined(USE_SSD1306)
-	display{ 128, 64, 3 }
-#else if defined(USE_ST7735)
-	display{ 160, 128, 3 }
-#endif
-{
-}
-Application::~Application()
-{
-}
-#endif
-
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -450,7 +414,7 @@ void Application::InitOnSystemModeChanged()
 
 #ifndef USE_HAL_DRIVER
 
-#include <FatFs/low_level/ff_win.hpp>
+#include <FatFs/low_level/ff_pc.hpp>
 
 #else
 
@@ -458,7 +422,6 @@ void Application::InitOnSystemModeChanged()
 #include <FatFs/low_level/ff.h>
 #include <SDCard/sdcard.h>
 #include <ST7735/low_level/ST7735.h>
-
 
 #endif
 
@@ -589,9 +552,9 @@ bool Application::Loop()
 	PriorityTaskSheduler::Shedule();
 	NRF24L01::Scanner.Loop();
 
-#ifdef __LINUX__
-	qapp->processEvents();
-#endif
+// #ifdef __LINUX__
+// 	qapp->processEvents();
+// #endif
 
 	// Если изменился режим работы системы, производится переинициализация
 	InitOnSystemModeChanged();
@@ -613,6 +576,8 @@ bool Application::GetRebootFlag() const
 #include <Input/Devices/UserInputDevice.hpp>
 
 #include <Input/SystemInputID.hpp>
+
+#include <Input/KeyCodePC.hpp>
 
 void Application::InitInput()
 {
@@ -643,32 +608,22 @@ void Application::InitInput()
 	buttons[5].Init(SYSTEM_BTN_MENU, BTN_6_GPIO_Port, BTN_6_Pin);
 	buttons[6].Init(SYSTEM_BTN_ALT, BTN_7_GPIO_Port, BTN_7_Pin);
 #else
-	constexpr int Left_key = 37;
-	constexpr int Up_key = 38;
-	constexpr int Right_key = 39;
-	constexpr int Down_key = 40;
-	constexpr int Enter_key = 13;
-	constexpr int Escape_key = 27;
-	constexpr int Space_key = 32;
+	using namespace KeyCodePC;
 
-	buttons[0].Init(SYSTEM_BTN_UP, Up_key);
-	buttons[1].Init(SYSTEM_BTN_DOWN, Down_key);
-	buttons[2].Init(SYSTEM_BTN_LEFT, Left_key);
-	buttons[3].Init(SYSTEM_BTN_RIGHT, Right_key);
-	buttons[4].Init(SYSTEM_BTN_ENTER, Enter_key);
-	buttons[5].Init(SYSTEM_BTN_MENU, Escape_key);
-	buttons[6].Init(SYSTEM_BTN_ALT, Space_key);
+	buttons[0].Init(SYSTEM_BTN_UP, KEY_UP);
+	buttons[1].Init(SYSTEM_BTN_DOWN, KEY_DOWN);
+	buttons[2].Init(SYSTEM_BTN_LEFT, KEY_LEFT);
+	buttons[3].Init(SYSTEM_BTN_RIGHT, KEY_RIGHT);
+	buttons[4].Init(SYSTEM_BTN_ENTER, KEY_RETURN);
+	buttons[5].Init(SYSTEM_BTN_MENU, KEY_ESCAPE);
+	buttons[6].Init(SYSTEM_BTN_ALT, KEY_SPACE);
 
 	// Дублеры событий с помощью мыши
-	constexpr int Mouse_Left = 1;
-	constexpr int Mouse_Right = 2;
-	constexpr int Mouse_Middle = 4;
-
 	static ButtonDevice add_button[1]{};
 
-	add_button[0].Init(SYSTEM_BTN_ENTER, Mouse_Middle);
-	//add_button[1].Init(SYSTEM_BTN_RIGHT, Mouse_Right);
-	//add_button[2].Init(SYSTEM_BTN_ENTER, Mouse_Middle);
+	add_button[0].Init(SYSTEM_BTN_ENTER, KEY_MBUTTON);
+	//add_button[1].Init(SYSTEM_BTN_LET, KEY_LBUTTON);
+	//add_button[2].Init(SYSTEM_BTN_RIGHT, KEY_RBUTTON);
 
 	for (ButtonDevice& button : add_button)
 		UserInputs.Push(&button);

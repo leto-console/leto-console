@@ -51,7 +51,7 @@
             }
         },
         {
-            "name": "ubuntu-base",
+            "name": "linux-base",
 			"inherits": "base",
 			"hidden": true,
             "cacheVariables": {
@@ -135,15 +135,17 @@
             }
         },
         {
-            "name": "ubuntu-debug",
-            "displayName": "ubuntu-debug",
-            "inherits": "ubuntu-base",
+            "name": "linux-st7735-debug",
+            "displayName": "linux-st7735-debug",
+            "inherits": "linux-base",
             "architecture": {
                 "value": "x64",
                 "strategy": "external"
             },
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
+                "CMAKE_BUILD_TYPE": "Debug",
+                "USE_SCREEN": "USE_ST7735",
+                "CORE_BUILD_PRESET": "linux-debug"
             }
         },
         {
@@ -199,12 +201,12 @@
             "configurePreset": "win-st7735-release"
         },
         {
-            "name": "ubuntu-debug",
-            "configurePreset": "ubuntu-debug"
+            "name": "linux-st7735-debug",
+            "configurePreset": "linux-st7735-debug"
         },
         {
             "name": "termux-debug",
-            "configurePreset": "ubuntu-debug"
+            "configurePreset": "linux-st7735-debug"
         }
     ]
 }
