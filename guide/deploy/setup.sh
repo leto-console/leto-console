@@ -11,6 +11,7 @@ chmod +x ./leto-console/preset_setup/setup.sh
 set -e
 ./LetoAPI/scripts/setup.sh
 ./LetoCore/scripts/setup.sh
+./LetoOS/scripts/setup.sh
 ./leto-console/scripts/setup.sh
 
 echo
