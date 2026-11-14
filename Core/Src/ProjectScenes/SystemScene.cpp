@@ -21,7 +21,7 @@ protected:
 		using namespace DrawFunctions;
 		StaticText32 str;
 		snprintf(str.CharPtr(), str.Capacity(), "%s: %d", name, Getter());
-		DrawText(screen, pos, str, WhiteColor, BlackColor, false, &Default_Font_7x7_small);
+		DrawString(screen, pos, str, WhiteColor, BlackColor, false, &Default_Font_7x7_small);
 		pos.y += 8;
 	}
 
@@ -33,7 +33,7 @@ public:
 		using namespace DrawFunctions;
 		
 		Point2_i pos{0, 0};
-		DrawText(screen, pos, "========CPU========");
+		DrawString(screen, pos, "========CPU========");
 		pos.y += 8;
 
 #ifdef __STM32__
@@ -75,7 +75,7 @@ public:
 		for (const PriorityTask* task : PriorityTaskSheduler::GetList())
 		{
 			if (skip > 0) { skip--; continue; }
-			DrawFunctions::DrawText(screen, {0, (i++) * 8}, CreateCharInfo(task->GetName(), task->GetAverageDurationMs(), 2));
+			DrawFunctions::DrawString(screen, {0, (i++) * 8}, CreateCharInfo(task->GetName(), task->GetAverageDurationMs(), 2));
 			if (i >= 8) break;
 		}
 	}
@@ -189,11 +189,11 @@ public:
 		Point2_i p;
 
 		snprintf(debug_str.CharPtr(), debug_str.Capacity(), "RAND: %0.6f", R);
-		DrawText(screen, p, debug_str);
+		DrawString(screen, p, debug_str);
 		p.y += 8;
 
 		snprintf(debug_str.CharPtr(), debug_str.Capacity(), "RAND_INT: %d", R_int);
-		DrawText(screen, p, debug_str);
+		DrawString(screen, p, debug_str);
 	}
 
 	bool ProcessInput(const AppEvent& event) override
@@ -270,13 +270,13 @@ public:
 		{
 			StaticText32 str{};
 			snprintf(str.CharPtr(), str.Capacity(), "ch[%d] %s", info.device.channel, info.device.web_name);
-			DrawText(screen, {0, idx * 16}, str);
+			DrawString(screen, {0, idx * 16}, str);
 			snprintf(str.CharPtr(), str.Capacity(), "%" PRIu32, info.last_activity);
-			DrawText(screen, {0, idx * 16 + 8}, str);
+			DrawString(screen, {0, idx * 16 + 8}, str);
 			if (info.device.app_id)
 			{
 				snprintf(str.CharPtr(), str.Capacity(), "APP %X", info.device.app_id);
-				DrawText(screen, {0, idx * 16 + 16}, str);
+				DrawString(screen, {0, idx * 16 + 16}, str);
 			}
 
 			idx++;
@@ -390,7 +390,7 @@ public:
 		uint8_t i = 0;
 
 		snprintf(str.CharPtr(), str.Capacity(), "O: %d", lobby.owner);
-		DrawFunctions::DrawText(screen, start + Point2_i{8, 8 + i * 8}, str, CyanColor);
+		DrawFunctions::DrawString(screen, start + Point2_i{8, 8 + i * 8}, str, CyanColor);
 		i++;
 
 		AppEvent get_event;
@@ -399,12 +399,12 @@ public:
 		if (IsSystemNextEvent(get_event))
 		{
 			snprintf(str.CharPtr(), str.Capacity(), "Next");
-			DrawFunctions::DrawText(screen, start + Point2_i{8, 8 + i * 8}, str, CyanColor);
+			DrawFunctions::DrawString(screen, start + Point2_i{8, 8 + i * 8}, str, CyanColor);
 		}
 		else if (IsSystemPrevEvent(get_event))
 		{
 			snprintf(str.CharPtr(), str.Capacity(), "Prev");
-			DrawFunctions::DrawText(screen, start + Point2_i{8, 8 + i * 8}, str, CyanColor);
+			DrawFunctions::DrawString(screen, start + Point2_i{8, 8 + i * 8}, str, CyanColor);
 		}
 
 		i++;
@@ -412,7 +412,7 @@ public:
 		for (uint32_t j = 0; j < lobby.connected; ++j, ++i)
 		{
 			snprintf(str.CharPtr(), str.Capacity(), "M[%d]: %d", j, lobby.members[j]);
-			DrawFunctions::DrawText(screen, start + Point2_i{8, 8 + i * 8}, str, CyanColor);
+			DrawFunctions::DrawString(screen, start + Point2_i{8, 8 + i * 8}, str, CyanColor);
 		}
 	}
 
@@ -483,7 +483,7 @@ public:
 		for (uint8_t i = 0; i < lobbies_cnt; ++i)
 		{
 			snprintf(str.CharPtr(), str.Capacity(), "-Lobby %d", lobbies_info[i].owner);
-			DrawFunctions::DrawText(screen, start + Point2_i{8, 8 + i * 8}, str, CyanColor);
+			DrawFunctions::DrawString(screen, start + Point2_i{8, 8 + i * 8}, str, CyanColor);
 		}
 		
 		// Отрисовка доступных лобби
@@ -561,17 +561,17 @@ public:
 
 		StaticText32 str{};
 		snprintf(str.CharPtr(), str.Capacity(), "Buffer: %d", WebManager_V1::Instance().BufferPPS());
-		DrawText(screen, {0, 1 * H}, str);
+		DrawString(screen, {0, 1 * H}, str);
 
 		snprintf(str.CharPtr(), str.Capacity(), "Connections: %d", WebManager_V1::Instance().GetConnections(nullptr, 0));
-		DrawText(screen, {0, 2 * H}, str);
+		DrawString(screen, {0, 2 * H}, str);
 
 		LobbyConnection_V1 connection;
 		if (LobbyManager_V1::Instance().GetActiveLobby(&connection))
 		{
 			lobby->SetActive(true);
 			//snprintf(str.CharPtr(), str.Capacity(), "[%s] Lobby: %d", connection.owner == GetDeviceID() ? "O" : "M", connection.connected);
-			//DrawText(screen, {0, 3 * H}, str);
+			//DrawString(screen, {0, 3 * H}, str);
 			create->SetActive(false);
 			quit->SetActive(true);
 		}
@@ -605,7 +605,7 @@ void basic_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
 
 	StaticText32 str{};
 	snprintf(str.CharPtr(), str.Capacity(), "BIN: %c%c%c%c%c%c%c%c", BYTE_TO_BINARY(value));
-	DrawText(screen, pos, str, WhiteColor, BlackColor, false, &Default_Font_7x7_small);
+	DrawString(screen, pos, str, WhiteColor, BlackColor, false, &Default_Font_7x7_small);
 }
 
 struct RegBitInfo
@@ -625,7 +625,7 @@ void reg_bit_draw(IScreen& screen, Point2_i& pos, uint8_t value, const RegBitInf
 			StaticText32 str{};
 			snprintf(str.CharPtr(), str.Capacity(), 
 					"%d %s", (value >> bit.bit) & 0x1, bit.name);
-			DrawText(screen, pos, str, WhiteColor, BlackColor, false, &Default_Font_7x7_small);
+			DrawString(screen, pos, str, WhiteColor, BlackColor, false, &Default_Font_7x7_small);
 		}
 		pos.y += 7;
 	}
@@ -638,7 +638,7 @@ void draw_reg_cell_value(IScreen& screen, Point2_i& pos, const char* name, IData
 {
 	StaticText32 str{};
 	snprintf(str.CharPtr(), str.Capacity(), hex ? "%s: %X" : "%s: %d", name, cell.GetOrDefault());
-	DrawFunctions::DrawText(screen, pos, str, WhiteColor, BlackColor, false, &Default_Font_7x7_small);
+	DrawFunctions::DrawString(screen, pos, str, WhiteColor, BlackColor, false, &Default_Font_7x7_small);
 	pos.y += 7;
 }
 
@@ -725,7 +725,7 @@ void setup_aw_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
 	reg_bit_draw(screen, pos, value, info);
 	pos.y -= 10;
 	pos.x += 48;
-	DrawFunctions::DrawText(screen, pos, aw_map[value & 0x3], GrayColor, BlackColor, true,
+	DrawFunctions::DrawString(screen, pos, aw_map[value & 0x3], GrayColor, BlackColor, true,
 			&Default_Font_7x7_small);
 }
 
@@ -791,10 +791,10 @@ void setup_retr_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
 	pos_add.x += 55;
 	pos_add.y += 3;
 	reg_bit_draw(screen, pos, value, info);
-	DrawFunctions::DrawText(screen, pos_add, ard_map[(value >> 4) & 0xF], GrayColor, BlackColor, true,
+	DrawFunctions::DrawString(screen, pos_add, ard_map[(value >> 4) & 0xF], GrayColor, BlackColor, true,
 			&Default_Font_7x7_small);
 	pos_add.y += 35;
-	DrawFunctions::DrawText(screen, pos_add, arc_map[value & 0xF], GrayColor, BlackColor, true,
+	DrawFunctions::DrawString(screen, pos_add, arc_map[value & 0xF], GrayColor, BlackColor, true,
 			&Default_Font_7x7_small);
 }
 
@@ -805,7 +805,7 @@ void rf_ch_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
 
 	StaticText32 str{};
 	snprintf(str.CharPtr(), str.Capacity(), "Channel: %d", value);
-	DrawFunctions::DrawText(screen, pos, str, WhiteColor, BlackColor, false, &Default_Font_7x7_small);
+	DrawFunctions::DrawString(screen, pos, str, WhiteColor, BlackColor, false, &Default_Font_7x7_small);
 }
 
 void rf_setup_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
@@ -834,7 +834,7 @@ void rf_setup_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
 	reg_bit_draw(screen, pos, value, info);
 	pos.y -= 17;
 	pos.x += 60;
-	DrawFunctions::DrawText(screen, pos, rf_pwr_map[(value >> 1) & 0x3], GrayColor, BlackColor, true,
+	DrawFunctions::DrawString(screen, pos, rf_pwr_map[(value >> 1) & 0x3], GrayColor, BlackColor, true,
 			&Default_Font_7x7_small);
 }
 
@@ -868,7 +868,7 @@ void status_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
 	reg_bit_draw(screen, pos, value, info);
 	pos.y -= 24;
 	pos.x += 65;
-	DrawFunctions::DrawText(screen, pos, rx_p_no_map[(value >> 1) & 0x7], GrayColor, BlackColor, true,
+	DrawFunctions::DrawString(screen, pos, rx_p_no_map[(value >> 1) & 0x7], GrayColor, BlackColor, true,
 			&Default_Font_7x7_small);
 }
 
@@ -879,11 +879,11 @@ void observe_tx_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
 	
 	StaticText32 str{};
 	snprintf(str.CharPtr(), str.Capacity(), "PLOS_CNT: %d", (value >> 4) & 0xF);
-	DrawFunctions::DrawText(screen, pos, str, WhiteColor, BlackColor, false, &Default_Font_7x7_small);
+	DrawFunctions::DrawString(screen, pos, str, WhiteColor, BlackColor, false, &Default_Font_7x7_small);
 	pos.y += 7;
 
 	snprintf(str.CharPtr(), str.Capacity(), "ARC_CNT: %d", value & 0xF);
-	DrawFunctions::DrawText(screen, pos, str, WhiteColor, BlackColor, false, &Default_Font_7x7_small);
+	DrawFunctions::DrawString(screen, pos, str, WhiteColor, BlackColor, false, &Default_Font_7x7_small);
 }
 
 void cd_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
@@ -967,7 +967,7 @@ void rx_addr_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
 	basic_reg_draw(screen, pos, value);
 	pos.y += 14;
 
-	DrawFunctions::DrawText(screen, pos, "    0X", WhiteColor, BlackColor, false, &Default_Font_7x7_small);
+	DrawFunctions::DrawString(screen, pos, "    0X", WhiteColor, BlackColor, false, &Default_Font_7x7_small);
 	pos.y += 7;
 	
 	draw_reg_cell_value(screen, pos, "P0", NRF24L01::Reg_0A);
@@ -983,7 +983,7 @@ void tx_addr_reg_draw(IScreen& screen, Point2_i pos, uint8_t value)
 	basic_reg_draw(screen, pos, value);
 	pos.y += 14;
 
-	DrawFunctions::DrawText(screen, pos, "    0X", WhiteColor, BlackColor, false, &Default_Font_7x7_small);
+	DrawFunctions::DrawString(screen, pos, "    0X", WhiteColor, BlackColor, false, &Default_Font_7x7_small);
 	pos.y += 7;
 	
 	draw_reg_cell_value(screen, pos, "TX", NRF24L01::Reg_10);
@@ -1044,7 +1044,7 @@ public:
 		int cur = settings.GetCurrentSettingIdx();
 		auto item = NRF24L01_ReadItems[cur];
 			
-		DrawText(screen, {58, 12}, item.name, strlen(item.name), WhiteColor, BlackColor, true, &Default_Font_7x7_small);
+		DrawString(screen, {58, 12}, item.name, strlen(item.name), WhiteColor, BlackColor, true, &Default_Font_7x7_small);
 		
 		NRF24L01_ReadItems[cur].panel(
 				screen, 

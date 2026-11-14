@@ -119,16 +119,16 @@ public:
 			static constexpr StaticText32 empty_text = "                ";
 			static constexpr StaticText32 process_text = "ПРОЦЕСС ОЧИСТКИ";
 
-			DrawText(screen, {0, 0}, empty_text);
-			DrawText(screen, {0, 8}, empty_text);
-			DrawText(screen, {0, 16}, empty_text);
-			DrawText(screen, {0, 24}, empty_text);
+			DrawString(screen, {0, 0}, empty_text);
+			DrawString(screen, {0, 8}, empty_text);
+			DrawString(screen, {0, 16}, empty_text);
+			DrawString(screen, {0, 24}, empty_text);
 
 			StaticText32 progress{};
 			snprintf(progress.CharPtr(), progress.Capacity(), "%d procent", 100 * part / count_parts);
 
-			DrawText(screen, {0, 0}, process_text);
-			DrawText(screen, {0, 8}, progress);
+			DrawString(screen, {0, 0}, process_text);
+			DrawString(screen, {0, 8}, progress);
 		}
 		else
 		{

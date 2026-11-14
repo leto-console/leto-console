@@ -55,8 +55,8 @@ void EyesScene::Draw(IScreen& screen)
 		WelcomeDraw(screen);
 	}
 
-	leto::graphics::DrawText(IScreen::ToHandle(&screen), {10, 70}, "Привет, мир! Как твои дела?", nullptr, WhiteColor, BlackColor, {1, 1});
-	leto::graphics::DrawText(IScreen::ToHandle(&screen), {10, 80}, "Да здравстует { #7907c5 }LETO{ # }!", nullptr, BlackColor, WhiteColor, {3, 3});
+	leto::graphics::DrawString(IScreen::ToHandle(&screen), {10, 70}, "Привет, мир! Как твои дела?", nullptr, WhiteColor, BlackColor, {1, 1});
+	leto::graphics::DrawString(IScreen::ToHandle(&screen), {10, 80}, "Да здравстует { #7907c5 }LETO{ # }!", nullptr, BlackColor, WhiteColor, {3, 3});
 }
 
 void EyesScene::Loop()
