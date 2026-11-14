@@ -54,7 +54,7 @@ else
 fi
 
 # 5. Интеграция внутренних путей LETO в системный PATH
-PATH_LINE='export PATH="$LETO_PATH:$LETO_PATH/leto-console/scripts:$LETO_PATH/LetoCore/scripts:$PATH"'
+PATH_LINE='export PATH="$LETO_PATH:$LETO_PATH/Common/linux-debug/bin:$LETO_PATH/Common/linux-debug/lib:$PATH"'
 
 if ! grep -q 'export PATH.*LETO_PATH' "$RC_FILE"; then
     echo "${PATH_LINE}" >> "$RC_FILE"

@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.20)
-project("leto-console" C CXX ASM)
+project("leto-console" C CXX)
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+include(AddLetoLibrary)
 
 add_compile_definitions(${PRESET_DEFINE_MACRO})
 add_compile_definitions(${USE_SCREEN})
@@ -9,86 +12,16 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(LIB_DIR "$ENV{LETO_PATH}/Common/${CORE_BUILD_PRESET}/lib")
+set(BIN_DIR "$ENV{LETO_PATH}/Common/${CORE_BUILD_PRESET}/bin")
+
 file(GLOB CPP_COURCES 
 	"Core/Src/*/*.cpp" "Core/Src/*/*.c" 
 	"Core/Inc/*/*.cpp" "Core/Inc/*/*.c"
 )
 
-# Функция добавления импортированной библиотеки Leto
-# Использование:
-#   add_leto_library(LetoAPI)
-#   add_leto_library(LetoCore COMPILE_DEFINITIONS <...>)
-#   add_leto_library(LetoAPI LIB_DIR <...> BIN_DIR <...>)
-#   add_leto_library(LetoCore LIB_DIR <...> BIN_DIR <...> COMPILE_DEFINITIONS <...>)
-function(add_leto_library LIB_NAME)
-
-    # Разбор именованных аргументов
-    set(options "")
-    set(oneValueArgs LIB_DIR BIN_DIR)
-    set(multiValueArgs COMPILE_DEFINITIONS)
-    cmake_parse_arguments(ARG "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
-
-	# Если не переданы, используем глобальные переменные
-    if(NOT ARG_LIB_DIR)
-        set(ARG_LIB_DIR "${LIB_DIR}")
-    endif()
-    if(NOT ARG_BIN_DIR)
-        set(ARG_BIN_DIR "${BIN_DIR}")
-    endif()
-
-    # Платформо-зависимые настройки	
-	if("${PRESET_DEFINE_MACRO}" STREQUAL "__STM32__")
-        set(_type STATIC)
-        set(_prefix "lib")
-        set(_ext "a")
-        set(_implib "")
-        set(_location "${ARG_LIB_DIR}/${_prefix}${LIB_NAME}.${_ext}")
-	elseif(WIN32)
-        set(_type SHARED)
-        set(_prefix "")
-        set(_ext "lib")
-        set(_implib "${ARG_LIB_DIR}/${LIB_NAME}.${_ext}")
-        set(_location "${ARG_BIN_DIR}/${LIB_NAME}.dll")
-    elseif(LINUX)
-		set(_type SHARED)
-        set(_prefix "lib")
-        set(_ext "so")
-        set(_implib "")
-        set(_location "${ARG_LIB_DIR}/${_prefix}${LIB_NAME}.${_ext}")
-	elseif(APPLE)
-		set(_type SHARED)
-		set(_prefix "lib")
-		set(_ext "dylib")
-		set(_implib "")
-		set(_location "${ARG_LIB_DIR}/${_prefix}${LIB_NAME}.${_ext}")
-	endif()
-
-    # Создание импортированной цели
-    add_library(${LIB_NAME} ${_type} IMPORTED GLOBAL)
-
-    # Базовые свойства (общие для всех библиотек)
-    set_target_properties(${LIB_NAME} PROPERTIES
-        IMPORTED_LOCATION "${_location}"
-        INTERFACE_INCLUDE_DIRECTORIES "$ENV{LETO_PATH}/${LIB_NAME}/include"
-    )
-
-    # IMPORTED_IMPLIB нужен только для Windows (SHARED)
-    if(_implib)
-        set_target_properties(${LIB_NAME} PROPERTIES
-            IMPORTED_IMPLIB "${_implib}"
-        )
-    endif()
-
-    # Дополнительные compile definitions (если переданы)
-    if(ARG_COMPILE_DEFINITIONS)
-        set_target_properties(${LIB_NAME} PROPERTIES
-            INTERFACE_COMPILE_DEFINITIONS "${ARG_COMPILE_DEFINITIONS}"
-        )
-    endif()
-	
-endfunction()
-
 if ("${PRESET_DEFINE_MACRO}" STREQUAL "__STM32__")
+	enable_language(ASM)
 
 	file(GLOB HW_COURCES
 		"Drivers/STM32F4xx_HAL_Driver/Src/*.c"
@@ -160,10 +93,9 @@ else ()
 
 	elseif (${PRESET_DEFINE_MACRO} STREQUAL "__LINUX__")
 
-		# find_package(Qt6 COMPONENTS Widgets REQUIRED Core)
-		# qt_standard_project_setup()
+		find_package(SDL2 REQUIRED CONFIG)
+
 		add_executable ("${PROJECT_NAME}" "Core/Main/App.cpp" "${CPP_COURCES}")
-		# target_link_libraries("${PROJECT_NAME}" PRIVATE Qt6::Core Qt6::Widgets)
 		
 	elseif (${PRESET_DEFINE_MACRO} STREQUAL "__TERMUX__")
 
@@ -185,12 +117,16 @@ if(DEFINED ENV{LETO_PATH})
 		"$ENV{LETO_PATH}/Console/${CMAKE_PRESET_NAME}/bin/"
 	)
 
-	set(LIB_DIR "$ENV{LETO_PATH}/Common/${CORE_BUILD_PRESET}/lib")
-	set(BIN_DIR "$ENV{LETO_PATH}/Common/${CORE_BUILD_PRESET}/bin")
-
 	add_leto_library(LetoAPI COMPILE_DEFINITIONS LETOCORE_SHARED)
 	add_leto_library(LetoCore COMPILE_DEFINITIONS LETOCORE_SHARED)
-	add_leto_library(LetoOS COMPILE_DEFINITIONS LETO_OS_SHARED)
+	
+	if("${PRESET_DEFINE_MACRO}" STREQUAL "__STM32__")
+        add_leto_library(LetoOS)
+	elseif(WIN32)
+        add_leto_library(LetoOS COMPILE_DEFINITIONS LETO_OS_SHARED)
+    elseif(UNIX)
+        add_leto_library(LetoOS INTERFACE_LINK_LIBRARIES SDL2::SDL2)
+	endif()
 
 else()
     message(STATUS "[${PROJECT_NAME}] Переменная окружения LETO_PATH не найдена. Серверная сборка через FetchContent...")
