@@ -68,7 +68,7 @@ public:
 #endif
 
 			snprintf(text.CharPtr(), 3, "%02X", data[i]);
-			DrawText(screen, point, text, text_clr, back_clr, false, &Default_Font_7x7);
+			DrawString(screen, point, text, text_clr, back_clr, false, &Default_Font_7x7);
 			point.x += 14;
 		}
 
@@ -102,7 +102,7 @@ public:
 		
 		for (uint8_t i = 0; i < 8; ++i)
 		{
-			DrawText(screen, {0, i * line_height}, GetPosText(startPos + i * 8), line_num_clr, BlackColor, false, &Default_Font_7x7);
+			DrawString(screen, {0, i * line_height}, GetPosText(startPos + i * 8), line_num_clr, BlackColor, false, &Default_Font_7x7);
 			if (!charMode)
 			{
 				DrawByteLine(screen, {left_offset, i * line_height}, data + startPos + i * 8, 8);

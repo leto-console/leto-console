@@ -25,9 +25,9 @@ void WelcomeScene::Draw(IScreen& screen)
 	using namespace DrawFunctions;
 
 	StaticText32 text = "ДОБРО";
-	DrawText(screen, {64 - TextWidth(text, &Default_Font_7x7) / 2, 16}, text, WhiteColor, BlackColor, false, &Default_Font_7x7);
+	DrawString(screen, {64 - TextWidth(text, &Default_Font_7x7) / 2, 16}, text, WhiteColor, BlackColor, false, &Default_Font_7x7);
 	text = "ПОЖАЛОВАТЬ";
-	DrawText(screen, {64 - TextWidth(text, &Default_Font_7x7) / 2, 24}, text, WhiteColor, BlackColor, false, &Default_Font_7x7);
+	DrawString(screen, {64 - TextWidth(text, &Default_Font_7x7) / 2, 24}, text, WhiteColor, BlackColor, false, &Default_Font_7x7);
 
 	DrawRectangle(
 		screen,
@@ -36,7 +36,7 @@ void WelcomeScene::Draw(IScreen& screen)
 		WhiteColor
 	);
 
-	DrawText(screen, {64 - TextWidth(name) / 2, 40}, name, WhiteColor, BlackColor, true, &Default_Font_8x8);
+	DrawString(screen, {64 - TextWidth(name) / 2, 40}, name, WhiteColor, BlackColor, true, &Default_Font_8x8);
 }
 
 void WelcomeScene::Loop()

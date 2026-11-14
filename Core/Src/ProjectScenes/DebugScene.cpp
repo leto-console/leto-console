@@ -30,21 +30,21 @@ static void DrawAlphabetPage(LetoScreen_V1* leto_screen, const char* (&lines)[3]
 
 	leto_api_v1->Graphics->FillScreen(leto_screen, back);
 
-	leto::graphics::DrawText(leto_screen, p, lines[0], nullptr, main, back); p.y += 10;
-	leto::graphics::DrawText(leto_screen, p, lines[1], nullptr, main, back); p.y += 10;
-	leto::graphics::DrawText(leto_screen, p, lines[2], nullptr, main, back); p.y += 10;
+	leto::graphics::DrawString(leto_screen, p, lines[0], nullptr, main, back); p.y += 10;
+	leto::graphics::DrawString(leto_screen, p, lines[1], nullptr, main, back); p.y += 10;
+	leto::graphics::DrawString(leto_screen, p, lines[2], nullptr, main, back); p.y += 10;
 
-	leto::graphics::DrawText(leto_screen, p, lines[0], nullptr, main, back, {1, 1}); p.y += 10;
-	leto::graphics::DrawText(leto_screen, p, lines[1], nullptr, main, back, {1, 1}); p.y += 10;
-	leto::graphics::DrawText(leto_screen, p, lines[2], nullptr, main, back, {1, 1}); p.y += 10;
+	leto::graphics::DrawString(leto_screen, p, lines[0], nullptr, main, back, {1, 1}); p.y += 10;
+	leto::graphics::DrawString(leto_screen, p, lines[1], nullptr, main, back, {1, 1}); p.y += 10;
+	leto::graphics::DrawString(leto_screen, p, lines[2], nullptr, main, back, {1, 1}); p.y += 10;
 	
-	leto::graphics::DrawText(leto_screen, p, lines[0], nullptr, back, main); p.y += 10;
-	leto::graphics::DrawText(leto_screen, p, lines[1], nullptr, back, main); p.y += 10;
-	leto::graphics::DrawText(leto_screen, p, lines[2], nullptr, back, main); p.y += 10;
+	leto::graphics::DrawString(leto_screen, p, lines[0], nullptr, back, main); p.y += 10;
+	leto::graphics::DrawString(leto_screen, p, lines[1], nullptr, back, main); p.y += 10;
+	leto::graphics::DrawString(leto_screen, p, lines[2], nullptr, back, main); p.y += 10;
 
-	leto::graphics::DrawText(leto_screen, p, lines[0], nullptr, back, main, {1, 1}); p.y += 10;
-	leto::graphics::DrawText(leto_screen, p, lines[1], nullptr, back, main, {1, 1}); p.y += 10;
-	leto::graphics::DrawText(leto_screen, p, lines[2], nullptr, back, main, {1, 1}); p.y += 10;
+	leto::graphics::DrawString(leto_screen, p, lines[0], nullptr, back, main, {1, 1}); p.y += 10;
+	leto::graphics::DrawString(leto_screen, p, lines[1], nullptr, back, main, {1, 1}); p.y += 10;
+	leto::graphics::DrawString(leto_screen, p, lines[2], nullptr, back, main, {1, 1}); p.y += 10;
 }
 
 void DebugScene::Draw(IScreen& screen)
@@ -58,9 +58,9 @@ void DebugScene::Draw(IScreen& screen)
 		static constexpr StaticText8 clk_text = "CLK";
 		static constexpr StaticText8 dt_text = "DT";
 
-		DrawFunctions::DrawText(screen, {0, 0}, clk_text);
+		DrawFunctions::DrawString(screen, {0, 0}, clk_text);
 		DEBUG_ENCODER_CLK.Draw(screen, {0, 0});
-		DrawFunctions::DrawText(screen, {0, SSD1306_Height / 2}, dt_text);
+		DrawFunctions::DrawString(screen, {0, SSD1306_Height / 2}, dt_text);
 		DEBUG_ENCODER_DT.Draw(screen, {0, SSD1306_Height / 2});
 
 		//char text[256];
@@ -159,7 +159,7 @@ void DebugScene::Draw(IScreen& screen)
 		int x = 8;
 		for (const char*& line : *poem)
 		{
-			leto::graphics::DrawText(leto_screen, {8, x}, line, nullptr, reverse ? BlackColor : WhiteColor, reverse ? WhiteColor : BlackColor, {1,1});
+			leto::graphics::DrawString(leto_screen, {8, x}, line, nullptr, reverse ? BlackColor : WhiteColor, reverse ? WhiteColor : BlackColor, {1,1});
 			x += 8;
 		}
 		return;

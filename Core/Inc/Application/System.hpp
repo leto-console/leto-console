@@ -7,28 +7,30 @@
 #ifndef INC_APPLICATION_SYSTEM_HPP_
 #define INC_APPLICATION_SYSTEM_HPP_
 
-#ifdef __LINUX__
-#	include <QApplication>
-#endif
-
 #ifndef USE_HAL_DRIVER
 #	include <Utils/arg_parser.hpp>
 #endif
 
-#include <EEPROM/EEPROM_24C.hpp>
-
 #if defined(USE_HAL_DRIVER)
 #	if defined(USE_SSD1306)
 #		include <SSD1306/SSD1306_HalDisplay.hpp>
+		using ApplicationDisplay = SSD1306_HalDisplay;
 #	elif defined(USE_ST7735)
 #		include <ST7735/ST7735_HalDisplay.hpp>
+		using ApplicationDisplay = ST7735_HalDisplay;
 #	endif
 #elif defined(__WIN__)
 #	include <GraphicsPC/WinDisplay.hpp>
+	using ApplicationDisplay = WinDisplay;
 #elif defined(__TERMUX__)
 #	include <GraphicsPC/HttpDisplay.hpp>
+	using ApplicationDisplay = HttpDisplay;
+#elif defined(__LINUX__)
+#	include <GraphicsPC/SDLDisplay.hpp>
+	using ApplicationDisplay = SDLDisplay;
 #endif
 
+#include <EEPROM/EEPROM_24C.hpp>
 #include <Input/Devices/UserInputDevice.hpp>
 #include <Storage/Storage.hpp>
 #include <System/SystemMode.hpp>
@@ -48,30 +50,13 @@ protected:
 	ArgParser arg_parser;
 #endif
 
-#ifdef __LINUX__
-	QApplication	*qapp;
-#endif
+	EEPROM_24C eeprom_24c_08;
 
-	EEPROM_24C 		eeprom_24c_08;
-
-#if defined (USE_HAL_DRIVER)
-#	if defined(USE_SSD1306)
-	SSD1306_HalDisplay display;
-#	elif defined(USE_ST7735)
-	ST7735_HalDisplay display;
-#	endif
-#elif defined(__WIN__)
-	WinDisplay display;
-#else defined (__TERMUX__)
-	HttpDisplay display;
-#endif
+	ApplicationDisplay display;
 
 	StackGuard display_guard;
 
 public:
-	Application(int argc, char** argv);
-	~Application();
-
 #ifdef USE_HAL_DRIVER
 	struct Periphery
 	{
@@ -83,7 +68,11 @@ public:
 		};
 
 	Application(Periphery periphery);
+#else
+	Application(int argc, char** argv);
 #endif
+	~Application();
+
 	// Массив указателей на устройства пользовательского ввода
 	StaticList<UserInputDevice*, 32> UserInputs;
 

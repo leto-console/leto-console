@@ -45,7 +45,7 @@ public:
 			currentSubScene->MainDraw(screen);
 		else
 		{
-			if (!title.Empty()) DrawFunctions::DrawText(screen, {0, 0}, title);
+			if (!title.Empty()) DrawFunctions::DrawString(screen, {0, 0}, title);
 			menu.Draw(screen);
 		}
 
