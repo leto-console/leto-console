@@ -17,6 +17,7 @@
 
 enum DEBUG_MODE
 {
+	_DM_UI,
 	_DM_ENCODERS,
 	_DM_ALPHABET_ASCII,
 	_DM_ALPHABET_RUS,
@@ -47,12 +48,29 @@ static void DrawAlphabetPage(LetoScreen_V1* leto_screen, const char* (&lines)[3]
 	leto::graphics::DrawString(leto_screen, p, lines[2], nullptr, back, main, {1, 1}); p.y += 10;
 }
 
-void DebugScene::Draw(IScreen& screen)
+#include <UI/Base/TestUI.hpp>
+
+DebugScene::DebugScene(ISceneManager *scene_manager) : CommonScene{scene_manager}
+{
+	TestUI_Init();
+}
+
+DebugScene::~DebugScene()
+{
+	TestUI_DeInit();
+}
+
+void DebugScene::Draw(IScreen &screen)
 {
 	LetoScreen_V1* leto_screen = IScreen::ToHandle(&screen);
 
 	switch (mode)
 	{
+	case _DM_UI:
+	{
+		TestUI_Draw(screen);
+		return;
+	}
 	case _DM_ENCODERS:
 	{
 		static constexpr StaticText8 clk_text = "CLK";
@@ -168,9 +186,11 @@ void DebugScene::Draw(IScreen& screen)
 	default:
 		break;
 	}
+}
 
-
-
+void DebugScene::Loop()
+{
+	TestUI_Loop();
 }
 
 bool DebugScene::ProcessInput(const AppEvent& event)

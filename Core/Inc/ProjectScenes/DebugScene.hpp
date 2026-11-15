@@ -17,10 +17,11 @@
 class DebugScene : public CommonScene
 {
 public:
-	DebugScene(ISceneManager* scene_manager) : CommonScene{scene_manager} {}
+	DebugScene(ISceneManager* scene_manager);
+	~DebugScene();
 
 	void Draw(IScreen& screen) override;
-	void Loop() override { };
+	void Loop() override;
 	bool ProcessInput(const AppEvent& event) override;
 
 	SCENE_NO_ARGS_BUILDER(DebugScene)
