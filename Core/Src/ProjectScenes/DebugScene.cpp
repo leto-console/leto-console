@@ -210,5 +210,6 @@ bool DebugScene::ProcessInput(const AppEvent& event)
 	}
 	if (IsSystemNextEvent(event) && mode == _DM_BONUS) bonus_part++;
 	if (IsSystemPrevEvent(event) && mode == _DM_BONUS) bonus_part--;
+	if (mode == _DM_UI) TestUI_OnEvent(event);
 	return true;
 }
