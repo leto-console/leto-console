@@ -68,7 +68,7 @@ void DebugScene::Draw(IScreen &screen)
 	{
 	case _DM_UI:
 	{
-		leto_api_v1->Graphics->FillScreen(leto_screen, reverse ? WhiteColor : BlackColor);
+		//leto_api_v1->Graphics->FillScreen(leto_screen, reverse ? WhiteColor : BlackColor);
 		TestUI_Draw(screen);
 		return;
 	}
