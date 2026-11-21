@@ -134,7 +134,7 @@ cmake --build --preset win-st7735-debug -j
 | --- | --- |
 | • `win-st7735-debug` <br>• `win-st7735-release` <br>• `win-ssd1306-debug` | эмулятор на Windows (MSVC) |
 | • `stm32f411xe-st7735-debug` <br>• `stm32f401xc-ssd1306-debug` <br>• `stm32f401xc-st7735-debug` | прошивка STM32F4 |
-| • `ubuntu-debug` | эмулятор на Linux (GCC) |
+| • `linux-st7735-debug` | эмулятор на Linux (GCC) |
 | • `termux-debug` <br>• `termux-win-debug` | эмулятор по HTTP |
 
 ### Запуск эмулятора
