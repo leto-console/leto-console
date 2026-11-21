@@ -88,13 +88,11 @@ Run the emulator:
 
 The program should start without errors and show the game console window.
 
-## Linux and Termux
+## Linux
 
 🚧 This section is still being written (same in the [Russian version](README_ru.md)).
 
 - `linux-st7735-debug` is the Linux emulator preset; it requires SDL2.
-- `termux-*` show the display output in a browser over HTTP.
-- `termux-win-debug` is needed to debug the web output on Windows without a phone.
 
 <p align="center">
   <sub><a href="../../README.md">← Back to the project README</a></sub>
