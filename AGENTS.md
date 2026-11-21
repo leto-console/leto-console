@@ -81,9 +81,8 @@ CI собирает только STM32 и Windows. Linux-сборка в CI не
 ## Инварианты
 
 - `LetoCore` не подключает заголовки `LetoOS`. `SystemSceneManager` объявлен
-  в `LetoOS/include/System/`. Известные нарушения —
-  `LetoCore/include/Input/UserInputTask.hpp` и
-  `LetoCore/include/Graphics/IDisplayTasks.hpp`; устраняются в #96.
+  в `LetoOS/include/System/`. Заголовки, которым нужен системный слой, лежат
+  в `LetoOS/include`.
 - Приложение линкует только `LetoAPI` и `LetoCore`, `LetoOS` в игру не
   попадает. Системные части остаются в `LetoOS`, а не переносятся в `LetoCore`
   ради удобства игр.
@@ -100,8 +99,9 @@ CI собирает только STM32 и Windows. Linux-сборка в CI не
 - Сборка игр под Linux и шаблон игры — #46. Шаблон сейчас не собирается:
   `DrawText` переименован в `DrawString`. Это не повод чинить его попутно
   в других PR.
-- Termux на паузе: пресеты `termux-*` и код под `#ifdef __TERMUX__`
-  (`HttpDisplay.*`, `EEPROM/EEPROM_24C.cpp`) остаются как есть.
+- Termux на паузе: пресеты `termux-*` удалены в #96, код под
+  `#ifdef __TERMUX__` (`HttpDisplay.*`, `EEPROM/EEPROM_24C.cpp`) остаётся
+  как есть.
 - Шрифты остаются в `LetoCore`; вынос в `LetoFont_V1` — отдельная будущая
   задача.
 
