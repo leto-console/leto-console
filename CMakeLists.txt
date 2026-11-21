@@ -97,13 +97,6 @@ else ()
 
 		add_executable ("${PROJECT_NAME}" "Core/Main/App.cpp" "${CPP_COURCES}")
 		
-	elseif (${PRESET_DEFINE_MACRO} STREQUAL "__TERMUX__")
-
-		file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/../LetoCore/include/GraphicsPC/web" 
-			DESTINATION "${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
-
-		add_executable ("${PROJECT_NAME}" "Core/Main/App.cpp" "${CPP_COURCES}")
-
 	endif ()
 		
 endif ()

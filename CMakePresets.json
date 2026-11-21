@@ -61,17 +61,6 @@
             }
         },
         {
-            "name": "termux-base",
-            "hidden": true,
-            "binaryDir": "${sourceDir}/build/${presetName}",
-            "installDir": "${sourceDir}/out/install/${presetName}",
-            "cacheVariables": {
-                "CMAKE_C_COMPILER": "gcc",
-                "CMAKE_CXX_COMPILER": "g++",
-                "PRESET_DEFINE_MACRO": "__TERMUX__"
-            }
-        },
-        {
             "name": "stm32f401xc-ssd1306-debug",
             "inherits": "stm32-base",
             "cacheVariables": {
@@ -147,32 +136,6 @@
                 "USE_SCREEN": "USE_ST7735",
                 "CORE_BUILD_PRESET": "linux-debug"
             }
-        },
-        {
-            "name": "termux-debug",
-            "displayName": "termux-debug",
-            "inherits": "termux-base",
-            "architecture": {
-                "value": "x64",
-                "strategy": "external"
-            },
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
-            }
-        },
-        {
-            "name": "termux-win-debug",
-            "displayName": "termux-win-debug",
-            "inherits": "windows-base",
-            "architecture": {
-                "value": "x64",
-                "strategy": "external"
-            },
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug",
-                "PRESET_DEFINE_MACRO": "__TERMUX__",
-                "USE_SCREEN": "USE_ST7735"
-            }
         }
     ],
     "buildPresets": [
@@ -202,10 +165,6 @@
         },
         {
             "name": "linux-st7735-debug",
-            "configurePreset": "linux-st7735-debug"
-        },
-        {
-            "name": "termux-debug",
             "configurePreset": "linux-st7735-debug"
         }
     ]
