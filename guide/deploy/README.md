@@ -92,7 +92,7 @@ The program should start without errors and show the game console window.
 
 🚧 This section is still being written (same in the [Russian version](README_ru.md)).
 
-- `ubuntu-debug` is the only preset that requires Qt6.
+- `linux-st7735-debug` is the Linux emulator preset; it requires SDL2.
 - `termux-*` show the display output in a browser over HTTP.
 - `termux-win-debug` is needed to debug the web output on Windows without a phone.
 

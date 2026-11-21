@@ -138,7 +138,7 @@ The following presets are available for `leto-console`:
 | --- | --- |
 | • `win-st7735-debug` <br>• `win-st7735-release` <br>• `win-ssd1306-debug` | the emulator on Windows (MSVC) |
 | • `stm32f411xe-st7735-debug` <br>• `stm32f401xc-ssd1306-debug` <br>• `stm32f401xc-st7735-debug` | STM32F4 firmware |
-| • `ubuntu-debug` | the emulator on Linux (GCC) |
+| • `linux-st7735-debug` | the emulator on Linux (GCC) |
 | • `termux-debug` <br>• `termux-win-debug` | the emulator over HTTP |
 
 ### Running the emulator
