@@ -141,6 +141,14 @@ CI собирает только STM32 и Windows. Linux-сборка в CI не
   - `-f`, а не `-F`: `-F` приводит числовой id опции к числу, и GraphQL
     отвечает `Could not coerce value ... to String`.
 - `GITHUB_TOKEN` и другие секреты не печатать в вывод и в комментарии.
+- Запись в `leto-games/*` идёт через `LETO_GAMES_TOKEN`, а `GITHUB_TOKEN` там
+  работает только на push. На комментарии, ответы в тредах, запрос ревью и
+  мерж он отвечает `403 Resource not accessible by personal access token`,
+  хотя тот же аккаунт в `leto-console/*` те же операции выполняет. Признак
+  нехватки прав именно у этого токена: push проходит, а `POST` в API — нет.
+  В `leto-console/*` с `GITHUB_TOKEN` не проходят ни push, ни мерж — оба
+  отвечают `403`, хотя он же пушит в `LetoAPI`, `LetoCore` и `leto-games`.
+  Там нужен `GH_PROJECTS_TOKEN` (классический, `scope: repo`).
 - Перед коммитом убедиться, что сборка и `ctest` проходят.
 
 ## Пометка AI-сообщений
