@@ -141,14 +141,20 @@ CI собирает только STM32 и Windows. Linux-сборка в CI не
   - `-f`, а не `-F`: `-F` приводит числовой id опции к числу, и GraphQL
     отвечает `Could not coerce value ... to String`.
 - `GITHUB_TOKEN` и другие секреты не печатать в вывод и в комментарии.
-- Запись в `leto-games/*` идёт через `LETO_GAMES_TOKEN`, а `GITHUB_TOKEN` там
-  работает только на push. На комментарии, ответы в тредах, запрос ревью и
-  мерж он отвечает `403 Resource not accessible by personal access token`,
-  хотя тот же аккаунт в `leto-console/*` те же операции выполняет. Признак
-  нехватки прав именно у этого токена: push проходит, а `POST` в API — нет.
-  В `leto-console/*` с `GITHUB_TOKEN` не проходят ни push, ни мерж — оба
-  отвечают `403`, хотя он же пушит в `LetoAPI`, `LetoCore` и `leto-games`.
-  Там нужен `GH_PROJECTS_TOKEN` (классический, `scope: repo`).
+- Запись в `leto-console/*` — только `GH_PROJECTS_TOKEN` (классический,
+  `scope: repo`). `GITHUB_TOKEN` и `LETO_GAMES_TOKEN` — fine-grained, и они не
+  могут писать туда в принципе: эти репозитории принадлежат пользовательскому
+  аккаунту `leto-console`, а fine-grained PAT достаёт репозитории только своего
+  аккаунта и организаций. Роль коллаборатора (`write`) этому не помогает, ответ
+  всегда `403 Resource not accessible by personal access token`. В организации
+  `leto-games` те же токены пишут нормально.
+- Правка `.github/workflows/*` требует отдельного права сверх записи в
+  репозиторий. У классического токена это scope `workflow`: без него push
+  отклоняется с `refusing to allow a Personal Access Token to create or update
+  workflow ... without 'workflow' scope`, причём обычный файл тем же токеном в
+  ту же ветку проходит. Проверять до начала работы, если задача трогает CI.
+- Права не проверять чтением: репозитории публичные, и `GET` проходит анонимно
+  у любого токена. Показательна только пробная запись.
 - Перед коммитом убедиться, что сборка и `ctest` проходят.
 
 ## Пометка AI-сообщений

@@ -27,7 +27,13 @@ jobs:
 
     - name: Install Dependencies (Linux)
       if: runner.os == 'Linux'
-      run: sudo apt-get install -y -q ninja-build gcc-arm-none-eabi
+      run: sudo apt-get install -y -q ninja-build
+
+    - name: Install Arm GNU Toolchain (Linux)
+      if: runner.os == 'Linux'
+      uses: carlosperate/arm-none-eabi-gcc-action@v1
+      with:
+        release: '14.2.Rel1'
 
     - name: Set up MSVC Developer Command Prompt (Windows)
       if: runner.os == 'Windows'
