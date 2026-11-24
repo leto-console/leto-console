@@ -122,6 +122,30 @@ CI собирает только STM32 и Windows. Linux-сборка в CI не
   (ветка в worktree — сначала `git worktree remove <путь>`).
   Мерженые ветки в репозитории не накапливаются.
 - PR открывается только по явной команде.
+- Ревью запрашивается сразу при открытии PR: мерж требует одного approving
+  review, и без него PR не мержится вообще. Смотреть на `reviewDecision` и
+  ruleset, а не на практику: `requested_reviewers` в старых PR пуст, потому
+  что ревьюер снимается из списка в момент approve, а не потому что его не
+  звали.
+  - Ревьюер — владелец `leto-console`. Аккаунт агента (`rtimur-ai`) — автор
+    PR и сам себя одобрить не может; `leto-console` — единственный, кто
+    оставлял ревью в истории `LetoCore`, `LetoOS`, `LetoAPI`, `leto-console`.
+  - Условия берутся из ruleset `Base Rules` (не из branch protection: её API
+    отвечает `Not Found`, потому что защита живёт в ruleset):
+    `required_approving_review_count: 1`, `dismiss_stale_reviews_on_push: true`,
+    `required_review_thread_resolution: true`, `current_user_can_bypass: never`,
+    обязательный чек — `CI Result`, разрешены только `merge` и `squash`.
+  - `dismiss_stale_reviews_on_push` означает: любой пуш после approve сбрасывает
+    одобрение. Поэтому новые правки отправляются до запроса ревью, а не после;
+    если править пришлось после approve — ревью запрашивается повторно.
+  - `required_review_thread_resolution` — незакрытые треды блокируют мерж
+    наравне с отсутствующим approve. Отвечать и резолвить их нужно самому.
+  - API: `POST /repos/{owner}/{repo}/pulls/{number}/requested_reviewers` с
+    `{"reviewers":["leto-console"]}`. Проверять результат по непустому
+    `requested_reviewers` в ответе: `GET` того же PR показывает уже
+    запрошенного ревьюера.
+  - В `reviewDecision` пустое `REVIEW_REQUIRED` — это и есть «ждёт approve»,
+    а не ошибка конфигурации.
 - Мерж выполняется только методом «Merge commit»: `gh pr merge --merge`.
   Rebase-merge и squash-merge не используются.
 - Задача закрывается вручную, а не закрывающими ключевыми словами в PR
