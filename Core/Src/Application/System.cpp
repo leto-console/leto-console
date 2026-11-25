@@ -515,7 +515,18 @@ void Application::Init()
 	{
 		std::string auth_idx = arg_parser.FindValue("--user", "0");
 		int idx = auth_idx[0] - '0';
-		
+
+		// На чистом eeprom аккаунтов нет, и --user не может войти: цикл ниже
+		// не выполняется ни разу, а вместе с ним пропускаются сцены пользователя.
+		// Тестовый аккаунт заводится, чтобы отладочный запуск работал без
+		// прохождения первичной настройки.
+		if (AuthHandler::Instance().GetAccounts().Empty())
+		{
+			uint32_t test_ID = 0;
+			if (AuthHandler::Instance().CreateAccount(StaticText32{ "Test" }, 0, test_ID))
+				VirtualConsole::Instance().Printf("Test account %u created", GreenColor, test_ID);
+		}
+
 		int cnt_idx = 0;
 		for (const Account& account : AuthHandler::Instance().GetAccounts())
 		{
