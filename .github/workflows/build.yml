@@ -54,3 +54,20 @@ jobs:
         name: leto-console-${{ matrix.preset }}
         path: dist/${{ matrix.preset }}/
         if-no-files-found: error
+
+  ctx-lint:
+    name: Agent knowledge base
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    # Текст тоже расходится с кодом: переименованный пресет, удалённый путь,
+    # скилл без триггера в описании. Проверяется здесь, а не при чтении.
+    - name: Lint AGENTS.md and skills
+      run: python3 scripts/ctx_lint.py . --issues
+      env:
+        GH_TOKEN: ${{ github.token }}
+
+    - name: Generated reference is up to date
+      run: python3 scripts/gen_reference.py --check
