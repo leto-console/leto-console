@@ -68,9 +68,12 @@ cd "$LETO_PATH/LetoOS/build/linux-debug" && ctest --output-on-failure
 
 Источник правды по пресетам — `CMakePresets.json` в каждом репозитории.
 
-CI собирает STM32, Windows и Linux (`build-linux` в `LetoOS`). Linux-джоба —
-единственное место, где компилируется ветка загрузчика на `dlopen`: STM32 и
-Windows её не видят.
+CI собирает STM32, Windows и Linux одной матрицей в `build-and-pack`. Строка
+`linux-st7735-debug` — единственное место, где компилируется ветка загрузчика на
+`dlopen`: STM32 и Windows её не видят. Зависимости там приходят через
+`FetchContent` (без `LETO_PATH`), поэтому та же джоба прогоняет тесты `LetoOS`:
+без `LETO_TEST_CONSOLE` E2E загрузчика пропускаются и джоба зеленеет, не
+проверив загрузку игры.
 
 ## Текущее состояние
 
