@@ -6,16 +6,24 @@ description: Собрать LETO — всю цепочку LetoAPI → LetoCore 
 # Сборка
 
 Порядок обязателен: `LetoAPI` → `LetoCore` → `LetoOS` → `leto-console`.
-Каждый следующий шаг собирается против артефактов предыдущего.
+Каждый следующий шаг собирается против артефактов предыдущего, поэтому
+последовательность задаётся скриптом, а не набором команд в этом файле.
 
-## Локальные пресеты (Linux)
+## Локальная сборка
+
+Порядок цепочки и имена пресетов держать в голове не нужно — их знает
+`scripts/leto-check.sh`:
 
 ```sh
 export LETO_PATH="$HOME/leto/"
-cd "$LETO_PATH/LetoAPI"      && cmake --preset linux-debug
-cd "$LETO_PATH/LetoCore"     && cmake --preset linux-debug
-cd "$LETO_PATH/LetoOS"       && cmake --preset linux-debug
-cd "$LETO_PATH/leto-console" && cmake --preset linux-st7735-debug
+./scripts/leto-check.sh --full    # вся цепочка, конфигурация при первом запуске
+```
+
+Один репозиторий: пресет берётся из `cmake --list-presets` (linux-пресет
+в каждом ровно один).
+
+```sh
+cd "$LETO_PATH/LetoCore" && cmake --preset linux-debug
 ```
 
 Зависимости: `cmake`, `ninja-build`, `libsdl2-dev`.
@@ -26,10 +34,12 @@ cd "$LETO_PATH/leto-console" && cmake --preset linux-st7735-debug
 ## Пресеты
 
 Источник правды — `CMakePresets.json` в каждом репозитории, не память и не этот файл.
-Перечислить актуальные:
+Список спрашивать у CMake, а не читать манифест самому:
 
 ```sh
-python3 -c "import json,sys;d=json.load(open('CMakePresets.json'));print([p['name'] for p in d['configurePresets'] if not p.get('hidden')])"
+for repo in LetoAPI LetoCore LetoOS leto-console; do
+    echo "== $repo"; ( cd "$LETO_PATH/$repo" && cmake --list-presets )
+done
 ```
 
 Ориентиры: прошивка — `stm32f401xc-*`/`stm32f411xe-*`, ПК — `win-*`, `linux-*`,

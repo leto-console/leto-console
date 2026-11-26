@@ -1,23 +1,26 @@
 #!/usr/bin/env python3
-"""Проверка самой базы знаний агента: пути, пресеты, скиллы, бюджеты размера.
+"""Проверка базы знаний агента: пути, пресеты, скиллы, бюджеты размера.
 
-База знаний, которую никто не проверяет, расходится с кодом: команда переименована,
-путь удалён, пресет переименован — а текст утверждает обратное. Этот линтер ловит
-такое на PR, а не через месяц при чтении устаревшей инструкции.
+База знаний, которую никто не проверяет, расходится с кодом: команда
+переименована, путь удалён, пресет удалён — а текст утверждает обратное. Этот
+линтер ловит такое на PR, а не через месяц при чтении устаревшей инструкции.
+
+Список пресетов не хранится и не парсится: его отдаёт `cmake --list-presets`.
+Файлов, которые надо поддерживать вручную, у линтера нет.
 
     python3 scripts/ctx_lint.py .            # обычная проверка
     python3 scripts/ctx_lint.py . --issues   # плюс проверка ссылок на issue через gh
 """
 from __future__ import annotations
 
-import json
 import os
 import re
 import subprocess
 import sys
 from pathlib import Path
 
-REPOS = ["LetoAPI", "LetoCore", "LetoOS", "leto-console", "game-template"]
+REPOS = ["LetoAPI", "LetoCore", "LetoOS", "leto-console"]
+ALL_REPOS = REPOS + ["game-template", "Battleships"]
 MAX_AGENTS_LINES = 120
 MAX_SKILL_LINES = 200
 MAX_SKILL_BODY = 80
@@ -25,20 +28,9 @@ MIN_DESCRIPTION = 40
 MAX_SKILLS = 12
 AI_MARKER = "Написано AI-агентом"
 
-# Путь проверяется, только если он обещает быть файлом/каталогом репозитория:
-# `origin/main`, `leto-games/*` и подобное — не пути, а упоминания.
 PATH_RE = re.compile(r"`([A-Za-z][\w./@{},-]*/[\w./@{},-]+)`")
 PRESET_RE = re.compile(r"--preset[\"'=\s]+([\w.-]+)")
 ISSUE_RE = re.compile(r"(?<![\w`/])#(\d{2,4})(?![\w`])")
-
-PREFIXES = (
-    "LetoAPI/", "LetoCore/", "LetoOS/", "leto-console/", "game-template/",
-    "Core/", "Tests/", "scripts/", "cmake/", "docs/", "include/", "source/",
-)
-SUFFIXES = (
-    ".hpp", ".h", ".cpp", ".c", ".sh", ".py", ".json", ".yml", ".yaml", ".md",
-    ".txt", ".cmake", ".ps1", ".bat", ".ioc", ".ld",
-)
 
 errors: list[str] = []
 warnings: list[str] = []
@@ -64,79 +56,119 @@ def repo_roots(root: Path) -> list[Path]:
     return roots
 
 
-def preset_sources() -> list[str]:
-    """Репозитории, чьи пресеты имеет смысл проверять в тексте."""
-    return REPOS[:4]
-
-
-def load_presets(roots: list[Path]) -> set[str]:
-    presets: set[str] = set()
+def cloned(repo: str, roots: list[Path]) -> Path | None:
     for root in roots:
-        manifest = root / "CMakePresets.json"
-        if not manifest.is_file():
+        if root.name == repo:
+            return root
+    return None
+
+
+def cmake_presets(repo_dir: Path) -> set[str] | None:
+    """Пресеты так, как их видит CMake; None — спросить не удалось."""
+    try:
+        result = subprocess.run(
+            ["cmake", "--list-presets"], cwd=repo_dir,
+            capture_output=True, text=True, timeout=120,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return None
+    if result.returncode != 0:
+        return None
+    return set(re.findall(r'^\s+"([^"]+)"', result.stdout, re.M))
+
+
+def collect_presets(roots: list[Path]) -> tuple[set[str], list[str]]:
+    presets: set[str] = set()
+    unqueried: list[str] = []
+    for repo in REPOS:
+        path = cloned(repo, roots)
+        if path is None:
+            unqueried.append(repo)
             continue
-        try:
-            data = json.loads(manifest.read_text(encoding="utf-8"))
-        except json.JSONDecodeError as exc:
-            err(f"{manifest}: невалидный JSON ({exc})")
+        listed = cmake_presets(path)
+        if listed is None:
+            unqueried.append(repo)
             continue
-        for key in ("configurePresets", "buildPresets", "testPresets"):
-            for preset in data.get(key, []):
-                if preset.get("name") and not preset.get("hidden"):
-                    presets.add(preset["name"])
-    return presets
+        presets.update(listed)
+    return presets, unqueried
 
 
-def repo_cloned(repo: str, roots: list[Path]) -> bool:
-    return any(root.name == repo for root in roots)
+def tracked_paths(roots: list[Path]) -> dict[Path, set[str]]:
+    """Файлы под контролем версий: git знает, что существует в проекте."""
+    tracked: dict[Path, set[str]] = {}
+    for root in roots:
+        if not (root / ".git").exists():
+            continue
+        result = subprocess.run(
+            ["git", "-C", str(root), "ls-files", "-z"],
+            capture_output=True, text=True,
+        )
+        if result.returncode == 0:
+            tracked[root] = {p for p in result.stdout.split("\0") if p}
+    return tracked
 
 
-def is_path_claim(token: str) -> bool:
+def resolves(token: str, roots: list[Path], tracked: dict[Path, set[str]]) -> bool:
+    for root in roots:
+        paths = tracked.get(root)
+        if paths is None:
+            if (root / token).exists():
+                return True
+            continue
+        if token in paths or any(p.startswith(token.rstrip("/") + "/") for p in paths):
+            return True
+    return False
+
+
+def is_path_claim(token: str, roots: list[Path], tracked: dict[Path, set[str]]) -> bool:
     if any(ch in token for ch in "<>{}$*?|"):
         return False
-    if not token.startswith(PREFIXES):
-        return False
-    return token.endswith("/") or token.endswith(SUFFIXES)
+    head = token.split("/", 1)[0]
+    if head in ALL_REPOS:
+        # `owner/repo` в тексте — ссылка на GitHub, а не путь внутри клона.
+        return token != f"{head}/{head}"
+    # Первый сегмент — каталог верхнего уровня, который реально есть в репозитории.
+    return any(head == p.split("/", 1)[0] for paths in tracked.values() for p in paths)
 
 
-def check_doc(path: Path, roots: list[Path], presets: set[str], budget: int) -> None:
+def check_doc(path: Path, roots: list[Path], presets: set[str], unqueried: list[str],
+              budget: int, tracked: dict[Path, set[str]]) -> None:
     text = path.read_text(encoding="utf-8")
-    lines = text.splitlines()
 
-    if len(lines) > budget:
-        err(f"{path}: {len(lines)} строк при бюджете {budget} — хвост файла не читается")
+    if len(text.splitlines()) > budget:
+        err(f"{path}: {len(text.splitlines())} строк при бюджете {budget} — хвост файла не читается")
 
     for raw in PATH_RE.findall(text):
         token = raw.rstrip(".,;:)")
-        if not is_path_claim(token):
+        if not is_path_claim(token, roots, tracked):
             continue
         candidates = [token]
         for repo in REPOS:
             if token.startswith(f"{repo}/"):
                 candidates.append(token[len(repo) + 1:])
-        if any((root / candidate).exists() for root in roots for candidate in candidates):
+        if any(resolves(candidate, roots, tracked) for candidate in candidates):
             continue
         owner = token.split("/", 1)[0]
-        if owner in REPOS and not repo_cloned(owner, roots):
+        if owner in ALL_REPOS and cloned(owner, roots) is None:
             warn(f"{path}: `{token}` не проверен — репозиторий {owner} не клонирован рядом")
             continue
         err(f"{path}: путь `{token}` не существует")
 
-    missing_repos = [r for r in preset_sources() if not repo_cloned(r, roots)]
     for preset in PRESET_RE.findall(text):
-        if not presets or preset in presets:
+        if preset in presets:
             continue
-        if missing_repos:
-            warn(f"{path}: пресет `{preset}` не проверен — не клонированы: {', '.join(missing_repos)}")
+        if unqueried:
+            warn(f"{path}: пресет `{preset}` не проверен — нет пресетов: {', '.join(unqueried)}")
             continue
-        err(f"{path}: пресет `{preset}` отсутствует в CMakePresets.json")
+        err(f"{path}: пресета `{preset}` нет в `cmake --list-presets`")
 
     for stale in ("Текущее состояние", "Current state"):
         if stale in text:
-            warn(f"{path}: раздел «{stale}» описывает состояние кодом текстом — заменить проверкой")
+            warn(f"{path}: раздел «{stale}» описывает состояние текстом — заменить проверкой")
 
 
-def check_skill(path: Path, roots: list[Path], presets: set[str]) -> None:
+def check_skill(path: Path, roots: list[Path], presets: set[str], unqueried: list[str],
+                tracked: dict[Path, set[str]]) -> None:
     text = path.read_text(encoding="utf-8")
     if not text.startswith("---\n"):
         err(f"{path}: нет frontmatter")
@@ -162,22 +194,33 @@ def check_skill(path: Path, roots: list[Path], presets: set[str]) -> None:
     if "Использовать" not in description and "Use when" not in description:
         warn(f"{path}: в description нет ситуации-триггера («Использовать, когда…»)")
 
-    check_doc(path, roots, presets, MAX_SKILL_LINES)
+    check_doc(path, roots, presets, unqueried, MAX_SKILL_LINES, tracked)
 
     if len(body.splitlines()) > MAX_SKILL_BODY:
         warn(f"{path}: тело больше {MAX_SKILL_BODY} строк — вынести детали в файлы рядом")
 
 
-def normalize_marker(line: str) -> str:
-    return line.strip().lstrip(">").strip().strip("`\"«»").strip()
+def check_router_lists_skills(root: Path, skills: list[Path]) -> None:
+    """Таблица скиллов в AGENTS.md и каталог скиллов не должны расходиться."""
+    agents = root / "AGENTS.md"
+    if not agents.is_file():
+        return
+    text = agents.read_text(encoding="utf-8")
+    section = text.split("## Скиллы", 1)[-1].split("\n## ", 1)[0]
+    listed = set(re.findall(r"`(leto-[a-z0-9-]+)`", section))
+    dirs = {path.parent.name for path in skills}
+    for name in sorted(dirs - listed):
+        err(f"AGENTS.md: скилл `{name}` есть, но не указан в таблице")
+    for name in sorted(listed - dirs):
+        err(f"AGENTS.md: указан скилл `{name}`, но каталога .agents/skills/{name} нет")
 
 
 def check_ai_marker(root: Path) -> None:
     variants = set()
     for path in list(root.glob("*.md")) + list(root.glob(".agents/skills/*/SKILL.md")):
         for line in path.read_text(encoding="utf-8").splitlines():
-            if "AI-агентом" in line:
-                variants.add(normalize_marker(line))
+            if AI_MARKER in line:
+                variants.add(line.strip().lstrip(">").strip().strip("`\"«»").strip())
     if len(variants) > 1:
         err(f"пометка AI встречается в {len(variants)} вариантах — нужна одна формулировка")
 
@@ -199,13 +242,14 @@ def main() -> int:
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     root = Path(args[0] if args else ".")
     roots = repo_roots(root)
-    presets = load_presets(roots)
+    presets, unqueried = collect_presets(roots)
+    tracked = tracked_paths(roots)
 
     agents = root / "AGENTS.md"
     if not agents.is_file():
         err("AGENTS.md отсутствует")
     else:
-        check_doc(agents, roots, presets, MAX_AGENTS_LINES)
+        check_doc(agents, roots, presets, unqueried, MAX_AGENTS_LINES, tracked)
 
     skills = sorted(root.glob(".agents/skills/*/SKILL.md"))
     if not skills:
@@ -213,8 +257,9 @@ def main() -> int:
     if len(skills) > MAX_SKILLS:
         err(f"{len(skills)} скиллов при потолке {MAX_SKILLS} — выбор перестанет быть однозначным")
     for skill in skills:
-        check_skill(skill, roots, presets)
+        check_skill(skill, roots, presets, unqueried, tracked)
 
+    check_router_lists_skills(root, skills)
     check_ai_marker(root)
     if "--issues" in sys.argv:
         check_issues(root)

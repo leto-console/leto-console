@@ -36,7 +36,7 @@ description: Провести изменение LETO по процессу ре
 `dismiss_stale_reviews_on_push: true`, `required_review_thread_resolution: true`,
 разрешены `merge` и `squash`. Обязательные чеки — джобы `build-and-pack`, их список
 берётся из ruleset, а не из памяти: в `LetoCore`/`LetoOS` это агрегирующая джоба
-`CI Result`, в `leto-console` — четыре матричные сборки.
+`CI Result`, в `leto-console` — матричные сборки `build-and-pack`.
 
 ```sh
 gh api -X POST repos/{owner}/{repo}/pulls/<N>/requested_reviewers \

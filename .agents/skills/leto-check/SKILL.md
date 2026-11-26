@@ -15,8 +15,9 @@ description: Прогнать проверки LETO перед коммитом 
 ## Что внутри
 
 1. `leto-sync`-инвариант: сборка идёт по цепочке `LetoAPI → LetoCore → LetoOS → leto-console`.
-2. `ctest` есть только у `LetoCore` и `LetoOS` (пресет `linux-debug`):
-   `ctest --test-dir "$LETO_PATH/$repo/build/linux-debug" --output-on-failure`.
+2. Пресет и наличие тестов скрипт не хранит: linux-пресет берётся из
+   `cmake --list-presets`, `ctest` запускается, если в каталоге сборки есть
+   `CTestTestfile.cmake`. Переименование пресета скрипт не сломает.
 3. Проверка выгрузки игры (только `--full`, нужен собранный `Apps/linux-debug/<Game>/`):
 
 ```sh
