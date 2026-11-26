@@ -545,9 +545,6 @@ void Application::Init()
 		if (arg_parser.FindArg("--game"))
 		{
 			std::string game = arg_parser.FindValue("--game", "");
-
-			// SetAppPath сам пишет путь и предупреждает об усечении: буфер
-			// стал подробностью LetoOS, наружу торчит только функция.
 			SetAppPath(game.c_str());
 			SystemSceneManager::Instance().SwitchScene(SceneID::GAMES_CENTER);
 			SystemSceneManager::Instance().Loop();
