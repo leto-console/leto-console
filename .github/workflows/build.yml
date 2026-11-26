@@ -1,4 +1,4 @@
-name: Multi-Platform Build (STM32 & Windows)
+name: Multi-Platform Build (STM32, Windows & Linux)
 
 on:
   push:
@@ -13,12 +13,21 @@ jobs:
         include:
           - preset: "stm32f401xc-st7735-debug"
             os: ubuntu-latest
+            test: false
           - preset: "stm32f411xe-st7735-debug"
             os: ubuntu-latest
+            test: false
           - preset: "win-st7735-debug"
             os: windows-latest
+            test: false
           - preset: "win-st7735-release"
             os: windows-latest
+            test: false
+          # Linux — единственное место, где компилируется ветка загрузчика на
+          # dlopen: STM32 и Windows идут другими путями.
+          - preset: "linux-st7735-debug"
+            os: ubuntu-latest
+            test: true
     runs-on: ${{ matrix.os }}
 
     steps:
@@ -27,10 +36,14 @@ jobs:
 
     - name: Install Dependencies (Linux)
       if: runner.os == 'Linux'
-      run: sudo apt-get install -y -q ninja-build
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y -q ninja-build libsdl2-dev
 
+    # Пресет определяет тулчейн, а не раннер: linux-st7735-debug идёт по
+    # __LINUX__ и в arm-none-eabi не нуждается.
     - name: Install Arm GNU Toolchain (Linux)
-      if: runner.os == 'Linux'
+      if: startsWith(matrix.preset, 'stm32')
       uses: carlosperate/arm-none-eabi-gcc-action@v1
       with:
         release: '14.2.Rel1'
@@ -42,8 +55,21 @@ jobs:
     - name: Configure CMake
       run: cmake --preset ${{ matrix.preset }}
 
-    - name: Build Firmware
+    - name: Build
       run: cmake --build --preset ${{ matrix.preset }} --parallel
+
+    # Тесты есть только у не-STM32 пресетов LetoOS. Без LETO_PATH LetoOS
+    # подключается через FetchContent и создаёт свой CTestTestfile в
+    # _deps/letoos-build; у корня leto-console тестов нет.
+    # LETO_TEST_CONSOLE указывает на эмулятор из этой же сборки и делает E2E
+    # загрузчика обязательными: без него они пропускаются, не найдя консоль, и
+    # джоба зеленеет, не проверив загрузку игры.
+    - name: Run LetoOS tests
+      if: matrix.test
+      env:
+        SDL_VIDEODRIVER: dummy
+        LETO_TEST_CONSOLE: ${{ github.workspace }}/bin/${{ matrix.preset }}/leto-console
+      run: ctest --test-dir build/${{ matrix.preset }}/_deps/letoos-build --output-on-failure
 
     - name: Install and Organize SDK
       run: cmake --install build/${{ matrix.preset }} --prefix dist/${{ matrix.preset }} --component app
@@ -54,3 +80,4 @@ jobs:
         name: leto-console-${{ matrix.preset }}
         path: dist/${{ matrix.preset }}/
         if-no-files-found: error
+
