@@ -546,14 +546,9 @@ void Application::Init()
 		{
 			std::string game = arg_parser.FindValue("--game", "");
 
-			// Пишем в AppPath напрямую, а не через LetoOS::SetAppPath: под
-			// Windows консоль собирается с LetoOS из main, где этой функции ещё
-			// нет. Усечение проверяем сами — иначе игра не найдётся по
-			// обрезанному пути без внятной причины.
-			AppPath = game.c_str();
-			if (game.size() > AppPath.Capacity())
-				VirtualConsole::Instance().Printf("путь обрезан: %u\r\n",
-					YellowColor, static_cast<unsigned>(AppPath.Capacity()));
+			// SetAppPath сам пишет путь и предупреждает об усечении: буфер
+			// стал подробностью LetoOS, наружу торчит только функция.
+			SetAppPath(game.c_str());
 			SystemSceneManager::Instance().SwitchScene(SceneID::GAMES_CENTER);
 			SystemSceneManager::Instance().Loop();
 			SystemSceneManager::Instance().SwitchScene(SceneID::APP_SCENE);
