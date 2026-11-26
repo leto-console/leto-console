@@ -1,4 +1,4 @@
-name: Multi-Platform Build (STM32 & Windows)
+name: Multi-Platform Build (STM32, Windows & Linux)
 
 on:
   push:
@@ -54,3 +54,80 @@ jobs:
         name: leto-console-${{ matrix.preset }}
         path: dist/${{ matrix.preset }}/
         if-no-files-found: error
+
+  # Linux собирается отдельной джобой, а не строкой матрицы: нужны четыре
+  # чекаута рядом в $LETO_PATH, установка SDL2 и прогон тестов LetoOS, которых
+  # у STM32/Windows нет. Ветка загрузчика на dlopen компилируется только здесь.
+  build-linux:
+    name: build-linux (linux-debug)
+    runs-on: ubuntu-latest
+    env:
+      # Слэш в конце обязателен: пресеты склеивают пути как $LETO_PATH/LetoAPI/...
+      LETO_PATH: ${{ github.workspace }}/leto/
+      # Без дисплея SDL не поднимется; те же переменные нужны E2E-тестам загрузчика
+      SDL_VIDEODRIVER: dummy
+
+    steps:
+    - name: Checkout leto-console
+      uses: actions/checkout@v4
+      with:
+        path: leto/leto-console
+
+    # Репозитории проекта — независимые клоны, а не подмодули: каждый чекаутится
+    # рядом сам, иначе CMake не найдёт исходники зависимостей.
+    - name: Checkout LetoAPI
+      uses: actions/checkout@v4
+      with:
+        repository: leto-console/LetoAPI
+        path: leto/LetoAPI
+
+    - name: Checkout LetoCore
+      uses: actions/checkout@v4
+      with:
+        repository: leto-console/LetoCore
+        path: leto/LetoCore
+
+    - name: Checkout LetoOS
+      uses: actions/checkout@v4
+      with:
+        repository: leto-console/LetoOS
+        path: leto/LetoOS
+
+    - name: Install Dependencies (Linux)
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y -q ninja-build libsdl2-dev
+
+    # Порядок обязателен: каждый следующий шаг линкуется против артефактов
+    # предыдущего, а тесты и эмулятор ищут их в $LETO_PATH/Common/<preset>/lib.
+    - name: Build LetoAPI, LetoCore, LetoOS
+      working-directory: leto
+      run: |
+        set -eux
+        for repo in LetoAPI LetoCore LetoOS; do
+          (
+            cd "$repo"
+            cmake --preset linux-debug
+            cmake --build --preset linux-debug --parallel
+          )
+        done
+
+    # Эмулятор собирается до тестов: E2E-тесты загрузчика запускают его как
+    # процесс и находят по $LETO_PATH/Console/<preset>/bin/leto-console.
+    # working-directory обязателен: из-за checkout с path: шаги начинаются в
+    # корне рабочего каталога, а сам репозиторий лежит в leto/leto-console.
+    - name: Build leto-console
+      working-directory: leto/leto-console
+      run: |
+        set -eux
+        cmake --preset linux-st7735-debug
+        cmake --build --preset linux-st7735-debug --parallel
+
+    # LETO_TEST_CONSOLE делает E2E-тесты обязательными: без него они
+    # пропускаются, если эмулятор не нашёлся, и джоба осталась бы зелёной,
+    # не проверив загрузку игры вообще.
+    - name: Run LetoOS tests
+      working-directory: leto/LetoOS
+      env:
+        LETO_TEST_CONSOLE: ${{ github.workspace }}/leto/Console/linux-st7735-debug/bin/leto-console
+      run: ctest --test-dir build/linux-debug --output-on-failure
