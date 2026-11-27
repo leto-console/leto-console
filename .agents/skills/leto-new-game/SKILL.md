@@ -12,7 +12,8 @@ description: Создать или изменить игру для LETO на б
 
 ```sh
 git clone https://github.com/leto-games/game-template.git MyGame
-cd MyGame && cmake --preset linux-debug && cmake --build build/linux-debug -j
+cd MyGame && cmake --list-presets          # linux-пресет шаблона
+cmake --preset <linux-пресет> && cmake --build "build/<linux-пресет>" -j
 ```
 
 Точка входа — экспорт `__leto_exec_info__` (не функция `Init`), см. `game-template/source/Export.hpp`

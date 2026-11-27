@@ -23,7 +23,9 @@ export LETO_PATH="$HOME/leto/"
 в каждом ровно один).
 
 ```sh
-cd "$LETO_PATH/LetoCore" && cmake --preset linux-debug
+cd "$LETO_PATH/LetoCore"
+cmake --list-presets                      # linux-пресет в репозитории один
+cmake --preset <linux-пресет>
 ```
 
 Зависимости: `cmake`, `ninja-build`, `libsdl2-dev`.
