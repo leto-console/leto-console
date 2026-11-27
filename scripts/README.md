@@ -20,3 +20,9 @@ Linux / macOS / Termux (добавить в `~/.bashrc` или `~/.zshrc`):
 ```sh
 export LETO_PATH="/home/<user>/.../STM32Projects"
 ```
+
+## Проверки
+
+Точка входа одна: `./scripts/leto-check.sh --help`. Список скриптов, режимы и
+правила не дублируются здесь — их отдают `--help` самих скриптов, `AGENTS.md` и
+скиллы в `.agents/skills/`. Правило одно: описание живёт в одном месте.
